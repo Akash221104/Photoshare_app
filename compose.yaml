@@ -1,0 +1,61 @@
+# compose.yaml
+services:
+  db:
+    image: ankane/pgvector:v0.5.1
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: photoshare
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d photoshare"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  ai-service:
+    build:
+      context: ./photo-ai
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8000
+      - AI_SERVICE_API_KEY=${AI_SERVICE_API_KEY:-your_secure_ai_service_api_key_here}
+
+  web-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+      ai-service:
+        condition: service_started
+    env_file:
+      - .env
+    environment:
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=postgres
+      - DATABASE_NAME=photoshare
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/photoshare
+      - AI_SERVICE_URL=http://ai-service:8000
+      - AI_SERVICE_API_KEY=${AI_SERVICE_API_KEY:-your_secure_ai_service_api_key_here}
+      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
+      - BETTER_AUTH_URL=${BETTER_AUTH_URL:-http://localhost:3000}
+      - NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+
+volumes:
+  pgdata:
