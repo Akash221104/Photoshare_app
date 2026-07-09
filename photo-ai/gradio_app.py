@@ -66,9 +66,9 @@ demo = gr.Interface(
     description="This Hugging Face Space hosts the face recognition pipeline backend APIs."
 )
 
-# Mount Gradio UI onto FastAPI app at /ui
+# Mount Gradio UI onto FastAPI app at '/'
 # All REST API endpoints (/analyze, /embedding, /health) remain available at the root URL (/)
-app = gr.mount_gradio_app(app, demo, path="/ui")
+app = gr.mount_gradio_app(app, demo, path="/")
 
 # START THE SERVER:
 # Hugging Face runs python scripts directly, so we must start uvicorn to block and listen for requests.
