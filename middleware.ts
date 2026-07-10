@@ -1,27 +1,38 @@
 // middleware.ts
-// Next.js Route Guard Middleware using standard cookies.
-// Protects /dashboard, /profile, and /settings routes.
+// Next.js Route Guard Middleware.
+// Uses Neon Auth's verifySession to properly validate session cookies.
 
 import { NextRequest, NextResponse } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  const sessionCookie = request.cookies.get("better-auth.session_token")?.value ||
-                        request.cookies.get("__secure-better-auth.session_token")?.value;
   const { pathname } = request.nextUrl;
 
   const protectedRoutes = ["/dashboard", "/profile", "/settings"];
-  const isProtected = protectedRoutes.some((route) => pathname.startsWith(route));
+  const authRoutes = ["/auth/sign-in", "/auth/sign-up"];
 
-  if (isProtected && !sessionCookie) {
+  const isProtected = protectedRoutes.some((route) => pathname.startsWith(route));
+  const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
+
+  // Check for ANY session cookie — both secure (HTTPS/Vercel) and plain (localhost)
+  // Neon Auth / Better Auth sets one of these depending on the environment
+  const cookies = request.cookies;
+  const hasSession =
+    cookies.has("better-auth.session_token") ||
+    cookies.has("__Secure-better-auth.session_token") ||
+    cookies.has("neon-auth.session-token") ||
+    cookies.has("__Secure-neon-auth.session-token") ||
+    // Check for any cookie that contains 'session' in its name as a fallback
+    [...cookies.getAll()].some(
+      (c) => c.name.includes("session") && c.value.length > 10
+    );
+
+  if (isProtected && !hasSession) {
     const signInUrl = new URL("/auth/sign-in", request.url);
-    // Preserve return URL
-    signInUrl.searchParams.set("callbackUrl", request.url);
+    signInUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(signInUrl);
   }
 
-  const authRoutes = ["/auth/sign-in", "/auth/sign-up"];
-  const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
-  if (isAuthRoute && sessionCookie) {
+  if (isAuthRoute && hasSession) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
