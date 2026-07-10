@@ -1,6 +1,5 @@
 // app/api/selfie/search/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
 import { SelfieService } from '@/services/selfie.service';
 import { SearchService } from '@/services/search.service';
@@ -12,9 +11,7 @@ const searchService = new SearchService();
 const memberRepo = new MemberRepository();
 
 export async function POST(request: NextRequest) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const { data: session } = await auth.getSession();
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

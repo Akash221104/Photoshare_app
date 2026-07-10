@@ -2,16 +2,13 @@
 // Handles Event list fetching (GET) and Event creation (POST).
 
 import { NextRequest, NextResponse } from 'next/server';
-import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
 import { EventService } from '@/services/event.service';
 
 const eventService = new EventService();
 
 export async function GET(request: NextRequest) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const { data: session } = await auth.getSession();
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -24,9 +21,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const { data: session } = await auth.getSession();
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

@@ -2,7 +2,6 @@
 // Handles single photo detail checks (GET), deletion (DELETE), and status updates (PATCH).
 
 import { NextRequest, NextResponse } from 'next/server';
-import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
 import { PhotoService } from '@/services/photo.service';
 import { PhotoRepository } from '@/database/repositories/photo.repository';
@@ -15,9 +14,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id: photoId } = await params;
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const { data: session } = await auth.getSession();
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -34,9 +31,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id: photoId } = await params;
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const { data: session } = await auth.getSession();
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -53,9 +48,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id: photoId } = await params;
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const { data: session } = await auth.getSession();
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

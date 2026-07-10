@@ -2,7 +2,6 @@
 // Handles Event details retrieval (GET), updating (PUT), and deletion (DELETE).
 
 import { NextRequest, NextResponse } from 'next/server';
-import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
 import { EventService } from '@/services/event.service';
 
@@ -13,9 +12,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id: eventId } = await params;
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const { data: session } = await auth.getSession();
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -32,9 +29,7 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id: eventId } = await params;
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const { data: session } = await auth.getSession();
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -62,9 +57,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id: eventId } = await params;
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const { data: session } = await auth.getSession();
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

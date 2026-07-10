@@ -2,7 +2,6 @@
 // Handles moderation action to remove a member from an event.
 
 import { NextRequest, NextResponse } from 'next/server';
-import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
 import { EventService } from '@/services/event.service';
 
@@ -13,9 +12,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string; memberId: string }> }
 ) {
   const { id: eventId, memberId } = await params;
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const { data: session } = await auth.getSession();
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

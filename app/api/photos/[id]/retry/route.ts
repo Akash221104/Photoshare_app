@@ -2,7 +2,6 @@
 // API route to trigger a processing retry for a failed photo.
 
 import { NextRequest, NextResponse } from 'next/server';
-import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
 import { PhotoRepository } from '@/database/repositories/photo.repository';
 import { EventRepository } from '@/database/repositories/event.repository';
@@ -20,9 +19,7 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id: photoId } = await params;
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const { data: session } = await auth.getSession();
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

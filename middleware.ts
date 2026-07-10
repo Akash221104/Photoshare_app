@@ -1,12 +1,12 @@
 // middleware.ts
-// Next.js Route Guard Middleware using Better Auth cookies.
+// Next.js Route Guard Middleware using standard cookies.
 // Protects /dashboard, /profile, and /settings routes.
 
 import { NextRequest, NextResponse } from "next/server";
-import { getSessionCookie } from "better-auth/cookies";
 
 export async function middleware(request: NextRequest) {
-  const sessionCookie = getSessionCookie(request);
+  const sessionCookie = request.cookies.get("better-auth.session_token")?.value ||
+                        request.cookies.get("__secure-better-auth.session_token")?.value;
   const { pathname } = request.nextUrl;
 
   const protectedRoutes = ["/dashboard", "/profile", "/settings"];

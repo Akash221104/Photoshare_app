@@ -2,7 +2,6 @@
 // API route to handle uploading photos. Parses multipart form-data.
 
 import { NextRequest, NextResponse } from 'next/server';
-import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
 import { PhotoService } from '@/services/photo.service';
 import { MAX_FILE_SIZE, ACCEPTED_IMAGE_TYPES } from '@/schemas/upload.schema';
@@ -10,9 +9,7 @@ import { MAX_FILE_SIZE, ACCEPTED_IMAGE_TYPES } from '@/schemas/upload.schema';
 const photoService = new PhotoService();
 
 export async function POST(request: NextRequest) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const { data: session } = await auth.getSession();
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

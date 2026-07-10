@@ -3,7 +3,6 @@
 
 import React from 'react';
 import { redirect } from 'next/navigation';
-import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
 import { EventService } from '@/services/event.service';
 import { Button } from '@/components/ui/button';
@@ -19,9 +18,7 @@ export default async function InvitePage({ params }: InvitePageProps) {
   const { joinCode } = await params;
 
   // 1. Check if user is authenticated
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const { data: session } = await auth.getSession();
 
   if (!session) {
     // Redirect to sign in, preserving the redirect target path

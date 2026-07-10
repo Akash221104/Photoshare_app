@@ -2,7 +2,6 @@
 // Host-only event statistics (aggregate metrics only, no individual photo access).
 
 import { NextRequest, NextResponse } from 'next/server';
-import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
 import { query } from '@/database/db';
 import { MemberRepository } from '@/database/repositories/member.repository';
@@ -14,9 +13,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id: eventId } = await params;
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const { data: session } = await auth.getSession();
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
