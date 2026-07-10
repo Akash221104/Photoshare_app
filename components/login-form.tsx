@@ -38,26 +38,20 @@ export function LoginForm() {
   const onSubmit = async (data: LoginInput) => {
     setLoading(true);
     try {
-      const response = await authClient.signIn.email({
+      const result = await authClient.signIn.email({
         email: data.email,
         password: data.password,
-        callbackURL: callbackUrl,
-      }, {
-        onRequest: () => {
-          setLoading(true);
-        },
-        onResponse: () => {
-          setLoading(false);
-        },
-        onError: (ctx) => {
-          toast.error(ctx.error.message || 'Invalid email or password');
-        },
-        onSuccess: () => {
-          toast.success('Logged in successfully!');
-          router.push(callbackUrl);
-          router.refresh();
-        }
       });
+
+      if (result?.error) {
+        toast.error(result.error.message || 'Invalid email or password');
+        setLoading(false);
+        return;
+      }
+
+      toast.success('Logged in successfully! Redirecting...');
+      // Hard redirect ensures the session cookie is picked up by middleware
+      window.location.href = callbackUrl;
     } catch (err: any) {
       toast.error('An unexpected connection error occurred');
       setLoading(false);

@@ -37,27 +37,21 @@ export function RegisterForm() {
   const onSubmit = async (data: RegisterInput) => {
     setLoading(true);
     try {
-      await authClient.signUp.email({
+      const result = await authClient.signUp.email({
         email: data.email,
         password: data.password,
         name: data.name,
-        callbackURL: '/dashboard',
-      }, {
-        onRequest: () => {
-          setLoading(true);
-        },
-        onResponse: () => {
-          setLoading(false);
-        },
-        onError: (ctx) => {
-          toast.error(ctx.error.message || 'Registration failed');
-        },
-        onSuccess: () => {
-          toast.success('Account created successfully!');
-          router.push('/dashboard');
-          router.refresh();
-        }
       });
+
+      if (result?.error) {
+        toast.error(result.error.message || 'Registration failed');
+        setLoading(false);
+        return;
+      }
+
+      toast.success('Account created successfully! Redirecting...');
+      // Hard redirect ensures the session cookie is picked up by middleware
+      window.location.href = '/dashboard';
     } catch (err: any) {
       toast.error('An unexpected connection error occurred');
       setLoading(false);
