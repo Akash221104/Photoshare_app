@@ -4,6 +4,7 @@
 
 import { betterAuth } from "better-auth";
 import { dbPool } from "@/database/db";
+import crypto from "crypto";
 
 export const auth = betterAuth({
   database: dbPool,
@@ -29,7 +30,7 @@ export const auth = betterAuth({
   },
   advanced: {
     database: {
-      generateId: "uuid",
+      generateId: () => crypto.randomUUID(),
     },
   },
   user: {
