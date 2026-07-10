@@ -4,7 +4,6 @@
 import { createAuthClient } from "better-auth/react";
 
 export const authClient = createAuthClient({
-  // baseURL can be omitted if frontend and backend share domain. 
-  // We specify it fallback to localhost:3000.
-  baseURL: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+  // Since frontend and backend share the same domain, we can dynamically detect the baseURL.
+  baseURL: typeof window !== "undefined" ? window.location.origin : undefined,
 });

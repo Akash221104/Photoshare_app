@@ -3,6 +3,9 @@
 // Configured to handle dev hot-reloads and support robust transactional queries.
 
 import { Pool, PoolConfig } from 'pg';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 // Global declaration to prevent leaking pools during hot reloads in Next.js development mode.
 declare global {
