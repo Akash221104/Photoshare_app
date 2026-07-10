@@ -1,9 +1,8 @@
 // lib/auth.ts
-// Neon Auth Server Instance Configuration.
+// Neon Auth Server Instance — single source of truth for all server-side auth.
+// Uses @neondatabase/auth/next/server exclusively.
 
 import { createNeonAuth } from '@neondatabase/auth/next/server';
-
-process.env.BETTER_AUTH_TRUSTED_PROXY_HEADERS = "true";
 
 export const auth = createNeonAuth({
   baseUrl: process.env.NEON_AUTH_BASE_URL!,

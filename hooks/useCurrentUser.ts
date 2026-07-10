@@ -1,31 +1,43 @@
 // hooks/useCurrentUser.ts
-// React Hook to access the currently logged-in user from the client side.
+// React hook to access the currently signed-in user from Neon Auth.
+// Uses authClient.useSession() from @neondatabase/auth/next.
+
+'use client';
 
 import { authClient } from '@/lib/auth-client';
-import { User } from '@/types/auth';
+
+export type CurrentUser = {
+  id: string;
+  name: string;
+  email: string;
+  emailVerified: boolean;
+  image?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 export function useCurrentUser(): {
-  user: User | null;
+  user: CurrentUser | null;
   loading: boolean;
   error: Error | null;
 } {
-  const { data: sessionData, isPending: loading, error } = authClient.useSession();
+  const { data: session, isPending: loading, error } = authClient.useSession();
 
-  const user = sessionData?.user
-    ? ({
-        id: sessionData.user.id,
-        name: sessionData.user.name,
-        email: sessionData.user.email,
-        emailVerified: sessionData.user.emailVerified,
-        image: sessionData.user.image,
-        createdAt: new Date(sessionData.user.createdAt),
-        updatedAt: new Date(sessionData.user.updatedAt),
-      } as User)
+  const user: CurrentUser | null = session?.user
+    ? {
+        id: session.user.id,
+        name: session.user.name,
+        email: session.user.email,
+        emailVerified: session.user.emailVerified,
+        image: session.user.image ?? null,
+        createdAt: new Date(session.user.createdAt),
+        updatedAt: new Date(session.user.updatedAt),
+      }
     : null;
 
   return {
     user,
     loading,
-    error: error ? new Error(error.statusText || 'Failed to fetch session') : null,
+    error: error ? new Error(String(error)) : null,
   };
 }
