@@ -8,7 +8,8 @@ export default auth.middleware({ loginUrl: "/auth/sign-in" });
 
 export const config = {
   matcher: [
-    // Protect all routes EXCEPT static files, images and public API
-    "/((?!_next/static|_next/image|favicon.ico|api/auth|api/debug-cookies|auth/).*)",
+    "/dashboard/:path*",
+    "/profile/:path*",
+    "/settings/:path*",
   ],
 };
