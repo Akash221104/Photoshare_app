@@ -61,10 +61,23 @@ export function LoginForm() {
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
-      await authClient.signIn.social({
-        provider: 'google',
-        callbackURL: callbackUrl,
+      const response = await fetch('/api/auth/sign-in/social', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          provider: 'google',
+          callbackURL: callbackUrl,
+        }),
       });
+
+      const data = await response.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error('No redirect URL returned');
+      }
     } catch (err) {
       toast.error('Google Sign In failed');
       setLoading(false);
