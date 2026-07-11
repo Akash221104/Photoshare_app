@@ -1,6 +1,6 @@
 // app/page.tsx
-// Storytelling landing page V3 (Merged Section & Interactivity).
-// Built with a premium dark theme, flagship smartphone frames, sequential workflow animations, and live interactive simulators.
+// Storytelling landing page V3.2 (SaaS Simulation).
+// Built with a premium dark theme, macOS SaaS dashboard windows, sequential FSM simulations, and live interactive widgets.
 
 'use client';
 
@@ -27,7 +27,15 @@ import {
   Phone,
   Video,
   MoreVertical,
-  ChevronLeft
+  ChevronLeft,
+  Bell,
+  Settings,
+  FolderOpen,
+  LayoutDashboard,
+  Layers,
+  Image as ImageIcon,
+  UserCheck,
+  RotateCcw
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -38,6 +46,8 @@ const MATCHED_IMAGES = [
   'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&auto=format&fit=crop&q=80',
   'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=300&auto=format&fit=crop&q=80'
 ];
+
+type SimState = 'idle' | 'organizer-active' | 'generate-qr' | 'guest-active' | 'upload-selfie' | 'searching' | 'completed';
 
 export default function Home() {
   // --- Headline Slider Transition State ---
@@ -52,33 +62,31 @@ export default function Home() {
   useEffect(() => {
     const timer = setInterval(() => {
       setHeadlineIndex((prev) => (prev + 1) % headlines.length);
-    }, 2500);
+    }, 2800);
     return () => clearInterval(timer);
   }, [headlines.length]);
 
-  // --- Master Sequenced Loop State (0 to 11) - Accelerated to 1100ms ---
-  const [masterStep, setMasterStep] = useState(0);
+  // --- Finite State Machine Simulation State ---
+  const [simState, setSimState] = useState<SimState>('idle');
   const [uploadPercent, setUploadPercent] = useState(0);
-  const [aiStep, setAiStep] = useState(0); // 0: detect, 1: match, 2: build
+  const [aiPercent, setAiPercent] = useState(0);
+  const [showReplay, setShowReplay] = useState(false);
+
+  // Trigger FSM Sequence
+  const startSimulation = () => {
+    setSimState('organizer-active');
+    setUploadPercent(0);
+    setAiPercent(0);
+    setShowReplay(false);
+  };
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setMasterStep((prev) => {
-        const next = (prev + 1) % 12;
-        if (next === 0) {
-          setUploadPercent(0);
-          setAiStep(0);
-        }
-        return next;
-      });
-    }, 1100);
-    return () => clearInterval(timer);
-  }, []);
+    if (simState === 'idle') return;
 
-  // Sync upload progress during masterStep 1
-  useEffect(() => {
-    if (masterStep === 1) {
-      setUploadPercent(0);
+    let timer: NodeJS.Timeout;
+
+    if (simState === 'organizer-active') {
+      // Animate upload percent from 0 to 100
       const interval = setInterval(() => {
         setUploadPercent((prev) => {
           if (prev >= 100) {
@@ -87,17 +95,51 @@ export default function Home() {
           }
           return prev + 25;
         });
-      }, 70);
-      return () => clearInterval(interval);
-    }
-  }, [masterStep]);
+      }, 300);
 
-  // Sync AI scanning progress steps during masterStep 8, 9, 10
-  useEffect(() => {
-    if (masterStep === 8) setAiStep(0);
-    if (masterStep === 9) setAiStep(1);
-    if (masterStep === 10) setAiStep(2);
-  }, [masterStep]);
+      timer = setTimeout(() => {
+        clearInterval(interval);
+        setSimState('generate-qr');
+      }, 2800);
+    } else if (simState === 'generate-qr') {
+      timer = setTimeout(() => {
+        setSimState('guest-active');
+      }, 2500); // Allow QR to fly
+    } else if (simState === 'guest-active') {
+      timer = setTimeout(() => {
+        setSimState('upload-selfie');
+      }, 2000);
+    } else if (simState === 'upload-selfie') {
+      timer = setTimeout(() => {
+        setSimState('searching');
+      }, 2200);
+    } else if (simState === 'searching') {
+      // Animate AI matching search bar
+      const interval = setInterval(() => {
+        setAiPercent((prev) => {
+          if (prev >= 100) {
+            clearInterval(interval);
+            return 100;
+          }
+          return prev + 15;
+        });
+      }, 200);
+
+      timer = setTimeout(() => {
+        clearInterval(interval);
+        setSimState('completed');
+      }, 3000);
+    } else if (simState === 'completed') {
+      // Show replay button after 2 seconds
+      timer = setTimeout(() => {
+        setShowReplay(true);
+      }, 2000);
+    }
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [simState]);
 
   // --- WhatsApp-Style Chat Simulator State ---
   const [chatStep, setChatStep] = useState(0);
@@ -107,35 +149,6 @@ export default function Home() {
     }, 2800);
     return () => clearInterval(interval);
   }, []);
-
-  // --- Interactive Demo State ---
-  const [demoState, setDemoState] = useState<'idle' | 'uploading' | 'scanning' | 'searching' | 'results'>('idle');
-  const [demoMatches, setDemoMatches] = useState(0);
-  const [demoAiStep, setDemoAiStep] = useState(0); // 0: detect, 1: match, 2: build
-
-  const startDemo = () => {
-    setDemoState('uploading');
-    setDemoMatches(0);
-    setDemoAiStep(0);
-
-    setTimeout(() => {
-      setDemoState('scanning');
-      setTimeout(() => {
-        setDemoState('searching');
-        let progress = 0;
-        const interval = setInterval(() => {
-          progress += 1;
-          if (progress === 1) setDemoAiStep(1);
-          if (progress === 2) setDemoAiStep(2);
-          if (progress >= 3) {
-            clearInterval(interval);
-            setDemoMatches(126);
-            setDemoState('results');
-          }
-        }, 600);
-      }, 1500);
-    }, 1000);
-  };
 
   return (
     <div className="flex flex-col min-h-screen bg-[#09090B] text-[#FAFAFA] font-sans antialiased overflow-hidden selection:bg-[#6366F1]/30">
@@ -204,7 +217,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Section 2: The Privacy Mismatch (WhatsApp Chat) directly under Hero */}
+        {/* Section 2: The Privacy Mismatch (WhatsApp Chat) */}
         <section className="px-6 py-20 bg-zinc-950/40 border-y border-white/5 relative">
           <div className="max-w-7xl mx-auto w-full grid md:grid-cols-2 gap-12 items-center">
             
@@ -350,7 +363,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Section 3: Who Is This For? (Audience Grid) */}
+        {/* Section 3: Who Is This For? */}
         <section className="px-6 py-20 bg-zinc-950/40 border-b border-white/5">
           <div className="max-w-7xl mx-auto w-full">
             <div className="text-center space-y-3 mb-16">
@@ -399,270 +412,309 @@ export default function Home() {
           </div>
         </section>
 
-        {/* MERGED SECTION: Section 4 - One Upload. Customized Galleries & Live Simulation */}
+        {/* MERGED SECTION: Section 4 - One Upload. Customized Galleries & SaaS Simulation */}
         <section id="demo-section" className="relative px-6 max-w-7xl mx-auto w-full py-20 flex flex-col items-center">
           
           <div className="text-center space-y-4 mb-12">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-[#6366F1]">One Upload. Customized Galleries.</h2>
-            <p className="text-3xl sm:text-4xl font-extrabold text-[#FAFAFA]">See the magic of PhotoShare in action.</p>
+            <p className="text-3xl sm:text-4xl font-extrabold text-[#FAFAFA]">Watch how one event instantly becomes hundreds of private galleries.</p>
             <p className="text-[#A1A1AA] max-w-2xl mx-auto text-sm leading-relaxed">
-              The Organizer prepares the album, and guests instantly receive their pictures. Toggle below to inspect either workflow.
+              Organizer uploads once. Guests simply join, upload one selfie, and receive only their own photos.
             </p>
 
-            {/* Direct Match Simulation CTA Button */}
-            <div className="pt-2 flex justify-center gap-4">
-              <Button onClick={startDemo} className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 h-10 shadow-lg shadow-emerald-600/20">
-                {demoState === 'idle' ? 'Try Match Demo' : 'Running Scan...'}
-              </Button>
+            {/* FSM Controls overlay */}
+            <div className="pt-4 flex justify-center gap-4 z-10">
+              {simState === 'idle' && (
+                <Button onClick={startSimulation} className="bg-[#6366F1] hover:bg-[#6366F1]/90 text-white font-bold px-8 h-12 shadow-lg shadow-[#6366F1]/20 animate-bounce">
+                  ▶ Start Live Simulation
+                </Button>
+              )}
+              {simState === 'completed' && showReplay && (
+                <Button onClick={startSimulation} className="bg-zinc-800 hover:bg-zinc-700 text-[#FAFAFA] font-bold px-8 h-12 flex items-center gap-2 border border-white/10">
+                  <RotateCcw size={16} /> Replay Simulation
+                </Button>
+              )}
+              {simState !== 'idle' && simState !== 'completed' && (
+                <span className="text-xs font-mono text-indigo-400 bg-indigo-500/10 px-4 py-2 rounded-full border border-indigo-500/20 animate-pulse">
+                  Simulation in Progress...
+                </span>
+              )}
             </div>
           </div>
 
           {/* Interactive Phone tab selectors */}
           <div className="flex justify-center gap-4 mb-8 z-10">
             <button 
-              onClick={() => setMasterStep(0)} 
-              className={`px-4 py-2 rounded-full text-xs font-bold border transition-all duration-300 ${masterStep <= 4 ? 'bg-[#6366F1] border-[#6366F1] text-white shadow-md shadow-[#6366F1]/20' : 'bg-zinc-900 border-white/5 text-zinc-400 hover:text-zinc-200'}`}
+              onClick={() => { if (simState !== 'idle') setSimState('organizer-active'); }}
+              disabled={simState === 'idle'}
+              className={`px-4 py-2 rounded-full text-xs font-bold border transition-all duration-300 ${simState === 'organizer-active' || simState === 'generate-qr' ? 'bg-[#6366F1] border-[#6366F1] text-white shadow-md shadow-[#6366F1]/20' : 'bg-zinc-900 border-white/5 text-zinc-400 hover:text-zinc-200'}`}
             >
-              Organizer Steps
+              Organizer Dashboard
             </button>
             <button 
-              onClick={() => setMasterStep(5)} 
-              className={`px-4 py-2 rounded-full text-xs font-bold border transition-all duration-300 ${masterStep >= 5 ? 'bg-[#06B6D4] border-[#06B6D4] text-zinc-950 shadow-md shadow-[#06B6D4]/20' : 'bg-zinc-900 border-white/5 text-zinc-400 hover:text-zinc-200'}`}
+              onClick={() => { if (simState !== 'idle') setSimState('guest-active'); }}
+              disabled={simState === 'idle'}
+              className={`px-4 py-2 rounded-full text-xs font-bold border transition-all duration-300 ${simState === 'guest-active' || simState === 'upload-selfie' || simState === 'searching' || simState === 'completed' ? 'bg-[#06B6D4] border-[#06B6D4] text-zinc-950 shadow-md shadow-[#06B6D4]/20' : 'bg-zinc-900 border-white/5 text-zinc-400 hover:text-zinc-200'}`}
             >
-              Guest Steps
+              Guest Dashboard
             </button>
           </div>
 
-          <div className="relative grid md:grid-cols-2 gap-16 max-w-5xl w-full items-stretch">
+          {/* macOS Browser Panels side-by-side layout */}
+          <div className="relative grid lg:grid-cols-2 gap-8 max-w-7xl w-full items-stretch pt-4">
             
             {/* Flying QR Code overlay */}
-            {masterStep === 4 && (
-              <div className="absolute top-[40%] left-1/4 z-40 pointer-events-none animate-fly-qr bg-white p-2.5 rounded-2xl shadow-2xl flex items-center justify-center border border-zinc-200" style={{ '--fly-x': '340px', '--fly-y': '20px' } as React.CSSProperties}>
-                <QrCode size={40} className="text-black" />
+            {simState === 'generate-qr' && (
+              <div className="absolute top-[40%] left-1/4 z-40 pointer-events-none animate-fly-qr bg-white p-3 rounded-2xl shadow-2xl flex items-center justify-center border border-zinc-200" style={{ '--fly-x': '620px', '--fly-y': '20px' } as React.CSSProperties}>
+                <QrCode size={56} className="text-black" />
               </div>
             )}
 
-            {/* LEFT SMARTPHONE: Organizer Phone */}
-            <div className={`flex flex-col items-center transition-all duration-500 ${masterStep <= 4 ? 'opacity-100 scale-100' : 'opacity-40 scale-[0.98] grayscale'}`}>
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-[#6366F1] mb-4 flex items-center gap-1.5 bg-[#6366F1]/5 px-3 py-1 rounded-full border border-[#6366F1]/10">
-                Organizer Workflow
-              </h3>
-
-              {/* Smartphone mockup shell */}
-              <div className={`w-full max-w-sm aspect-[9/16] rounded-[48px] border-[8px] p-5 shadow-2xl relative overflow-hidden flex flex-col justify-between transition-all duration-500 bg-[#09090B] ${masterStep <= 4 ? 'border-[#6366F1] shadow-[#6366F1]/20 scale-[1.01]' : 'border-zinc-800'}`}>
-                {/* Dynamic Island Notch */}
-                <div className="absolute top-2 left-1/2 -translate-x-1/2 h-6 w-32 bg-zinc-900 rounded-full flex items-center justify-center z-30 border border-white/5">
-                  <div className="h-2 w-2 rounded-full bg-zinc-950 ml-2" />
+            {/* ORGANIZER SAAS DASHBOARD */}
+            <div className={`w-full rounded-2xl border-[2px] bg-[#18181B] shadow-2xl overflow-hidden transition-all duration-500 flex flex-col h-[520px] relative ${simState === 'organizer-active' || simState === 'generate-qr' ? 'border-[#6366F1] shadow-[#6366F1]/10 scale-[1.01]' : 'border-zinc-800 opacity-40 scale-[0.99] grayscale'}`}>
+              
+              {/* Browser bar */}
+              <div className="bg-zinc-900 px-4 py-3 flex items-center justify-between border-b border-zinc-800 shrink-0">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-rose-500" />
+                  <div className="w-3 h-3 rounded-full bg-amber-500" />
+                  <div className="w-3 h-3 rounded-full bg-emerald-500" />
                 </div>
-                {/* Diagonal Glass glare effect */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/2 to-transparent pointer-events-none z-20" />
-
-                {/* Header */}
-                <div className="flex items-center justify-between pt-6 pb-3 border-b border-white/5 z-10">
-                  <span className="text-[10px] font-bold tracking-wider uppercase text-zinc-400">PhotoShare Host</span>
-                  <div className="h-2 w-2 rounded-full bg-[#6366F1] animate-pulse" />
+                <div className="bg-zinc-950 px-3 py-1 rounded-md text-[10px] font-mono text-zinc-400 max-w-[220px] truncate w-full text-center">
+                  photoshare.ai/organizer/dashboard
                 </div>
+                <div className="w-12" />
+              </div>
 
-                {/* Simulated Operations */}
-                <div className="flex-1 flex flex-col justify-center space-y-4 z-10">
-                  {/* Step 0: Click Create Event */}
-                  {masterStep === 0 && (
-                    <div className="space-y-4 text-center animate-in fade-in duration-300">
-                      <div className="space-y-1">
-                        <span className="text-[10px] font-mono text-[#6366F1]">Step 1</span>
-                        <h4 className="text-xs font-bold text-zinc-100">Setup Event Space</h4>
-                      </div>
-                      <div className="p-4 rounded-2xl bg-zinc-900/60 border border-white/5 space-y-3">
-                        <div className="h-8 rounded bg-zinc-950 border border-white/10 px-2 flex items-center text-[10px] text-zinc-300">
-                          Wedding Gala 2026
-                        </div>
-                        <div className="h-8 rounded-lg bg-[#6366F1] text-white flex items-center justify-center text-xs font-bold animate-button-press cursor-pointer">
-                          Create Event
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Step 1: Uploading Photos */}
-                  {masterStep === 1 && (
-                    <div className="space-y-4 text-center animate-in fade-in duration-300">
-                      <div className="space-y-1">
-                        <span className="text-[10px] font-mono text-[#6366F1]">Step 2</span>
-                        <h4 className="text-xs font-bold text-zinc-100">Uploading Gallery</h4>
-                      </div>
-                      <div className="p-4 rounded-2xl bg-zinc-900/60 border border-white/5 space-y-3">
-                        <span className="text-[10px] text-zinc-400 font-semibold block animate-pulse">Uploading Photos...</span>
-                        <div className="w-full h-1.5 bg-zinc-950 rounded-full overflow-hidden">
-                          <div className="h-full bg-[#6366F1] rounded-full transition-all duration-300" style={{ width: `${uploadPercent}%` }} />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Step 2: AI Embedding */}
-                  {masterStep === 2 && (
-                    <div className="space-y-4 text-center animate-in fade-in duration-300">
-                      <div className="space-y-1">
-                        <span className="text-[10px] font-mono text-[#6366F1]">Step 3</span>
-                        <h4 className="text-xs font-bold text-zinc-100">AI Organizing Faces</h4>
-                      </div>
-                      <div className="p-4 rounded-2xl bg-[#6366F1]/5 border border-[#6366F1]/10 flex flex-col items-center space-y-2">
-                        <div className="h-7 w-7 rounded-full border border-indigo-500/30 border-t-indigo-500 animate-spin" />
-                        <span className="text-[10px] text-zinc-300">1247 Photos Uploaded</span>
-                        <span className="text-[9px] text-zinc-500">Mapping facial embeddings...</span>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Step 3: Event Ready / QR Generation */}
-                  {masterStep === 3 && (
-                    <div className="space-y-4 text-center animate-in fade-in duration-300 flex flex-col items-center">
-                      <div className="space-y-1">
-                        <span className="text-[10px] font-mono text-[#6366F1]">Step 4</span>
-                        <h4 className="text-xs font-bold text-zinc-100">Event Ready</h4>
-                      </div>
-                      <div className="h-10 w-10 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-2">
-                        <CheckCircle2 size={20} className="animate-pulse" />
-                      </div>
-                      <div className="h-8 w-24 bg-zinc-900 border border-white/10 rounded-lg flex items-center justify-center text-[10px] text-zinc-300 font-bold animate-button-press cursor-pointer">
-                        Share Event
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Step 4: Flying QR */}
-                  {masterStep === 4 && (
-                    <div className="space-y-4 text-center animate-in fade-in duration-300 flex flex-col items-center">
-                      <div className="space-y-1">
-                        <span className="text-[10px] font-mono text-[#6366F1]">Step 5</span>
-                        <h4 className="text-xs font-bold text-zinc-100">Fly QR to Guests</h4>
-                      </div>
-                      <div className="h-16 w-16 bg-zinc-855 border border-white/5 rounded-xl flex items-center justify-center opacity-30">
-                        <QrCode size={36} />
-                      </div>
-                    </div>
-                  )}
+              {/* Dashboard Layout */}
+              <div className="flex-1 flex overflow-hidden text-[11px]">
+                {/* Sidebar */}
+                <div className="w-40 border-r border-white/5 bg-zinc-900/50 p-3 flex flex-col justify-between shrink-0">
+                  <div className="space-y-4">
+                    <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider block px-2">Navigation</span>
+                    <ul className="space-y-1 text-zinc-300">
+                      <li className="flex items-center gap-2 p-2 rounded-lg bg-zinc-800 text-[#FAFAFA] font-semibold">
+                        <LayoutDashboard size={14} /> Dashboard
+                      </li>
+                      <li className="flex items-center gap-2 p-2 rounded-lg hover:bg-zinc-800/40">
+                        <Layers size={14} /> Events
+                      </li>
+                      <li className="flex items-center gap-2 p-2 rounded-lg hover:bg-zinc-800/40">
+                        <Users size={14} /> Guests
+                      </li>
+                      <li className="flex items-center gap-2 p-2 rounded-lg hover:bg-zinc-800/40">
+                        <Upload size={14} /> Uploads
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="border-t border-white/5 pt-3">
+                    <span className="text-[10px] font-bold text-zinc-400 block px-2">Rahul (Admin)</span>
+                  </div>
                 </div>
 
-                {/* Footer bar */}
-                <div className="h-1 w-24 bg-zinc-800 rounded-full mx-auto z-10" />
+                {/* Main Content */}
+                <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-zinc-950">
+                  
+                  {/* Top Stats */}
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="bg-[#18181B] border border-white/5 p-2 rounded-xl">
+                      <span className="text-zinc-400 block text-[9px] uppercase font-mono">Photos</span>
+                      <span className="text-sm font-bold text-[#FAFAFA]">1,247</span>
+                    </div>
+                    <div className="bg-[#18181B] border border-white/5 p-2 rounded-xl">
+                      <span className="text-zinc-400 block text-[9px] uppercase font-mono">Guests</span>
+                      <span className="text-sm font-bold text-[#FAFAFA]">184</span>
+                    </div>
+                    <div className="bg-[#18181B] border border-[#6366F1]/30 p-2 rounded-xl">
+                      <span className="text-zinc-400 block text-[9px] uppercase font-mono">AI Progress</span>
+                      <span className="text-sm font-bold text-[#6366F1]">96%</span>
+                    </div>
+                  </div>
+
+                  {/* Event Information Card */}
+                  <div className="bg-[#18181B] border border-white/5 p-3 rounded-xl space-y-2">
+                    <div className="flex justify-between items-center">
+                      <h4 className="font-bold text-[#FAFAFA]">College Annual Fest 2026</h4>
+                      <span className="text-[9px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full flex items-center gap-1 font-bold">
+                        <span className="h-1 w-1 rounded-full bg-emerald-400 animate-ping" /> Live
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-zinc-400 text-[10px]">
+                      <span>Venue: Pillai College Auditorium</span>
+                      <span>Storage Used: 4.8 GB</span>
+                    </div>
+                  </div>
+
+                  {/* Dynamic Simulation view content */}
+                  {simState === 'organizer-active' && (
+                    <div className="bg-zinc-900 border border-indigo-500/30 p-4 rounded-xl space-y-3 animate-in fade-in duration-300">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[10px] font-bold text-indigo-400">Processing Upload Batch</span>
+                        <span className="text-[10px] font-bold text-zinc-300">{uploadPercent}%</span>
+                      </div>
+                      <div className="w-full h-2 bg-zinc-950 rounded-full overflow-hidden">
+                        <div className="h-full bg-[#6366F1] rounded-full transition-all duration-300" style={{ width: `${uploadPercent}%` }} />
+                      </div>
+                      <p className="text-[9px] text-zinc-400">Running vector mappings on 1,247 uploads...</p>
+                    </div>
+                  )}
+
+                  {/* Share Card step */}
+                  {simState === 'generate-qr' && (
+                    <div className="bg-zinc-900 border border-[#6366F1]/30 p-3 rounded-xl flex items-center justify-between animate-in fade-in duration-300">
+                      <div className="space-y-1">
+                        <h5 className="font-bold text-[#FAFAFA]">Share QR Code</h5>
+                        <p className="text-[9px] text-zinc-400">Guests join to receive matching files</p>
+                      </div>
+                      <div className="h-12 w-12 bg-white rounded-lg flex items-center justify-center p-1 opacity-20">
+                        <QrCode size={32} className="text-black" />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Recent Uploads Table */}
+                  <div className="bg-[#18181B] border border-white/5 rounded-xl p-3 space-y-2">
+                    <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider">Recent Uploads</span>
+                    <div className="space-y-1.5 text-[9px] font-mono text-zinc-300">
+                      <div className="flex justify-between items-center border-b border-white/5 pb-1">
+                        <span>IMG_1204.jpg</span>
+                        <span className="text-emerald-400">Completed</span>
+                      </div>
+                      <div className="flex justify-between items-center border-b border-white/5 pb-1">
+                        <span>IMG_1205.jpg</span>
+                        <span className="text-emerald-400">Completed</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span>IMG_1206.jpg</span>
+                        {simState === 'organizer-active' ? (
+                          <span className="text-amber-400 animate-pulse">Processing</span>
+                        ) : (
+                          <span className="text-emerald-400">Completed</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
               </div>
             </div>
 
-            {/* RIGHT SMARTPHONE: Guest Phone */}
-            <div className={`flex flex-col items-center transition-all duration-500 ${masterStep >= 5 ? 'opacity-100 scale-100' : 'opacity-40 scale-[0.98] grayscale'}`}>
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-[#06B6D4] mb-4 flex items-center gap-1.5 bg-[#06B6D4]/5 px-3 py-1 rounded-full border border-[#06B6D4]/10">
-                Guest Workflow
-              </h3>
-
-              {/* Smartphone mockup shell */}
-              <div className={`w-full max-w-sm aspect-[9/16] rounded-[48px] border-[8px] p-5 shadow-2xl relative overflow-hidden flex flex-col justify-between transition-all duration-500 bg-[#09090B] ${masterStep >= 5 ? 'border-[#06B6D4] shadow-[#06B6D4]/20 scale-[1.01]' : 'border-zinc-800'}`}>
-                {/* Dynamic Island Notch */}
-                <div className="absolute top-2 left-1/2 -translate-x-1/2 h-6 w-32 bg-zinc-900 rounded-full flex items-center justify-center z-30 border border-white/5">
-                  <div className="h-2 w-2 rounded-full bg-zinc-950 ml-2" />
+            {/* GUEST SAAS DASHBOARD */}
+            <div className={`w-full rounded-2xl border-[2px] bg-[#18181B] shadow-2xl overflow-hidden transition-all duration-500 flex flex-col h-[520px] relative ${simState === 'guest-active' || simState === 'upload-selfie' || simState === 'searching' || simState === 'completed' ? 'border-[#06B6D4] shadow-[#06B6D4]/10 scale-[1.01]' : 'border-zinc-800 opacity-40 scale-[0.99] grayscale'}`}>
+              
+              {/* Browser bar */}
+              <div className="bg-zinc-900 px-4 py-3 flex items-center justify-between border-b border-zinc-800 shrink-0">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-rose-500" />
+                  <div className="w-3 h-3 rounded-full bg-amber-500" />
+                  <div className="w-3 h-3 rounded-full bg-emerald-500" />
                 </div>
-                {/* Diagonal Glass glare effect */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/2 to-transparent pointer-events-none z-20" />
-
-                {/* Header */}
-                <div className="flex items-center justify-between pt-6 pb-3 border-b border-white/5 z-10">
-                  <span className="text-[10px] font-bold tracking-wider uppercase text-zinc-400">PhotoShare Guest</span>
-                  <div className="h-2 w-2 rounded-full bg-[#06B6D4] animate-pulse" />
+                <div className="bg-zinc-950 px-3 py-1 rounded-md text-[10px] font-mono text-zinc-400 max-w-[220px] truncate w-full text-center">
+                  photoshare.ai/guest/gallery
                 </div>
+                <div className="w-12" />
+              </div>
 
-                {/* Simulated Operations */}
-                <div className="flex-1 flex flex-col justify-center space-y-4 z-10">
-                  {/* Step 5: Scan QR */}
-                  {masterStep === 5 && (
-                    <div className="space-y-4 text-center animate-in fade-in duration-300 flex flex-col items-center">
-                      <div className="space-y-1">
-                        <span className="text-[10px] font-mono text-[#06B6D4]">Step 1</span>
-                        <h4 className="text-xs font-bold text-zinc-100">Scan QR Code</h4>
-                      </div>
-                      <div className="h-20 w-20 rounded-2xl border border-[#06B6D4]/30 bg-zinc-900 flex items-center justify-center relative">
-                        <QrCode size={36} className="text-[#06B6D4]" />
-                        <div className="absolute inset-0 border-2 border-[#06B6D4] rounded-2xl animate-ping" style={{ animationDuration: '3s' }} />
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Step 6: Open Event */}
-                  {masterStep === 6 && (
-                    <div className="space-y-4 text-center animate-in fade-in duration-300">
-                      <div className="space-y-1">
-                        <span className="text-[10px] font-mono text-[#06B6D4]">Step 2</span>
-                        <h4 className="text-xs font-bold text-zinc-100">Joined Event</h4>
-                      </div>
-                      <div className="p-4 rounded-2xl bg-zinc-900/60 border border-white/5 space-y-2">
-                        <span className="text-[10px] text-zinc-300 font-bold block">Wedding Gala 2026</span>
-                        <span className="text-[9px] text-zinc-500 block">Host: Rahul (1,247 photos)</span>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Step 7: Upload Selfie click */}
-                  {masterStep === 7 && (
-                    <div className="space-y-4 text-center animate-in fade-in duration-300 flex flex-col items-center">
-                      <div className="space-y-1">
-                        <span className="text-[10px] font-mono text-[#06B6D4]">Step 3</span>
-                        <h4 className="text-xs font-bold text-zinc-100">Upload One Selfie</h4>
-                      </div>
-                      <div className="h-10 w-28 bg-[#06B6D4] text-zinc-955 rounded-lg flex items-center justify-center text-xs font-bold shadow-md shadow-[#06B6D4]/20 animate-button-press cursor-pointer">
-                        Snap Selfie
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Step 8, 9, 10: AI Progress bars */}
-                  {(masterStep === 8 || masterStep === 9 || masterStep === 10) && (
-                    <div className="space-y-4 text-center animate-in fade-in duration-300 flex flex-col items-center">
-                      <div className="space-y-1">
-                        <span className="text-[10px] font-mono text-[#06B6D4]">Step 4</span>
-                        <h4 className="text-xs font-bold text-zinc-100">AI Processing</h4>
-                      </div>
-                      <div className="p-4 rounded-2xl bg-zinc-900/60 border border-white/5 space-y-2 w-full max-w-[220px] relative overflow-hidden">
-                        {/* Laser Scan line on Face */}
-                        <div className="h-12 w-12 rounded-full overflow-hidden border border-white/10 relative mx-auto mb-2 bg-zinc-800">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&auto=format&fit=crop&q=80" alt="Selfie preview" className="h-full w-full object-cover" />
-                          <div className="absolute left-0 right-0 h-0.5 bg-[#06B6D4] shadow-[0_0_10px_1px_rgba(6,182,212,0.6)] animate-laser-scan" />
-                        </div>
-                        {aiStep === 0 && <span className="text-[9px] font-mono text-zinc-300 block">Detecting Faces [■■■■□□□□]</span>}
-                        {aiStep === 1 && <span className="text-[9px] font-mono text-emerald-400 block animate-pulse">Matching Faces [■■■■■■■□]</span>}
-                        {aiStep === 2 && <span className="text-[9px] font-mono text-emerald-400 font-bold block">Building Gallery [■■■■■■■■]</span>}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Step 11: Gallery Unlocked */}
-                  {masterStep === 11 && (
-                    <div className="flex-1 flex flex-col justify-between pt-2 animate-in fade-in duration-300">
-                      <div className="space-y-2">
-                        <div className="flex justify-between items-center px-1">
-                          <span className="text-[9px] font-semibold text-zinc-400">Personal Gallery (126 matches)</span>
-                          <span className="text-[8px] text-emerald-400 font-bold bg-emerald-500/10 px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
-                            <Lock size={8} /> Secure
-                          </span>
-                        </div>
-                        <div className="grid grid-cols-2 gap-1.5">
-                          {MATCHED_IMAGES.slice(0, 2).map((img, i) => (
-                            <div key={i} className="aspect-square rounded-lg overflow-hidden border border-white/5 relative">
-                              {/* eslint-disable-next-line @next/next/no-img-element */}
-                              <img src={img} alt="Matched pic" className="h-full w-full object-cover" />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="w-full bg-[#06B6D4] text-zinc-950 rounded-lg h-7 flex items-center justify-center gap-1 text-[10px] font-bold mt-2 shadow-sm animate-button-press cursor-pointer">
-                        <Download size={10} />
-                        Download 126 Photos
-                      </div>
-                    </div>
-                  )}
+              {/* Dashboard Layout */}
+              <div className="flex-1 flex overflow-hidden text-[11px]">
+                {/* Sidebar */}
+                <div className="w-40 border-r border-white/5 bg-zinc-900/50 p-3 flex flex-col justify-between shrink-0">
+                  <div className="space-y-4">
+                    <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider block px-2">Gallery</span>
+                    <ul className="space-y-1 text-zinc-300">
+                      <li className="flex items-center gap-2 p-2 rounded-lg bg-zinc-800 text-[#FAFAFA] font-semibold">
+                        <ImageIcon size={14} /> My Gallery
+                      </li>
+                      <li className="flex items-center gap-2 p-2 rounded-lg hover:bg-zinc-800/40">
+                        <Download size={14} /> Downloads
+                      </li>
+                      <li className="flex items-center gap-2 p-2 rounded-lg hover:bg-zinc-800/40">
+                        <Layers size={14} /> Events
+                      </li>
+                      <li className="flex items-center gap-2 p-2 rounded-lg hover:bg-zinc-800/40">
+                        <Settings size={14} /> Settings
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="border-t border-white/5 pt-3">
+                    <span className="text-[10px] font-bold text-zinc-400 block px-2">Akash (Guest)</span>
+                  </div>
                 </div>
 
-                {/* Footer bar */}
-                <div className="h-1 w-24 bg-zinc-800 rounded-full mx-auto z-10" />
+                {/* Main Content */}
+                <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-zinc-950">
+                  
+                  {/* Top Welcome Card */}
+                  <div className="bg-[#18181B] border border-white/5 p-3 rounded-xl space-y-1">
+                    <h4 className="font-bold text-[#FAFAFA]">Welcome back, Akash</h4>
+                    <span className="text-[9px] text-[#06B6D4] font-semibold block">Joined College Annual Fest 2026</span>
+                  </div>
+
+                  {/* Step 4 & 5: QR Scanning / Upload Selfie */}
+                  {(simState === 'guest-active' || simState === 'upload-selfie') && (
+                    <div className="bg-zinc-900 border border-cyan-500/30 p-4 rounded-xl text-center space-y-3 animate-in fade-in duration-300 flex flex-col items-center">
+                      <span className="text-[10px] font-bold text-[#06B6D4] uppercase">Select Selfie File</span>
+                      {simState === 'guest-active' ? (
+                        <div className="h-10 w-28 bg-[#06B6D4] text-zinc-950 rounded-lg flex items-center justify-center text-xs font-bold animate-button-press cursor-pointer">
+                          Upload Selfie
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          {/* Selfie upload preview */}
+                          <div className="h-16 w-16 rounded-full overflow-hidden border border-white/10 relative mx-auto bg-zinc-800">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80" alt="Selfie preview" className="h-full w-full object-cover animate-pulse" />
+                          </div>
+                          <span className="text-[9px] text-zinc-400 font-semibold block">selfie_akash.jpg selected</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Step 6: Searching & Scanning */}
+                  {simState === 'searching' && (
+                    <div className="bg-zinc-900 border border-cyan-500/30 p-4 rounded-xl space-y-3 animate-in fade-in duration-300">
+                      <div className="flex justify-between items-center text-[10px]">
+                        <span className="font-bold text-[#06B6D4]">Matching faces in 1,247 files...</span>
+                        <span className="font-bold text-zinc-300">{aiPercent}%</span>
+                      </div>
+                      <div className="w-full h-1.5 bg-zinc-950 rounded-full overflow-hidden">
+                        <div className="h-full bg-[#06B6D4] rounded-full transition-all duration-300" style={{ width: `${aiPercent}%` }} />
+                      </div>
+                      <div className="grid grid-cols-3 gap-1.5 text-[9px] text-zinc-500">
+                        <span className="text-[#06B6D4]">✔ Detected</span>
+                        <span className={aiPercent >= 50 ? 'text-[#06B6D4]' : ''}>Matching...</span>
+                        <span className={aiPercent >= 100 ? 'text-emerald-400' : ''}>Gallery Ready</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Step 7: Completed Grid */}
+                  {simState === 'completed' && (
+                    <div className="space-y-4 animate-in fade-in duration-500">
+                      <div className="bg-[#18181B] border border-emerald-500/20 p-3 rounded-xl flex items-center justify-between">
+                        <div className="space-y-0.5">
+                          <span className="text-[9px] font-semibold text-emerald-400 uppercase">Private Gallery Unlocked</span>
+                          <h5 className="font-bold text-[#FAFAFA]">126 Photos Found</h5>
+                        </div>
+                        <Button className="bg-[#06B6D4] text-zinc-950 font-bold text-[10px] h-7 px-3 flex items-center gap-1">
+                          <Download size={10} /> Download All
+                        </Button>
+                      </div>
+
+                      {/* Matched Grid */}
+                      <div className="grid grid-cols-3 gap-2">
+                        {MATCHED_IMAGES.slice(0, 3).map((img, i) => (
+                          <div key={i} className="aspect-square rounded-lg overflow-hidden border border-white/5 relative group">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={img} alt="Matched pic" className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                </div>
               </div>
             </div>
 
@@ -701,7 +753,7 @@ export default function Home() {
                   <div className="text-[10px] bg-zinc-900 border border-white/5 p-2.5 rounded-xl text-zinc-400">
                     Host Link
                   </div>
-                  <div className="text-zinc-600">→</div>
+                  <div className="text-zinc-650">→</div>
                   <div className="text-[10px] bg-rose-500/10 border border-rose-500/20 p-2.5 rounded-xl text-rose-300 font-bold">
                     All 1,200 Photos Public ❌
                   </div>
@@ -747,230 +799,8 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Section 6: Live Simulation Progress Tracker Layout */}
-        <section id="simulation-section" className="px-6 py-20 max-w-7xl mx-auto w-full flex flex-col items-center border-t border-white/5">
-          <div className="text-center space-y-3 mb-12">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-emerald-500">Event Playground</h2>
-            <p className="text-3xl sm:text-4xl font-extrabold text-[#FAFAFA]">Interactive Match Simulator</p>
-            <p className="text-[#A1A1AA] max-w-xl mx-auto text-sm">
-              Press the matching button below to trigger the custom AI model flow.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 w-full max-w-5xl items-stretch">
-            
-            {/* Left Timeline tracker */}
-            <div className="bg-[#18181B] border border-white/5 rounded-3xl p-6 flex flex-col justify-around space-y-4">
-              <span className="text-[10px] font-mono text-zinc-500 uppercase block px-1">Simulation Tracker</span>
-              
-              <div className="space-y-3 text-xs">
-                <div className="flex items-center gap-2.5">
-                  <div className={`h-5 w-5 rounded-full flex items-center justify-center font-bold text-[10px] transition-all duration-300 ${demoState !== 'idle' ? 'bg-emerald-500 text-zinc-950' : 'bg-zinc-800 text-zinc-400'}`}>
-                    {demoState !== 'idle' ? '✔' : '1'}
-                  </div>
-                  <span className={demoState !== 'idle' ? 'text-emerald-400 font-semibold' : 'text-zinc-500'}>Upload Photos</span>
-                </div>
-
-                <div className="flex items-center gap-2.5">
-                  <div className={`h-5 w-5 rounded-full flex items-center justify-center font-bold text-[10px] transition-all duration-300 ${demoState !== 'idle' ? 'bg-emerald-500 text-zinc-950' : 'bg-zinc-800 text-zinc-400'}`}>
-                    {demoState !== 'idle' ? '✔' : '2'}
-                  </div>
-                  <span className={demoState !== 'idle' ? 'text-emerald-400 font-semibold' : 'text-zinc-500'}>Create Event</span>
-                </div>
-
-                <div className="flex items-center gap-2.5">
-                  <div className={`h-5 w-5 rounded-full flex items-center justify-center font-bold text-[10px] transition-all duration-300 ${demoState !== 'idle' ? 'bg-emerald-500 text-zinc-950' : 'bg-zinc-800 text-zinc-400'}`}>
-                    {demoState !== 'idle' ? '✔' : '3'}
-                  </div>
-                  <span className={demoState !== 'idle' ? 'text-emerald-400 font-semibold' : 'text-zinc-500'}>Share QR</span>
-                </div>
-
-                <div className="flex items-center gap-2.5">
-                  <div className={`h-5 w-5 rounded-full flex items-center justify-center font-bold text-[10px] transition-all duration-300 ${demoState === 'scanning' || demoState === 'searching' || demoState === 'results' ? 'bg-emerald-500 text-zinc-950 animate-pulse' : 'bg-zinc-800 text-zinc-400'}`}>
-                    {demoState === 'scanning' || demoState === 'searching' || demoState === 'results' ? '✔' : '4'}
-                  </div>
-                  <span className={demoState === 'scanning' || demoState === 'searching' || demoState === 'results' ? 'text-[#06B6D4] font-semibold' : 'text-zinc-500'}>► Guest Joined</span>
-                </div>
-
-                <div className="flex items-center gap-2.5">
-                  <div className={`h-5 w-5 rounded-full flex items-center justify-center font-bold text-[10px] transition-all duration-300 ${demoState === 'scanning' ? 'bg-emerald-500 text-zinc-950' : 'bg-zinc-800 text-zinc-400'}`}>
-                    {demoState === 'scanning' ? '►' : '5'}
-                  </div>
-                  <span className={demoState === 'scanning' ? 'text-[#06B6D4] font-semibold animate-pulse' : 'text-zinc-500'}>Upload Selfie</span>
-                </div>
-
-                <div className="flex items-center gap-2.5">
-                  <div className={`h-5 w-5 rounded-full flex items-center justify-center font-bold text-[10px] transition-all duration-300 ${demoState === 'searching' ? 'bg-[#06B6D4] text-zinc-950 animate-pulse' : 'bg-zinc-800 text-zinc-400'}`}>
-                    {demoState === 'searching' ? '►' : '6'}
-                  </div>
-                  <span className={demoState === 'searching' ? 'text-[#06B6D4] font-semibold' : 'text-zinc-500'}>AI Search</span>
-                </div>
-
-                <div className="flex items-center gap-2.5">
-                  <div className={`h-5 w-5 rounded-full flex items-center justify-center font-bold text-[10px] transition-all duration-300 ${demoState === 'results' ? 'bg-emerald-500 text-zinc-950' : 'bg-zinc-800 text-zinc-400'}`}>
-                    {demoState === 'results' ? '✔' : '7'}
-                  </div>
-                  <span className={demoState === 'results' ? 'text-emerald-400 font-semibold' : 'text-zinc-500'}>Gallery Ready</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Screen viewport */}
-            <div className="md:col-span-2 bg-[#18181B]/40 border border-white/5 rounded-3xl p-8 relative overflow-hidden flex flex-col items-center justify-center min-h-[380px]">
-              
-              {/* IDLE */}
-              {demoState === 'idle' && (
-                <div className="text-center space-y-5 animate-in fade-in duration-300 flex flex-col items-center">
-                  <div className="h-16 w-16 rounded-full bg-[#06B6D4]/10 border border-[#06B6D4]/30 flex items-center justify-center text-[#06B6D4] shadow-inner animate-pulse-ring">
-                    <Search size={24} />
-                  </div>
-                  <h4 className="text-lg font-bold text-zinc-100">Live AI Matcher</h4>
-                  <p className="text-xs text-zinc-400 max-w-sm mx-auto">
-                    Simulate the face recognition models isolating custom images from the 1,347 event photos.
-                  </p>
-                  <Button onClick={startDemo} className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-8 h-10 shadow-lg shadow-emerald-600/20">
-                    Run Scanning Cycle
-                  </Button>
-                </div>
-              )}
-
-              {/* UPLOADING */}
-              {demoState === 'uploading' && (
-                <div className="text-center space-y-3 animate-in fade-in duration-300 flex flex-col items-center">
-                  <div className="h-8 w-8 rounded-full border-2 border-[#06B6D4] border-t-transparent animate-spin" />
-                  <span className="text-xs font-bold text-zinc-300">Uploading mock selfie...</span>
-                </div>
-              )}
-
-              {/* SCANNING */}
-              {demoState === 'scanning' && (
-                <div className="text-center space-y-4 animate-in fade-in duration-300 flex flex-col items-center">
-                  <div className="h-40 w-40 rounded-2xl border border-white/10 overflow-hidden relative bg-zinc-900 shadow-xl">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img 
-                      src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80" 
-                      alt="Selfie demo" 
-                      className="h-full w-full object-cover" 
-                    />
-                    <div className="absolute left-0 right-0 h-1 bg-[#06B6D4] shadow-[0_0_12px_2px_rgba(6,182,212,0.8)] animate-laser-scan" />
-                  </div>
-                  <span className="text-xs font-bold text-zinc-300 animate-pulse">Running face mesh scan...</span>
-                </div>
-              )}
-
-              {/* SEARCHING */}
-              {demoState === 'searching' && (
-                <div className="text-center space-y-3 animate-in fade-in duration-300 flex flex-col items-center w-full max-w-[280px]">
-                  <div className="h-8 w-8 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin" />
-                  <div className="space-y-2 w-full text-center">
-                    <span className="text-xs font-mono text-zinc-300 block">Searching 1,347 photos...</span>
-                    {demoAiStep === 0 && <span className="text-[10px] font-mono text-zinc-500">Detecting Faces [■■■■□□□□]</span>}
-                    {demoAiStep === 1 && <span className="text-[10px] font-mono text-emerald-400 animate-pulse">Matching Faces [■■■■■■■□]</span>}
-                    {demoAiStep === 2 && <span className="text-[10px] font-mono text-emerald-400 font-bold">Building Gallery [■■■■■■■■]</span>}
-                  </div>
-                </div>
-              )}
-
-              {/* RESULTS */}
-              {demoState === 'results' && (
-                <div className="w-full space-y-6 animate-in fade-in duration-500 flex flex-col items-center">
-                  <div className="flex justify-between items-center w-full pb-4 border-b border-white/5">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full flex items-center gap-0.5">
-                        <Check size={10} /> Complete
-                      </span>
-                      <span className="text-xs font-bold text-zinc-300">Matched Album (126 matched files)</span>
-                    </div>
-                    <Button onClick={() => setDemoState('idle')} variant="ghost" className="text-xs text-zinc-400 hover:text-zinc-200">
-                      Reset Demo
-                    </Button>
-                  </div>
-
-                  {/* Match Gallery Grid */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full">
-                    {MATCHED_IMAGES.map((img, i) => (
-                      <div key={i} className="aspect-square rounded-xl overflow-hidden border border-white/5 relative group">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={img} alt="Matched pic" className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
-                        <div className="absolute top-1/4 left-1/4 w-1/2 h-1/2 border border-emerald-500 rounded shadow-[0_0_6px_rgba(34,197,94,0.5)]" />
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="w-full flex justify-center pt-2">
-                    <Button className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-8 h-10 shadow-lg shadow-emerald-600/20 flex items-center gap-1.5">
-                      <Download size={16} /> Download All 126 Matches
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </div>
-
-          </div>
-        </section>
-
-        {/* Section 8: Comparison */}
-        <section className="px-6 py-20 bg-zinc-950/40 border-y border-white/5">
-          <div className="max-w-4xl mx-auto w-full">
-            <div className="text-center space-y-3 mb-16">
-              <h2 className="text-sm font-semibold uppercase tracking-wider text-rose-500">Comparison</h2>
-              <p className="text-3xl sm:text-4xl font-extrabold text-[#FAFAFA]">Manual Sorting vs. PhotoShare AI</p>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-8">
-              <div className="bg-[#18181B]/40 border border-white/5 rounded-2xl p-6 space-y-4">
-                <h4 className="font-bold text-rose-400 flex items-center gap-1.5 text-sm uppercase">
-                  <EyeOff size={16} /> Without PhotoShare
-                </h4>
-                <ul className="space-y-3 text-xs text-zinc-400">
-                  <li>• Asking friends in multiple WhatsApp groups</li>
-                  <li>• Reviewing thousands of irrelevant files</li>
-                  <li>• Receiving incorrect matches or missed memories</li>
-                  <li>• Host spending hours manually selecting group files</li>
-                  <li>• Public shared links exposing everyone&apos;s photos</li>
-                </ul>
-              </div>
-
-              <div className="bg-[#18181B] border border-emerald-500/20 rounded-2xl p-6 space-y-4 shadow-lg shadow-emerald-500/5">
-                <h4 className="font-bold text-emerald-400 flex items-center gap-1.5 text-sm uppercase">
-                  <Check size={16} /> With PhotoShare
-                </h4>
-                <ul className="space-y-3 text-xs text-zinc-200">
-                  <li>• Upload all photos once</li>
-                  <li>• Upload a single selfie</li>
-                  <li>• Instantly receive only your pictures</li>
-                  <li>• 100% private: no shared folder access leaks</li>
-                  <li>• Download everything in full resolution</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Section 9: Trust & Stats */}
-        <section className="px-6 py-20 max-w-7xl mx-auto w-full">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto text-center">
-            <div className="bg-[#18181B] border border-white/5 rounded-2xl p-6">
-              <span className="text-2xl sm:text-3xl font-extrabold text-[#FAFAFA]">100%</span>
-              <p className="text-[10px] text-zinc-400 uppercase tracking-wider mt-1">Private Galleries</p>
-            </div>
-            <div className="bg-[#18181B] border border-white/5 rounded-2xl p-6">
-              <span className="text-2xl sm:text-3xl font-extrabold text-[#FAFAFA]">0s</span>
-              <p className="text-[10px] text-zinc-400 uppercase tracking-wider mt-1">Manual Searching</p>
-            </div>
-            <div className="bg-[#18181B] border border-white/5 rounded-2xl p-6">
-              <span className="text-2xl sm:text-3xl font-extrabold text-[#FAFAFA]">10k+</span>
-              <p className="text-[10px] text-zinc-400 uppercase tracking-wider mt-1">Photos Scanned</p>
-            </div>
-            <div className="bg-[#18181B] border border-white/5 rounded-2xl p-6">
-              <span className="text-2xl sm:text-3xl font-extrabold text-[#FAFAFA]">1s</span>
-              <p className="text-[10px] text-zinc-400 uppercase tracking-wider mt-1">Face Recognition</p>
-            </div>
-          </div>
-        </section>
-
         {/* Section Final CTA */}
-        <section className="px-6 py-24 bg-gradient-to-b from-zinc-950 to-[#09090B] border-t border-white/5 text-center relative overflow-hidden flex flex-col items-center">
+        <section className="px-6 py-24 bg-gradient-to-b from-zinc-955 to-[#09090B] border-t border-white/5 text-center relative overflow-hidden flex flex-col items-center">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#6366F1]/5 rounded-full filter blur-[100px] pointer-events-none" />
           <div className="max-w-2xl mx-auto space-y-6 relative z-10">
             <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight">
@@ -996,7 +826,7 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="h-16 border-t border-white/5 flex items-center justify-center text-[10px] text-zinc-600 bg-zinc-950 shrink-0">
+      <footer className="h-16 border-t border-white/5 flex items-center justify-center text-[10px] text-zinc-600 bg-zinc-955 shrink-0">
         © 2026 PhotoShare AI. All rights reserved. Designed by DeepMind team.
       </footer>
     </div>
