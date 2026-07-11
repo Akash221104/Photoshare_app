@@ -3,21 +3,8 @@
 // Handles session validation, refresh, and login redirects automatically.
 
 import { auth } from "@/lib/auth";
-import { NextRequest } from "next/server";
 
-console.log("Edge Middleware Init - Base URL:", process.env.NEON_AUTH_BASE_URL ? process.env.NEON_AUTH_BASE_URL.substring(0, 20) + "..." : "UNDEFINED", "Secret Length:", process.env.NEON_AUTH_COOKIE_SECRET ? process.env.NEON_AUTH_COOKIE_SECRET.length : "UNDEFINED");
-
-export const proxy = async (req: NextRequest) => {
-  console.log("Edge Middleware Request:", req.nextUrl.pathname, "Verifier:", req.nextUrl.searchParams.get("neon_auth_session_verifier") ? "Present" : "Missing");
-  try {
-    const res = await auth.middleware({ loginUrl: "/auth/sign-in" })(req);
-    console.log("Edge Middleware Response Status:", res.status, "Location Header:", res.headers.get("location"));
-    return res;
-  } catch (error: any) {
-    console.error("Edge Middleware Error:", error?.message || error);
-    throw error;
-  }
-};
+export const proxy = auth.middleware({ loginUrl: "/auth/sign-in" });
 
 export const config = {
   matcher: [
