@@ -1,5 +1,5 @@
 // app/page.tsx
-// Storytelling landing page V3 (Refined).
+// Storytelling landing page V3 (Refined UI & Order).
 // Built with a premium dark theme, flagship smartphone frames, sequential workflow animations, and live interactive simulators.
 
 'use client';
@@ -23,16 +23,13 @@ import {
   Share2,
   AlertTriangle,
   ShieldCheck,
-  CheckCircle2
+  CheckCircle2,
+  Phone,
+  Video,
+  MoreVertical,
+  ChevronLeft
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-
-// Mock images representing incorrect matches for the chat simulator privacy warning
-const WRONG_IMAGES = [
-  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=60',
-  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=60',
-  'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=60'
-];
 
 // Mock images representing correct matches for the AI scanner
 const MATCHED_IMAGES = [
@@ -55,11 +52,11 @@ export default function Home() {
   useEffect(() => {
     const timer = setInterval(() => {
       setHeadlineIndex((prev) => (prev + 1) % headlines.length);
-    }, 2800);
+    }, 2500);
     return () => clearInterval(timer);
   }, [headlines.length]);
 
-  // --- Master Sequenced Loop State (0 to 11) ---
+  // --- Master Sequenced Loop State (0 to 11) - Accelerated to 1600ms ---
   const [masterStep, setMasterStep] = useState(0);
   const [uploadPercent, setUploadPercent] = useState(0);
   const [aiStep, setAiStep] = useState(0); // 0: detect, 1: match, 2: build
@@ -74,7 +71,7 @@ export default function Home() {
         }
         return next;
       });
-    }, 3800);
+    }, 1600);
     return () => clearInterval(timer);
   }, []);
 
@@ -88,9 +85,9 @@ export default function Home() {
             clearInterval(interval);
             return 100;
           }
-          return prev + 20;
+          return prev + 25;
         });
-      }, 150);
+      }, 100);
       return () => clearInterval(interval);
     }
   }, [masterStep]);
@@ -107,7 +104,7 @@ export default function Home() {
   useEffect(() => {
     const interval = setInterval(() => {
       setChatStep((prev) => (prev + 1) % 8);
-    }, 3200);
+    }, 2800);
     return () => clearInterval(interval);
   }, []);
 
@@ -135,9 +132,9 @@ export default function Home() {
             setDemoMatches(126);
             setDemoState('results');
           }
-        }, 1200);
-      }, 2500);
-    }, 1500);
+        }, 800);
+      }, 2000);
+    }, 1200);
   };
 
   return (
@@ -182,7 +179,7 @@ export default function Home() {
 
             {/* Dynamic Sliding Title */}
             <div className="min-h-[120px] flex items-center justify-center overflow-hidden">
-              <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight leading-tight max-w-3xl bg-gradient-to-b from-[#FAFAFA] to-[#A1A1AA] bg-clip-text text-transparent transition-all duration-700 transform translate-y-0 scale-100">
+              <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight leading-tight max-w-3xl bg-gradient-to-b from-[#FAFAFA] to-[#A1A1AA] bg-clip-text text-transparent transition-all duration-500 transform translate-y-0 scale-100">
                 {headlines[headlineIndex]}
               </h1>
             </div>
@@ -205,8 +202,214 @@ export default function Home() {
               </a>
             </div>
           </div>
+        </section>
 
-          {/* Sequenced Hero Demos: Organizer vs Guest */}
+        {/* ORDER UPDATE: Section 2 is now The Privacy Mismatch (WhatsApp Chat) directly under Hero */}
+        <section className="px-6 py-20 bg-zinc-950/40 border-y border-white/5 relative">
+          <div className="max-w-7xl mx-auto w-full grid md:grid-cols-2 gap-12 items-center">
+            
+            {/* Left side: Explainer */}
+            <div className="space-y-6">
+              <h2 className="text-sm font-semibold uppercase tracking-wider text-rose-500">The Privacy Mismatch</h2>
+              <p className="text-3xl sm:text-4xl font-extrabold text-[#FAFAFA]">Shared Albums Expose Your Private Memories.</p>
+              <p className="text-[#A1A1AA] text-sm leading-relaxed">
+                When you share a cloud folder or standard photo link, you force a compromise. To let everyone find their photos, you expose **everything** to **everyone**. Unwanted frames, private angles, and personal memories are visible to all event attendees.
+              </p>
+            </div>
+
+            {/* Right side: WhatsApp Chat Simulator */}
+            <div className="w-full max-w-md bg-[#0b141a] border border-white/5 rounded-3xl p-0 relative overflow-hidden min-h-[420px] flex flex-col justify-between shadow-2xl">
+              
+              {/* WhatsApp-Style Header */}
+              <div className="bg-[#202c33] p-3 flex items-center justify-between border-b border-zinc-800 shrink-0">
+                <div className="flex items-center gap-2">
+                  <ChevronLeft className="text-emerald-400" size={18} />
+                  <div className="h-9 w-9 rounded-full bg-zinc-700 flex items-center justify-center text-white font-bold text-xs uppercase">
+                    R
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-zinc-100">Rahul</h4>
+                    <span className="text-[9px] text-[#25D366] font-semibold flex items-center gap-1">
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#25D366] inline-block" /> online
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 text-zinc-300">
+                  <Video size={16} />
+                  <Phone size={14} />
+                  <MoreVertical size={16} />
+                </div>
+              </div>
+
+              {/* Chat Wallpaper Container */}
+              <div className="flex-1 p-4 space-y-3 text-xs overflow-y-auto bg-[#0b141a] relative">
+                
+                {/* Chat Akash */}
+                {chatStep >= 0 && (
+                  <div className="flex justify-end animate-in fade-in slide-in-from-bottom-2 duration-300">
+                    <div className="bg-[#005c4b] text-zinc-100 rounded-2xl rounded-tr-none px-3 py-2 max-w-[80%] relative shadow-md">
+                      <span>Can you send me my photos?</span>
+                      <div className="text-[8px] text-zinc-400 text-right mt-1 font-mono flex items-center justify-end gap-0.5">
+                        18:58 <span className="text-[#53bdeb] font-bold">✓✓</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Chat Rahul 1 */}
+                {chatStep >= 1 && (
+                  <div className="flex justify-start animate-in fade-in slide-in-from-bottom-2 duration-300">
+                    <div className="bg-[#202c33] text-zinc-100 rounded-2xl rounded-tl-none px-3 py-2 max-w-[80%] relative shadow-md">
+                      <span>I can... But I&apos;ll have to search through 1200 photos first.</span>
+                      <div className="text-[8px] text-zinc-500 text-right mt-1 font-mono">
+                        18:58
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Chat Rahul 2 */}
+                {chatStep >= 2 && (
+                  <div className="flex justify-start animate-in fade-in slide-in-from-bottom-2 duration-300">
+                    <div className="bg-[#202c33] text-zinc-100 rounded-2xl rounded-tl-none px-3 py-2 max-w-[80%] relative shadow-md">
+                      <span>Or I can send everything.</span>
+                      <div className="text-[8px] text-zinc-500 text-right mt-1 font-mono">
+                        18:59
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Chat Akash 2 */}
+                {chatStep >= 3 && (
+                  <div className="flex justify-end animate-in fade-in slide-in-from-bottom-2 duration-300">
+                    <div className="bg-[#005c4b] text-zinc-100 rounded-2xl rounded-tr-none px-3 py-2 max-w-[80%] relative shadow-md">
+                      <span>Then I&apos;ll spend hours finding mine.</span>
+                      <div className="text-[8px] text-zinc-400 text-right mt-1 font-mono flex items-center justify-end gap-0.5">
+                        18:59 <span className="text-[#53bdeb] font-bold">✓✓</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Chat Rahul 3 */}
+                {chatStep >= 4 && (
+                  <div className="flex justify-start animate-in fade-in slide-in-from-bottom-2 duration-300">
+                    <div className="bg-[#202c33] text-zinc-100 rounded-2xl rounded-tl-none px-3 py-2 max-w-[80%] relative shadow-md border border-[#25D366]/20">
+                      <span className="text-emerald-400 font-bold block mb-1">Rahul</span>
+                      <span>I&apos;ll just share the whole album.</span>
+                      <div className="text-[8px] text-zinc-500 text-right mt-1 font-mono">
+                        18:59
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Warning Popup Overlay */}
+              {chatStep >= 5 && chatStep <= 6 && (
+                <div className="absolute inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center p-6 animate-in fade-in duration-300 z-20">
+                  <div className="bg-[#18181B] border border-amber-500/30 rounded-2xl p-5 space-y-4 max-w-sm text-center shadow-2xl relative">
+                    <div className="h-10 w-10 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500 mx-auto animate-bounce">
+                      <AlertTriangle size={20} />
+                    </div>
+                    <div className="space-y-1">
+                      <h4 className="text-xs font-bold text-zinc-100 uppercase tracking-wide">Shared Album Created</h4>
+                      <p className="text-[10px] text-zinc-400">1200 Photos Sent. Everyone can see:</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-1.5 text-[9px] text-rose-300 text-left bg-zinc-900/50 p-2.5 rounded-lg border border-white/5">
+                      <span>• Your Photos</span>
+                      <span>• Unwanted Photos</span>
+                      <span>• Private Moments</span>
+                      <span>• Other People&apos;s Photos</span>
+                    </div>
+                    <span className="text-[8px] text-zinc-500 font-semibold flex items-center justify-center gap-0.5">
+                      <EyeOff size={10} /> Serious Privacy Risk
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Success PhotoShare AI transition */}
+              {chatStep === 7 && (
+                <div className="absolute inset-0 bg-[#09090B] flex flex-col items-center justify-center p-6 animate-in fade-in zoom-in duration-500 z-20">
+                  <div className="h-12 w-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-4 animate-pulse-ring">
+                    <ShieldCheck size={24} />
+                  </div>
+                  <h4 className="text-sm font-bold text-zinc-100 mb-1">PhotoShare AI Solution</h4>
+                  <p className="text-[10px] text-zinc-400 text-center max-w-[200px] mb-2">
+                    Private Gallery Created
+                  </p>
+                  <span className="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                    126 Photos Only For You
+                  </span>
+                </div>
+              )}
+
+            </div>
+          </div>
+        </section>
+
+        {/* Section 3: Who Is This For? (Audience Grid) */}
+        <section className="px-6 py-20 bg-zinc-950/40 border-b border-white/5">
+          <div className="max-w-7xl mx-auto w-full">
+            <div className="text-center space-y-3 mb-16">
+              <h2 className="text-sm font-semibold uppercase tracking-wider text-[#6366F1]">Who Is This For?</h2>
+              <p className="text-3xl sm:text-4xl font-extrabold text-[#FAFAFA]">Designed for Every Occasion</p>
+              <p className="text-[#A1A1AA] max-w-xl mx-auto text-sm">Empowering event managers, couples, organizations, and runners.</p>
+            </div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+              {/* Card 1: Weddings */}
+              <div className="bg-[#18181B] border border-white/5 rounded-2xl p-6 hover:border-[#6366F1]/30 transition-all duration-300">
+                <span className="text-2xl block mb-4">💍</span>
+                <h4 className="font-bold text-zinc-100 mb-1">Wedding Photographers</h4>
+                <p className="text-xs text-[#A1A1AA] leading-relaxed">
+                  Upload once. Every Guest Gets Their Photos.
+                </p>
+              </div>
+
+              {/* Card 2: Festivals */}
+              <div className="bg-[#18181B] border border-white/5 rounded-2xl p-6 hover:border-[#6366F1]/30 transition-all duration-300">
+                <span className="text-2xl block mb-4">🎸</span>
+                <h4 className="font-bold text-zinc-100 mb-1">College Festivals</h4>
+                <p className="text-xs text-[#A1A1AA] leading-relaxed">
+                  Thousands of Photos. No Manual Sharing.
+                </p>
+              </div>
+
+              {/* Card 3: Corporate */}
+              <div className="bg-[#18181B] border border-white/5 rounded-2xl p-6 hover:border-[#6366F1]/30 transition-all duration-300">
+                <span className="text-2xl block mb-4">🏢</span>
+                <h4 className="font-bold text-zinc-100 mb-1">Corporate Events</h4>
+                <p className="text-xs text-[#A1A1AA] leading-relaxed">
+                  Private Team Memories.
+                </p>
+              </div>
+
+              {/* Card 4: Marathons */}
+              <div className="bg-[#18181B] border border-white/5 rounded-2xl p-6 hover:border-[#6366F1]/30 transition-all duration-300">
+                <span className="text-2xl block mb-4">🏃</span>
+                <h4 className="font-bold text-zinc-100 mb-1">Marathons</h4>
+                <p className="text-xs text-[#A1A1AA] leading-relaxed">
+                  Find Yourself Instantly.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Section 4: Organizer & Guest Sequenced Phone Workflow */}
+        <section className="relative px-6 max-w-7xl mx-auto w-full py-20 flex flex-col items-center">
+          
+          <div className="text-center space-y-3 mb-12">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-[#6366F1]">The Solution</h2>
+            <p className="text-3xl sm:text-4xl font-extrabold text-[#FAFAFA]">One Upload. Customized Galleries.</p>
+            <p className="text-[#A1A1AA] max-w-xl mx-auto text-sm">
+              See the magic of PhotoShare in action. The Organizer prepares the album, and guests instantly receive their pictures.
+            </p>
+          </div>
+
           <div className="relative grid md:grid-cols-2 gap-16 max-w-5xl w-full items-stretch pt-8">
             
             {/* Flying QR Code overlay */}
@@ -223,7 +426,7 @@ export default function Home() {
               </h3>
 
               {/* Smartphone mockup */}
-              <div className={`w-full max-w-sm aspect-[9/16] rounded-[48px] border-[6px] p-5 shadow-2xl relative overflow-hidden flex flex-col justify-between transition-all duration-500 bg-[#09090B] ${masterStep <= 4 ? 'border-[#6366F1] shadow-[#6366F1]/5' : 'border-zinc-800'}`}>
+              <div className={`w-full max-w-sm aspect-[9/16] rounded-[48px] border-[6px] p-5 shadow-2xl relative overflow-hidden flex flex-col justify-between transition-all duration-500 bg-[#09090B] ${masterStep <= 4 ? 'border-[#6366F1] shadow-[#6366F1]/10' : 'border-zinc-800'}`}>
                 {/* Dynamic Island Notch */}
                 <div className="absolute top-2 left-1/2 -translate-x-1/2 h-6 w-32 bg-zinc-900 rounded-full flex items-center justify-center z-30 border border-white/5">
                   <div className="h-2 w-2 rounded-full bg-zinc-950 ml-2" />
@@ -280,7 +483,7 @@ export default function Home() {
                         <span className="text-[10px] font-mono text-[#6366F1]">Step 3</span>
                         <h4 className="text-xs font-bold text-zinc-100">AI Organizing Faces</h4>
                       </div>
-                      <div className="p-4 rounded-2xl bg-zinc-900/60 border border-white/5 flex flex-col items-center space-y-2">
+                      <div className="p-4 rounded-2xl bg-[#6366F1]/5 border border-[#6366F1]/10 flex flex-col items-center space-y-2">
                         <div className="h-7 w-7 rounded-full border border-indigo-500/30 border-t-indigo-500 animate-spin" />
                         <span className="text-[10px] text-zinc-300">1247 Photos Uploaded</span>
                         <span className="text-[9px] text-zinc-500">Mapping facial embeddings...</span>
@@ -311,7 +514,7 @@ export default function Home() {
                         <span className="text-[10px] font-mono text-[#6366F1]">Step 5</span>
                         <h4 className="text-xs font-bold text-zinc-100">Fly QR to Guests</h4>
                       </div>
-                      <div className="h-16 w-16 bg-zinc-800 border border-white/5 rounded-xl flex items-center justify-center opacity-30">
+                      <div className="h-16 w-16 bg-zinc-850 border border-white/5 rounded-xl flex items-center justify-center opacity-30">
                         <QrCode size={36} />
                       </div>
                     </div>
@@ -330,7 +533,7 @@ export default function Home() {
               </h3>
 
               {/* Smartphone mockup */}
-              <div className={`w-full max-w-sm aspect-[9/16] rounded-[48px] border-[6px] p-5 shadow-2xl relative overflow-hidden flex flex-col justify-between transition-all duration-500 bg-[#09090B] ${masterStep >= 5 ? 'border-[#06B6D4] shadow-[#06B6D4]/5' : 'border-zinc-800'}`}>
+              <div className={`w-full max-w-sm aspect-[9/16] rounded-[48px] border-[6px] p-5 shadow-2xl relative overflow-hidden flex flex-col justify-between transition-all duration-500 bg-[#09090B] ${masterStep >= 5 ? 'border-[#06B6D4] shadow-[#06B6D4]/10' : 'border-zinc-800'}`}>
                 {/* Dynamic Island Notch */}
                 <div className="absolute top-2 left-1/2 -translate-x-1/2 h-6 w-32 bg-zinc-900 rounded-full flex items-center justify-center z-30 border border-white/5">
                   <div className="h-2 w-2 rounded-full bg-zinc-950 ml-2" />
@@ -443,56 +646,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Section 1.3: Who Is This For? (Audience Grid) */}
-        <section className="px-6 py-20 bg-zinc-950/40 border-y border-white/5">
-          <div className="max-w-7xl mx-auto w-full">
-            <div className="text-center space-y-3 mb-16">
-              <h2 className="text-sm font-semibold uppercase tracking-wider text-[#6366F1]">Who Is This For?</h2>
-              <p className="text-3xl sm:text-4xl font-extrabold text-[#FAFAFA]">Designed for Every Occasion</p>
-              <p className="text-[#A1A1AA] max-w-xl mx-auto text-sm">Empowering event managers, couples, organizations, and runners.</p>
-            </div>
-
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-              {/* Card 1: Weddings */}
-              <div className="bg-[#18181B] border border-white/5 rounded-2xl p-6 hover:border-[#6366F1]/30 transition-all duration-300">
-                <span className="text-2xl block mb-4">💍</span>
-                <h4 className="font-bold text-zinc-100 mb-1">Wedding Photographers</h4>
-                <p className="text-xs text-[#A1A1AA] leading-relaxed">
-                  Upload the raw wedding album once. Every guest scans the card at the table and receives only their custom photos.
-                </p>
-              </div>
-
-              {/* Card 2: Festivals */}
-              <div className="bg-[#18181B] border border-white/5 rounded-2xl p-6 hover:border-[#6366F1]/30 transition-all duration-300">
-                <span className="text-2xl block mb-4">🎸</span>
-                <h4 className="font-bold text-zinc-100 mb-1">College Festivals</h4>
-                <p className="text-xs text-[#A1A1AA] leading-relaxed">
-                  Thousands of photos across bands, stages, and crowds. Zero manual sharing required; guests fetch theirs instantly.
-                </p>
-              </div>
-
-              {/* Card 3: Corporate */}
-              <div className="bg-[#18181B] border border-white/5 rounded-2xl p-6 hover:border-[#6366F1]/30 transition-all duration-300">
-                <span className="text-2xl block mb-4">🏢</span>
-                <h4 className="font-bold text-zinc-100 mb-1">Corporate Events</h4>
-                <p className="text-xs text-[#A1A1AA] leading-relaxed">
-                  Private team outings and retreats. Keeps company folders locked and matches team members with zero hassle.
-                </p>
-              </div>
-
-              {/* Card 4: Marathons */}
-              <div className="bg-[#18181B] border border-white/5 rounded-2xl p-6 hover:border-[#6366F1]/30 transition-all duration-300">
-                <span className="text-2xl block mb-4">🏃</span>
-                <h4 className="font-bold text-zinc-100 mb-1">Marathons</h4>
-                <p className="text-xs text-[#A1A1AA] leading-relaxed">
-                  Runners upload a selfie post-race and instantly locate all checkpoints and action shots containing their face.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Section 1.5: Privacy Comparison Section */}
+        {/* Section 5: Privacy Comparison Layout */}
         <section className="px-6 py-20 max-w-7xl mx-auto w-full">
           <div className="text-center space-y-3 mb-16">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-[#06B6D4] flex items-center justify-center gap-1">
@@ -560,7 +714,7 @@ export default function Home() {
                     <span className="text-emerald-400 font-bold">B&apos;s Photos Only 🔒</span>
                   </div>
                   <div className="flex justify-between items-center bg-zinc-900/20 p-2.5 rounded-lg border border-dashed border-white/5 select-none opacity-40">
-                    <span className="text-zinc-650">Host Dashboard</span>
+                    <span className="text-zinc-655">Host Dashboard</span>
                     <span className="text-[#06B6D4] font-bold">Manage Event Only</span>
                   </div>
                 </div>
@@ -570,115 +724,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Section 2: Chat Simulator & Warning Popup */}
-        <section className="px-6 py-20 bg-zinc-950/40 border-y border-white/5 relative">
-          <div className="max-w-7xl mx-auto w-full grid md:grid-cols-2 gap-12 items-center">
-            
-            {/* Left side: Explainer */}
-            <div className="space-y-6">
-              <h2 className="text-sm font-semibold uppercase tracking-wider text-rose-500">The Privacy Mismatch</h2>
-              <p className="text-3xl sm:text-4xl font-extrabold text-[#FAFAFA]">Shared Albums Expose Your Private Moments.</p>
-              <p className="text-[#A1A1AA] text-sm leading-relaxed">
-                When you share a cloud folder or standard photo link, you force a compromise. To let everyone find their photos, you expose **everything** to **everyone**. Unwanted frames, private angles, and personal memories are visible to all event attendees.
-              </p>
-            </div>
-
-            {/* Right side: Chat & Warning Popup Simulator */}
-            <div className="w-full max-w-md bg-[#18181B] border border-white/5 rounded-3xl p-6 relative overflow-hidden min-h-[380px] flex flex-col justify-between">
-              
-              {/* WhatsApp-Style Chat Simulation */}
-              <div className="space-y-3 text-xs flex-1">
-                {/* Chat Akash */}
-                {chatStep >= 0 && (
-                  <div className="flex justify-end animate-in fade-in slide-in-from-bottom-2 duration-300">
-                    <div className="bg-[#6366F1]/20 text-indigo-200 rounded-2xl rounded-tr-none px-3 py-1.5 max-w-[80%]">
-                      Can you send me my photos?
-                    </div>
-                  </div>
-                )}
-
-                {/* Chat Rahul 1 */}
-                {chatStep >= 1 && (
-                  <div className="flex justify-start animate-in fade-in slide-in-from-bottom-2 duration-300">
-                    <div className="bg-zinc-900 text-zinc-200 rounded-2xl rounded-tl-none px-3 py-1.5 max-w-[80%]">
-                      I can... But I&apos;ll have to search through 1200 photos first.
-                    </div>
-                  </div>
-                )}
-
-                {/* Chat Rahul 2 */}
-                {chatStep >= 2 && (
-                  <div className="flex justify-start animate-in fade-in slide-in-from-bottom-2 duration-300">
-                    <div className="bg-zinc-900 text-zinc-200 rounded-2xl rounded-tl-none px-3 py-1.5 max-w-[80%]">
-                      Or I can send everything.
-                    </div>
-                  </div>
-                )}
-
-                {/* Chat Akash 2 */}
-                {chatStep >= 3 && (
-                  <div className="flex justify-end animate-in fade-in slide-in-from-bottom-2 duration-300">
-                    <div className="bg-[#6366F1]/20 text-indigo-200 rounded-2xl rounded-tr-none px-3 py-1.5 max-w-[80%]">
-                      Then I&apos;ll spend hours finding mine.
-                    </div>
-                  </div>
-                )}
-
-                {/* Chat Rahul 3 */}
-                {chatStep >= 4 && (
-                  <div className="flex justify-start animate-in fade-in slide-in-from-bottom-2 duration-300">
-                    <div className="bg-[#25D366]/20 text-emerald-200 rounded-2xl rounded-tl-none px-3 py-1.5 max-w-[80%] border border-[#25D366]/20">
-                      I&apos;ll just share the whole album.
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Warning Popup Overlay */}
-              {chatStep >= 5 && chatStep <= 6 && (
-                <div className="absolute inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center p-6 animate-in fade-in duration-300">
-                  <div className="bg-[#18181B] border border-amber-500/30 rounded-2xl p-5 space-y-4 max-w-sm text-center shadow-2xl relative">
-                    <div className="h-10 w-10 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500 mx-auto animate-bounce">
-                      <AlertTriangle size={20} />
-                    </div>
-                    <div className="space-y-1">
-                      <h4 className="text-xs font-bold text-zinc-100 uppercase tracking-wide">Shared Album Created</h4>
-                      <p className="text-[10px] text-zinc-400">1200 Photos Sent. Everyone can see:</p>
-                    </div>
-                    <div className="grid grid-cols-2 gap-1.5 text-[9px] text-rose-300 text-left bg-zinc-900/50 p-2.5 rounded-lg border border-white/5">
-                      <span>• Your Photos</span>
-                      <span>• Unwanted Photos</span>
-                      <span>• Private Moments</span>
-                      <span>• Other People&apos;s Photos</span>
-                    </div>
-                    <span className="text-[8px] text-zinc-500 font-semibold flex items-center justify-center gap-0.5">
-                      <EyeOff size={10} /> Serious Privacy Risk
-                    </span>
-                  </div>
-                </div>
-              )}
-
-              {/* Success PhotoShare AI transition */}
-              {chatStep === 7 && (
-                <div className="absolute inset-0 bg-[#09090B] flex flex-col items-center justify-center p-6 animate-in fade-in zoom-in duration-500">
-                  <div className="h-12 w-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-4 animate-pulse-ring">
-                    <ShieldCheck size={24} />
-                  </div>
-                  <h4 className="text-sm font-bold text-zinc-100 mb-1">PhotoShare AI Solution</h4>
-                  <p className="text-[10px] text-zinc-400 text-center max-w-[200px] mb-2">
-                    Private Gallery Created
-                  </p>
-                  <span className="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded-full">
-                    126 Photos Only For You
-                  </span>
-                </div>
-              )}
-
-            </div>
-          </div>
-        </section>
-
-        {/* Section 4: Live Event Simulation (Progress Tracker timeline) */}
+        {/* Section 6: Live Simulation Progress Tracker */}
         <section id="demo-section" className="px-6 py-20 max-w-7xl mx-auto w-full flex flex-col items-center">
           <div className="text-center space-y-3 mb-12">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-emerald-500">Live Simulation</h2>
@@ -842,68 +888,6 @@ export default function Home() {
               )}
             </div>
 
-          </div>
-        </section>
-
-        {/* Section 8: Comparison */}
-        <section className="px-6 py-20 bg-zinc-950/40 border-y border-white/5">
-          <div className="max-w-4xl mx-auto w-full">
-            <div className="text-center space-y-3 mb-16">
-              <h2 className="text-sm font-semibold uppercase tracking-wider text-rose-500">Comparison</h2>
-              <p className="text-3xl sm:text-4xl font-extrabold text-[#FAFAFA]">Manual Sorting vs. PhotoShare AI</p>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-8">
-              {/* Without */}
-              <div className="bg-[#18181B]/40 border border-white/5 rounded-2xl p-6 space-y-4">
-                <h4 className="font-bold text-rose-400 flex items-center gap-1.5 text-sm uppercase">
-                  <EyeOff size={16} /> Without PhotoShare
-                </h4>
-                <ul className="space-y-3 text-xs text-zinc-400">
-                  <li>• Asking friends in multiple WhatsApp groups</li>
-                  <li>• Reviewing thousands of irrelevant files</li>
-                  <li>• Receiving incorrect matches or missed memories</li>
-                  <li>• Host spending hours manually selecting group files</li>
-                  <li>• Public shared links exposing everyone&apos;s photos</li>
-                </ul>
-              </div>
-
-              {/* With */}
-              <div className="bg-[#18181B] border border-emerald-500/20 rounded-2xl p-6 space-y-4 shadow-lg shadow-emerald-500/5">
-                <h4 className="font-bold text-emerald-400 flex items-center gap-1.5 text-sm uppercase">
-                  <Check size={16} /> With PhotoShare
-                </h4>
-                <ul className="space-y-3 text-xs text-zinc-200">
-                  <li>• Upload all photos once</li>
-                  <li>• Upload a single selfie</li>
-                  <li>• Instantly receive only your pictures</li>
-                  <li>• 100% private: no shared folder access leaks</li>
-                  <li>• Download everything in full resolution</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Section 9: Trust & Stats */}
-        <section className="px-6 py-20 max-w-7xl mx-auto w-full">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto text-center">
-            <div className="bg-[#18181B] border border-white/5 rounded-2xl p-6">
-              <span className="text-2xl sm:text-3xl font-extrabold text-[#FAFAFA]">100%</span>
-              <p className="text-[10px] text-zinc-400 uppercase tracking-wider mt-1">Private Galleries</p>
-            </div>
-            <div className="bg-[#18181B] border border-white/5 rounded-2xl p-6">
-              <span className="text-2xl sm:text-3xl font-extrabold text-[#FAFAFA]">0s</span>
-              <p className="text-[10px] text-zinc-400 uppercase tracking-wider mt-1">Manual Searching</p>
-            </div>
-            <div className="bg-[#18181B] border border-white/5 rounded-2xl p-6">
-              <span className="text-2xl sm:text-3xl font-extrabold text-[#FAFAFA]">10k+</span>
-              <p className="text-[10px] text-zinc-400 uppercase tracking-wider mt-1">Photos Scanned</p>
-            </div>
-            <div className="bg-[#18181B] border border-white/5 rounded-2xl p-6">
-              <span className="text-2xl sm:text-3xl font-extrabold text-[#FAFAFA]">1s</span>
-              <p className="text-[10px] text-zinc-400 uppercase tracking-wider mt-1">Face Recognition</p>
-            </div>
           </div>
         </section>
 
