@@ -5,7 +5,7 @@
 import { auth } from "@/lib/auth";
 import { NextRequest } from "next/server";
 
-console.log("Edge Middleware Init - Base URL:", process.env.NEON_AUTH_BASE_URL ? "Defined" : "UNDEFINED", "Secret:", process.env.NEON_AUTH_COOKIE_SECRET ? "Defined" : "UNDEFINED");
+console.log("Edge Middleware Init - Base URL:", process.env.NEON_AUTH_BASE_URL ? process.env.NEON_AUTH_BASE_URL.substring(0, 20) + "..." : "UNDEFINED", "Secret Length:", process.env.NEON_AUTH_COOKIE_SECRET ? process.env.NEON_AUTH_COOKIE_SECRET.length : "UNDEFINED");
 
 export const proxy = async (req: NextRequest) => {
   console.log("Edge Middleware Request:", req.nextUrl.pathname, "Verifier:", req.nextUrl.searchParams.get("neon_auth_session_verifier") ? "Present" : "Missing");
