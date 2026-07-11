@@ -201,3 +201,23 @@
 .animate-lock-bounce {
   animation: lock-bounce 2.5s infinite ease-in-out;
 }
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: -40;
+  }
+}
+
+.animate-dash-line {
+  stroke-dasharray: 8 4;
+  animation: dash 2s infinite linear;
+}
+
+@keyframes cursor-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.animate-cursor-pulse {
+  animation: cursor-pulse 1s infinite step-end;
+}
