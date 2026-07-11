@@ -9,4 +9,5 @@ export const auth = createNeonAuth({
   cookies: {
     secret: process.env.NEON_AUTH_COOKIE_SECRET!,
   },
+  logLevel: 'debug',
 });
