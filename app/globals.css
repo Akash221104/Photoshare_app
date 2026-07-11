@@ -128,3 +128,76 @@
     @apply font-sans;
   }
 }
+
+@keyframes laser-scan {
+  0%, 100% {
+    top: 0%;
+    opacity: 0.8;
+  }
+  50% {
+    top: 100%;
+    opacity: 0.8;
+  }
+}
+
+@keyframes typing-dot-bounce {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+  }
+}
+
+@keyframes lock-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+.animate-laser-scan {
+  animation: laser-scan 3s infinite linear;
+}
+
+.animate-typing-dot-1 {
+  animation: typing-dot-bounce 1s infinite ease-in-out;
+  animation-delay: 0.1s;
+}
+
+.animate-typing-dot-2 {
+  animation: typing-dot-bounce 1s infinite ease-in-out;
+  animation-delay: 0.3s;
+}
+
+.animate-typing-dot-3 {
+  animation: typing-dot-bounce 1s infinite ease-in-out;
+  animation-delay: 0.5s;
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 2s infinite ease-in-out;
+}
+
+.animate-lock-bounce {
+  animation: lock-bounce 2.5s infinite ease-in-out;
+}
