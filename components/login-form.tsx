@@ -63,7 +63,8 @@ export function LoginForm() {
     try {
       await authClient.signIn.social({
         provider: 'google',
-        callbackURL: callbackUrl,
+        callbackURL: new URL(callbackUrl, window.location.origin).toString(),
+        errorCallbackURL: new URL('/auth/sign-in', window.location.origin).toString(),
       });
     } catch (err) {
       toast.error('Google Sign In failed');
