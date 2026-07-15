@@ -19,6 +19,8 @@ import { PhotoUploader } from '@/components/upload/photo-uploader';
 import { SearchContainer } from '@/components/search/search-container';
 import { Button } from '@/components/ui/button';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import { NotificationCenter } from '@/components/events/notification-center';
+import { GalleryGrid } from '@/components/gallery/gallery-grid';
 
 interface EventPageProps {
   params: Promise<{ eventId: string }>;
@@ -32,8 +34,8 @@ export default function EventPage({ params }: EventPageProps) {
 
   const [uploaderOpen, setUploaderOpen] = React.useState(false);
   const [galleryVersion, setGalleryVersion] = React.useState(0);
-  // Host view: 'dashboard'. Member view starts on 'my-gallery'.
-  const [activeHostTab, setActiveHostTab] = React.useState<'dashboard'>('dashboard');
+  // Host view: 'dashboard' or 'gallery'.
+  const [activeHostTab, setActiveHostTab] = React.useState<'dashboard' | 'gallery'>('dashboard');
 
   const handleLeave = async () => {
     if (!window.confirm('Are you sure you want to leave this event?')) return;
@@ -88,20 +90,24 @@ export default function EventPage({ params }: EventPageProps) {
         <div className="flex items-center justify-between">
           <Button variant="ghost" size="sm" className="gap-2" onClick={() => router.push('/events')}>
             <ArrowLeft size={16} />
-            Back to Workspaces
+            <span className="hidden sm:inline">Back to Workspaces</span>
+            <span className="sm:hidden">Back</span>
           </Button>
 
-          {/* Upload Button — visible only if authorized */}
-          {canUpload && (
-            <Button
-              size="sm"
-              onClick={() => setUploaderOpen(true)}
-              className="gap-1.5 shadow-sm"
-            >
-              <Upload size={14} />
-              Upload Photos
-            </Button>
-          )}
+          <div className="flex items-center gap-3">
+            <NotificationCenter />
+            {canUpload && (
+              <Button
+                size="sm"
+                onClick={() => setUploaderOpen(true)}
+                className="gap-1.5 shadow-sm"
+              >
+                <Upload size={14} />
+                <span className="hidden sm:inline">Upload Photos</span>
+                <span className="sm:hidden">Upload</span>
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Cover Banner */}
@@ -116,18 +122,48 @@ export default function EventPage({ params }: EventPageProps) {
         ───────────────────────────────────────────── */}
         {isHost ? (
           <div className="space-y-6 pt-2">
+            {/* Host Mode Tabs */}
+            <div className="flex bg-muted/65 p-1 rounded-lg border border-muted/20 w-fit">
+              <button
+                onClick={() => setActiveHostTab('dashboard')}
+                className={`flex items-center gap-1.5 px-4 py-1.5 rounded-md text-xs font-bold transition-all ${
+                  activeHostTab === 'dashboard'
+                    ? 'bg-background text-primary shadow-sm'
+                    : 'text-muted-foreground hover:text-primary'
+                }`}
+              >
+                <LayoutDashboard className="w-3.5 h-3.5" />
+                Host Dashboard
+              </button>
+              <button
+                onClick={() => setActiveHostTab('gallery')}
+                className={`flex items-center gap-1.5 px-4 py-1.5 rounded-md text-xs font-bold transition-all ${
+                  activeHostTab === 'gallery'
+                    ? 'bg-background text-primary shadow-sm'
+                    : 'text-muted-foreground hover:text-primary'
+                }`}
+              >
+                <Images className="w-3.5 h-3.5 text-indigo-500" />
+                Event Gallery
+              </button>
+            </div>
+
             {/* Host Mode Banner */}
             <div className="flex items-center gap-2 bg-card/50 border border-muted/40 rounded-xl px-4 py-3 backdrop-blur-sm">
               <LayoutDashboard className="w-4 h-4 text-primary shrink-0" />
               <div className="flex-1">
                 <p className="text-xs font-bold">Event Management Mode</p>
                 <p className="text-[11px] text-muted-foreground">
-                  You are viewing aggregate event data. Switch to a member view by uploading photos from the button above.
+                  You are viewing the event as a Host. Toggle tabs to switch between metrics and managing the gallery.
                 </p>
               </div>
             </div>
 
-            <HostDashboard eventId={eventId} />
+            {activeHostTab === 'dashboard' ? (
+              <HostDashboard eventId={eventId} />
+            ) : (
+              <GalleryGrid eventId={eventId} currentUserId={user.id} isHost={true} />
+            )}
           </div>
         ) : (
           /* ──────────────────────────────────────────────

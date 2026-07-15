@@ -68,14 +68,23 @@ export function HostDashboard({ eventId }: HostDashboardProps) {
 
   useEffect(() => {
     fetchStats();
-    // Auto-refresh stats every 30s if there are pending/processing photos
+    // Auto-refresh stats every 5s if there are pending/processing photos
     const interval = setInterval(() => {
       if (stats && (stats.pendingPhotos > 0 || stats.processingPhotos > 0)) {
         fetchStats();
       }
-    }, 30000);
+    }, 5000);
     return () => clearInterval(interval);
   }, [fetchStats, stats?.pendingPhotos, stats?.processingPhotos]);
+
+  // Listen to background AI complete events to reload stats immediately
+  useEffect(() => {
+    const handleUpdate = () => {
+      fetchStats();
+    };
+    window.addEventListener('gallery-update', handleUpdate);
+    return () => window.removeEventListener('gallery-update', handleUpdate);
+  }, [fetchStats]);
 
   if (loading) {
     return (

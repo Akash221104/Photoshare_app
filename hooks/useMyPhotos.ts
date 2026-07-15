@@ -33,9 +33,9 @@ export function useMyPhotos(eventId: string, initialThreshold = 0.40) {
     }
   }, [eventId, threshold]);
 
-  const fetchPhotos = useCallback(async (currentOffset: number, clearPrevious = false) => {
+  const fetchPhotos = useCallback(async (currentOffset: number, clearPrevious = false, silent = false) => {
     try {
-      setLoading(true);
+      if (!silent) setLoading(true);
       setError(null);
       
       const res = await fetch(
@@ -82,11 +82,20 @@ export function useMyPhotos(eventId: string, initialThreshold = 0.40) {
     fetchPhotos(nextOffset, false);
   };
 
-  const reload = () => {
+  const reload = (silent = false) => {
     setOffset(0);
-    fetchPhotos(0, true);
+    fetchPhotos(0, true, silent);
     fetchStats();
   };
+
+  // Listen for background AI updates to auto-refresh matched photos
+  useEffect(() => {
+    const handleUpdate = () => {
+      reload(true);
+    };
+    window.addEventListener('gallery-update', handleUpdate);
+    return () => window.removeEventListener('gallery-update', handleUpdate);
+  }, [reload]);
 
   return {
     photos,

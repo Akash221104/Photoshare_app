@@ -7,6 +7,7 @@
 import React, { createContext, useContext, useState, useRef, useEffect } from 'react';
 import { toast } from 'sonner';
 import { MAX_FILE_SIZE, ACCEPTED_IMAGE_TYPES } from '@/schemas/upload.schema';
+import { useNotification } from '@/hooks/useNotification';
 
 export interface UploadTask {
   id: string;
@@ -19,6 +20,8 @@ export interface UploadTask {
   totalBytes: number;
   status: 'waiting' | 'uploading' | 'registering' | 'completed' | 'failed' | 'cancelled';
   cloudinaryUrl?: string;
+  photoId?: string; // Database ID returned from registration
+  aiStatus?: 'pending' | 'completed' | 'failed'; // AI processing status
   error?: string;
   previewUrl: string;
   eventId: string;
@@ -43,15 +46,19 @@ interface UploadContextType {
   uploadProgress: number;
   speed: number; // bytes/sec
   eta: number; // seconds remaining
+  aiProcessing: boolean; // Whether the background AI queue is processing our uploads
+  completedAiCount: number; // Count of completed AI processes in current queue
 }
 
 const UploadContext = createContext<UploadContextType | undefined>(undefined);
 
 export function UploadProvider({ children }: { children: React.ReactNode }) {
+  const { addNotification, updateNotification } = useNotification();
   const [tasks, setTasks] = useState<UploadTask[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [speed, setSpeed] = useState(0);
   const [eta, setEta] = useState(0);
+  const [aiProcessing, setAiProcessing] = useState(false);
 
   const tasksRef = useRef<UploadTask[]>([]);
   const xhrRef = useRef<Record<string, XMLHttpRequest>>({});
@@ -104,7 +111,123 @@ export function UploadProvider({ children }: { children: React.ReactNode }) {
 
       const estimatedTime = currentSpeed > 1024 ? Math.round(remainingBytes / currentSpeed) : 0;
       setEta(estimatedTime);
+
+      // Dynamically update the upload notification
+      const activeBatchId = activeTasks[0]?.batchId;
+      if (activeBatchId) {
+        const batchTasks = tasksRef.current.filter((t) => t.batchId === activeBatchId);
+        const totalInBatch = batchTasks.length;
+        const completedInBatch = batchTasks.filter((t) => t.status === 'completed').length;
+        const batchProgress = totalInBatch > 0 
+          ? Math.round(batchTasks.reduce((sum, t) => sum + t.progress, 0) / totalInBatch)
+          : 0;
+
+        const speedText = currentSpeed >= 1024 * 1024 
+          ? `${(currentSpeed / (1024 * 1024)).toFixed(1)} MB/s` 
+          : `${(currentSpeed / 1024).toFixed(0)} KB/s`;
+
+        const etaText = estimatedTime >= 60 
+          ? `${Math.floor(estimatedTime / 60)}m ${estimatedTime % 60}s remaining` 
+          : `${estimatedTime}s remaining`;
+
+        updateNotification(activeBatchId, {
+          progress: batchProgress,
+          description: `${completedInBatch} of ${totalInBatch} photos uploaded (${speedText} • ${etaText}).`
+        });
+      }
     }, 1000);
+
+    return () => clearInterval(interval);
+  }, [tasks, isUploading]);
+
+  // AI Queue Status Polling Effect
+  useEffect(() => {
+    // Check if there are tasks currently completed in upload but pending AI processing
+    const pendingAiTasks = tasks.filter((t) => t.status === 'completed' && t.aiStatus === 'pending');
+    
+    if (pendingAiTasks.length === 0) {
+      setAiProcessing(false);
+      return;
+    }
+
+    setAiProcessing(true);
+
+    const interval = setInterval(async () => {
+      let changed = false;
+      const updatedTasks = [...tasksRef.current];
+
+      for (let i = 0; i < updatedTasks.length; i++) {
+        const task = updatedTasks[i];
+        if (task.status === 'completed' && task.aiStatus === 'pending' && task.photoId) {
+          try {
+            const res = await fetch(`/api/photos/${task.photoId}`);
+            if (res.ok) {
+              const data = await res.json();
+              const newStatus = data.processing_status;
+              if (newStatus === 'COMPLETED' || newStatus === 'FAILED') {
+                updatedTasks[i] = {
+                  ...task,
+                  aiStatus: newStatus === 'COMPLETED' ? 'completed' : 'failed',
+                };
+                changed = true;
+              }
+            }
+          } catch (err) {
+            console.error(`Failed to poll AI status for photo ${task.photoId}:`, err);
+          }
+        }
+      }
+
+      if (changed) {
+        setTasks(updatedTasks);
+
+        const activeBatchId = pendingAiTasks[0]?.batchId;
+        if (activeBatchId) {
+          const batchTasks = updatedTasks.filter((t) => t.batchId === activeBatchId && t.status === 'completed');
+          const totalInBatch = batchTasks.length;
+          const completedAi = batchTasks.filter((t) => t.aiStatus !== 'pending').length;
+          const failedAi = batchTasks.filter((t) => t.aiStatus === 'failed').length;
+          
+          const progressVal = totalInBatch > 0 ? Math.round((completedAi / totalInBatch) * 100) : 100;
+
+          // Check if all pending AI tasks in the current batch have finished processing
+          const stillPending = updatedTasks.some((t) => t.status === 'completed' && t.aiStatus === 'pending');
+          if (!stillPending) {
+            if (failedAi > 0) {
+              updateNotification(`ai-${activeBatchId}`, {
+                title: '⚠ AI Processing Completed',
+                description: `${totalInBatch - failedAi} photos processed. ${failedAi} photos failed.`,
+                category: 'warning',
+                priority: 'high',
+                progress: 100,
+              });
+              toast.warning(`AI Processing complete with ${failedAi} failed items.`);
+            } else {
+              updateNotification(`ai-${activeBatchId}`, {
+                title: '🎉 Event Ready',
+                description: 'All uploaded photos have been processed. Guests can now search their photos instantly.',
+                category: 'event',
+                priority: 'critical',
+                progress: 100,
+                action: {
+                  label: 'Open Gallery',
+                  href: `/events/${pendingAiTasks[0]?.eventId}`,
+                  actionType: 'link'
+                }
+              });
+              toast.success('AI processing completed! Your personal gallery is ready.');
+            }
+            window.dispatchEvent(new Event('gallery-update'));
+          } else {
+            updateNotification(`ai-${activeBatchId}`, {
+              title: '🤖 AI Processing...',
+              description: `Analyzing photos: ${completedAi} / ${totalInBatch} completed.`,
+              progress: progressVal,
+            });
+          }
+        }
+      }
+    }, 3000); // Poll every 3 seconds
 
     return () => clearInterval(interval);
   }, [tasks, isUploading]);
@@ -316,6 +439,8 @@ export function UploadProvider({ children }: { children: React.ReactNode }) {
                   progress: 100,
                   uploadedBytes: t.fileSize,
                   cloudinaryUrl: registeredPhoto.cloudinary_url,
+                  photoId: registeredPhoto.id,
+                  aiStatus: 'pending',
                   file: null, // Purge from RAM
                 }
               : t
@@ -386,6 +511,18 @@ export function UploadProvider({ children }: { children: React.ReactNode }) {
       }
     };
 
+    const activeBatchId = pendingTasks[0]?.batchId;
+    if (activeBatchId) {
+      addNotification({
+        id: activeBatchId,
+        title: 'Uploading Photos...',
+        description: `Starting upload of ${pendingTasks.length} photos.`,
+        category: 'upload',
+        priority: 'low',
+        progress: 0,
+      });
+    }
+
     const workers = Array.from(
       { length: Math.min(CONCURRENCY_LIMIT, queue.length) },
       worker
@@ -393,6 +530,40 @@ export function UploadProvider({ children }: { children: React.ReactNode }) {
 
     await Promise.all(workers);
     setIsUploading(false);
+
+    if (activeBatchId) {
+      const batchTasks = tasksRef.current.filter((t) => t.batchId === activeBatchId);
+      const completed = batchTasks.filter((t) => t.status === 'completed').length;
+      const failed = batchTasks.filter((t) => t.status === 'failed').length;
+
+      if (completed > 0) {
+        updateNotification(activeBatchId, {
+          title: '✅ Upload Complete',
+          description: `${completed} photos uploaded successfully. AI processing has started.`,
+          category: 'success',
+          priority: 'medium',
+          progress: 100,
+        });
+
+        // Trigger AI Processing Started notification
+        addNotification({
+          id: `ai-${activeBatchId}`,
+          title: '🤖 AI Processing Started',
+          description: `Analyzing ${completed} uploaded photos. Guests will be able to search once completed.`,
+          category: 'ai',
+          priority: 'medium',
+          progress: 0,
+        });
+      } else if (failed > 0) {
+        updateNotification(activeBatchId, {
+          title: '❌ Upload Failed',
+          description: `Failed to upload ${failed} photos. Click retry to resume.`,
+          category: 'error',
+          priority: 'high',
+          progress: 100,
+        });
+      }
+    }
   };
 
   const cancelUpload = (taskId: string) => {
@@ -482,6 +653,7 @@ export function UploadProvider({ children }: { children: React.ReactNode }) {
   const failedCount = tasks.filter((t) => t.status === 'failed').length;
   const activeCount = tasks.filter((t) => t.status === 'uploading' || t.status === 'registering').length;
   const pendingCount = tasks.filter((t) => t.status === 'waiting').length;
+  const completedAiCount = tasks.filter((t) => t.status === 'completed' && t.aiStatus && t.aiStatus !== 'pending').length;
 
   const totalTasks = tasks.length;
   const uploadProgress =
@@ -509,6 +681,8 @@ export function UploadProvider({ children }: { children: React.ReactNode }) {
         uploadProgress,
         speed,
         eta,
+        aiProcessing,
+        completedAiCount,
       }}
     >
       {children}

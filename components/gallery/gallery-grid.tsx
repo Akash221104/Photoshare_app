@@ -65,7 +65,7 @@ export function GalleryGrid({ eventId, currentUserId, isHost }: GalleryGridProps
     return (
       <div className="flex flex-col items-center justify-center min-h-[250px] text-center space-y-4">
         <p className="text-sm font-semibold text-red-500">{error}</p>
-        <Button onClick={reload} variant="outline" size="sm" className="gap-1.5">
+        <Button onClick={() => reload()} variant="outline" size="sm" className="gap-1.5">
           <RefreshCw size={14} />
           Retry
         </Button>

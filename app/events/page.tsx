@@ -14,6 +14,7 @@ import { SearchBar } from '@/components/events/search-bar';
 import { EventGrid } from '@/components/events/event-grid';
 import { CreateEventDialog } from '@/components/events/create-event-dialog';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import { NotificationCenter } from '@/components/events/notification-center';
 
 export default function EventsListPage() {
   const { user } = useCurrentUser();
@@ -44,13 +45,18 @@ export default function EventsListPage() {
           <Link href="/dashboard">
             <Button variant="ghost" size="sm" className="gap-2">
               <ArrowLeft size={16} />
-              Dashboard
+              <span className="hidden sm:inline">Dashboard</span>
+              <span className="sm:hidden">Back</span>
             </Button>
           </Link>
-          <Button onClick={() => setCreateOpen(true)} className="flex items-center gap-2">
-            <PlusCircle size={16} />
-            Create Event
-          </Button>
+          <div className="flex items-center gap-3">
+            <NotificationCenter />
+            <Button onClick={() => setCreateOpen(true)} className="flex items-center gap-2">
+              <PlusCircle size={16} />
+              <span className="hidden sm:inline">Create Event</span>
+              <span className="sm:hidden">Create</span>
+            </Button>
+          </div>
         </div>
 
         {/* Title Block */}

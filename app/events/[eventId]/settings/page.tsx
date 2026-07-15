@@ -122,7 +122,8 @@ export default function EventSettingsPage({ params }: SettingsPageProps) {
         <div className="flex items-center">
           <Button variant="ghost" size="sm" className="gap-2" onClick={() => router.push(`/events/${event.id}`)}>
             <ArrowLeft size={16} />
-            Back to Event Workspace
+            <span className="hidden sm:inline">Back to Event Workspace</span>
+            <span className="sm:hidden">Back</span>
           </Button>
         </div>
 

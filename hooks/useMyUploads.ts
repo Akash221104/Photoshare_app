@@ -14,9 +14,9 @@ export function useMyUploads(eventId: string) {
   const limit = 24;
   const isFirstLoad = useRef(true);
 
-  const fetchUploads = useCallback(async (currentOffset: number, clearPrevious = false) => {
+  const fetchUploads = useCallback(async (currentOffset: number, clearPrevious = false, silent = false) => {
     try {
-      setLoading(true);
+      if (!silent) setLoading(true);
       setError(null);
       
       const res = await fetch(
@@ -62,10 +62,19 @@ export function useMyUploads(eventId: string) {
     fetchUploads(nextOffset, false);
   };
 
-  const reload = () => {
+  const reload = (silent = false) => {
     setOffset(0);
-    fetchUploads(0, true);
+    fetchUploads(0, true, silent);
   };
+
+  // Listen for background AI updates to auto-refresh uploads
+  useEffect(() => {
+    const handleUpdate = () => {
+      reload(true);
+    };
+    window.addEventListener('gallery-update', handleUpdate);
+    return () => window.removeEventListener('gallery-update', handleUpdate);
+  }, [reload]);
 
   return {
     photos,

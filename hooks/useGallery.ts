@@ -15,11 +15,11 @@ export function useGallery(eventId: string, limit = 12) {
   const [total, setTotal] = React.useState(0);
 
   const fetchPhotos = React.useCallback(
-    async (currentOffset: number, append = false) => {
+    async (currentOffset: number, append = false, silent = false) => {
       if (!eventId) return;
       if (append) {
         setLoadingMore(true);
-      } else {
+      } else if (!silent) {
         setLoading(true);
       }
       setError(null);
@@ -52,8 +52,8 @@ export function useGallery(eventId: string, limit = 12) {
     fetchPhotos(nextOffset, true);
   };
 
-  const reload = () => {
-    fetchPhotos(0, false);
+  const reload = (silent = false) => {
+    fetchPhotos(0, false, silent);
   };
 
   const deletePhoto = async (photoId: string) => {
@@ -81,6 +81,15 @@ export function useGallery(eventId: string, limit = 12) {
       fetchPhotos(0, false);
     }
   }, [eventId, fetchPhotos]);
+
+  // Listen for background AI updates to auto-refresh event gallery photos
+  React.useEffect(() => {
+    const handleUpdate = () => {
+      reload(true);
+    };
+    window.addEventListener('gallery-update', handleUpdate);
+    return () => window.removeEventListener('gallery-update', handleUpdate);
+  }, [reload]);
 
   return {
     photos,

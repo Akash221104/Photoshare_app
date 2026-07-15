@@ -52,12 +52,19 @@ export function PhotoCard({ photo, currentUserId, isHost, onPreview, onDelete, o
   }, [photo.cloudinary_url]);
 
   return (
-    <div className={cn(
-      "group relative rounded-xl border overflow-hidden bg-white dark:bg-zinc-950 aspect-4/3 shadow-sm hover:shadow-md transition-all",
-      status === ProcessingStatus.FAILED 
-        ? "border-red-500/40 dark:border-red-500/30" 
-        : "border-zinc-200/50 dark:border-zinc-800/50"
-    )}>
+    <div 
+      onClick={() => {
+        if (status === ProcessingStatus.COMPLETED) {
+          onPreview();
+        }
+      }}
+      className={cn(
+        "group relative rounded-xl border overflow-hidden bg-white dark:bg-zinc-950 aspect-4/3 shadow-sm hover:shadow-md transition-all cursor-pointer",
+        status === ProcessingStatus.FAILED 
+          ? "border-red-500/40 dark:border-red-500/30" 
+          : "border-zinc-200/50 dark:border-zinc-800/50"
+      )}
+    >
       {/* Thumbnail */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img

@@ -21,6 +21,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import { NotificationCenter } from '@/components/events/notification-center';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -131,6 +132,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
           {/* User Account Controls */}
           <div className="ml-auto flex items-center gap-4">
+            <NotificationCenter />
             <DropdownMenu>
               <DropdownMenuTrigger className="relative h-8 w-8 rounded-full p-0 overflow-hidden outline-none cursor-pointer">
                 <Avatar className="h-8 w-8">

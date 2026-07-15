@@ -36,6 +36,8 @@ export function FloatingUploadTray() {
     uploadProgress,
     speed,
     eta,
+    aiProcessing,
+    completedAiCount,
   } = useUploadContext();
 
   const [minimized, setMinimized] = useState(false);
@@ -87,8 +89,10 @@ export function FloatingUploadTray() {
           <span className="text-xs font-bold text-zinc-900 dark:text-zinc-50 truncate">
             {isUploading
               ? `Uploading Photos (${completedCount}/${tasks.length})`
+              : aiProcessing
+              ? `AI Processing (${completedAiCount}/${completedCount} Completed)...`
               : allDone
-              ? `Upload Complete - ${completedCount} Photos Uploaded - AI Processing...`
+              ? `Upload Complete - All ${completedCount} Photos Uploaded & AI Processed`
               : 'Upload queue'}
           </span>
         </div>
@@ -121,16 +125,24 @@ export function FloatingUploadTray() {
         <div className="flex justify-between items-center text-[11px] text-zinc-500 mb-1.5 font-semibold">
           <div className="flex flex-col">
             <span>{uploadProgress}% completed</span>
-            {isUploading && (
+            {isUploading ? (
               <span className="text-[10px] text-zinc-400 font-medium">
                 {formatSpeed(speed)} {speed > 0 && '•'} {formatETA(eta)}
               </span>
-            )}
-            {isUploading && (
+            ) : aiProcessing ? (
+              <span className="text-[10px] text-amber-600 dark:text-amber-400 font-bold animate-pulse">
+                Running face recognition on your uploads...
+              </span>
+            ) : null}
+            {isUploading ? (
               <span className="text-[9px] text-violet-500 dark:text-violet-400 font-bold mt-0.5">
                 {activeCount} Active • {pendingCount} Waiting
               </span>
-            )}
+            ) : aiProcessing ? (
+              <span className="text-[9px] text-amber-500 font-bold mt-0.5 animate-pulse">
+                AI processing in progress
+              </span>
+            ) : null}
           </div>
           <span className="flex gap-2 shrink-0">
             {completedCount > 0 && <span className="text-green-600 dark:text-green-400">{completedCount} success</span>}

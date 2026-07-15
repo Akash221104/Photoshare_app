@@ -61,9 +61,16 @@ export function SelfieUpload({
     setErrorMsg(null);
     setCameraError(null);
     setLocalPreview(null);
+
+    if (typeof window === 'undefined' || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setCameraError('Webcam access is not supported by this browser or requires a secure connection (HTTPS).');
+      return;
+    }
+
     try {
+      // Use standard user facingMode without rigid constraints to prevent OverconstrainedError on mobile
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
+        video: { facingMode: 'user' },
         audio: false,
       });
       streamRef.current = stream;
@@ -72,8 +79,21 @@ export function SelfieUpload({
       }
       setCameraActive(true);
     } catch (err: any) {
-      console.error('Camera access error:', err);
-      setCameraError('Could not access camera. Please check permissions or browse a file.');
+      console.warn('[Selfie Camera] User facingMode failed, attempting fallback default camera:', err.message);
+      try {
+        const fallbackStream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: false,
+        });
+        streamRef.current = fallbackStream;
+        if (videoRef.current) {
+          videoRef.current.srcObject = fallbackStream;
+        }
+        setCameraActive(true);
+      } catch (fallbackErr: any) {
+        console.error('[Selfie Camera] Fallback camera failed:', fallbackErr);
+        setCameraError('Could not access webcam. Please verify site camera permissions or select a local photo file instead.');
+      }
     }
   };
 
