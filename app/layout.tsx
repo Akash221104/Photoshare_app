@@ -18,6 +18,8 @@ export const metadata: Metadata = {
 };
 
 import { Toaster } from "@/components/ui/sonner";
+import { UploadProvider } from "@/context/UploadContext";
+import { FloatingUploadTray } from "@/components/upload/floating-upload-tray";
 
 export default function RootLayout({
   children,
@@ -30,7 +32,10 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
     >
       <body className="min-h-full flex flex-col">
-        {children}
+        <UploadProvider>
+          {children}
+          <FloatingUploadTray />
+        </UploadProvider>
         <Toaster />
       </body>
     </html>

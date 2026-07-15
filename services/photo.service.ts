@@ -17,54 +17,6 @@ const cloudinaryService = new CloudinaryService();
 
 export class PhotoService {
   /**
-   * Performs uploader membership check, streams image to Cloudinary, and saves metadata in database.
-   * Auto-marks status as 'processed' in this phase (no AI processing).
-   */
-  async uploadPhoto(
-    eventId: string,
-    uploadedBy: string,
-    base64Data: string
-  ): Promise<PhotoResponse> {
-    try {
-      // 1. Authorization Guard: Check if user is a member of the event workspace
-      const isMember = await memberRepo.isMember(eventId, uploadedBy);
-      if (!isMember) {
-        return { success: false, error: 'Unauthorized: You must join the event before uploading' };
-      }
-
-      // 2. Check Event settings (Upload Mode)
-      const event = await eventRepo.getEventById(eventId);
-      if (!event) {
-        return { success: false, error: 'Event not found' };
-      }
-      if (event.upload_mode === 'HOST_ONLY' && event.host_id !== uploadedBy) {
-        return { success: false, error: 'Forbidden: Only the event host can upload photos' };
-      }
-
-      // 3. Upload asset to Cloudinary
-      const cloudinaryRes = await cloudinaryService.uploadPhoto(base64Data, eventId);
-
-      // 3. Register photo in DB (will default status to 'processing' and processing_status to 'PENDING')
-      const photo = await photoRepo.uploadPhoto(
-        eventId,
-        uploadedBy,
-        cloudinaryRes.public_id,
-        cloudinaryRes.secure_url,
-        cloudinaryRes.width,
-        cloudinaryRes.height
-      );
-
-      // 4. Enqueue in-memory background processing queue
-      processingQueue.enqueue(photo.id);
-
-      return { success: true, data: photo };
-    } catch (error) {
-      console.error('Failed to upload photo in service:', error);
-      return { success: false, error: 'Failed to process media upload' };
-    }
-  }
-
-  /**
    * Retrieves a paginated gallery for an event. Guards against non-members.
    */
   async getEventGallery(

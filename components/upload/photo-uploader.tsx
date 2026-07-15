@@ -57,16 +57,18 @@ export function PhotoUploader({ eventId, open, onOpenChange, onUploadComplete }:
   });
 
   const handleClose = () => {
-    if (uploading) {
-      if (!window.confirm('Upload is in progress. Closing this dialog will not cancel ongoing network requests. Are you sure?')) {
-        return;
-      }
+    if (!uploading) {
+      clearQueue();
     }
-    clearQueue();
     onOpenChange(false);
   };
 
-  const idleTasksCount = tasks.filter((t) => t.status === 'idle').length;
+  const handleStartUpload = () => {
+    startUpload();
+    onOpenChange(false);
+  };
+
+  const waitingTasksCount = tasks.filter((t) => t.status === 'waiting').length;
   const isQueueEmpty = tasks.length === 0;
 
   return (
@@ -115,16 +117,16 @@ export function PhotoUploader({ eventId, open, onOpenChange, onUploadComplete }:
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={task.previewUrl}
-                      alt={task.file.name}
+                      alt={task.fileName}
                       className="h-full w-full object-cover"
                     />
                   </div>
                   <div className="min-w-0">
                     <p className="font-semibold text-xs text-zinc-900 dark:text-zinc-50 truncate max-w-[180px]">
-                      {task.file.name}
+                      {task.fileName}
                     </p>
                     <p className="text-[10px] text-zinc-400">
-                      {(task.file.size / (1024 * 1024)).toFixed(2)} MB
+                      {(task.fileSize / (1024 * 1024)).toFixed(2)} MB
                     </p>
                   </div>
                 </div>
@@ -137,7 +139,7 @@ export function PhotoUploader({ eventId, open, onOpenChange, onUploadComplete }:
                       <span className="text-[10px] font-medium text-zinc-500">{task.progress}%</span>
                     </div>
                   )}
-                  {task.status === 'success' && (
+                   {task.status === 'completed' && (
                     <CheckCircle2 className="h-5 w-5 text-green-500" />
                   )}
                   {task.status === 'failed' && (
@@ -153,7 +155,7 @@ export function PhotoUploader({ eventId, open, onOpenChange, onUploadComplete }:
                       </Button>
                     </div>
                   )}
-                  {task.status === 'idle' && !uploading && (
+                  {(task.status === 'waiting' || task.status === 'cancelled') && !uploading && (
                     <Button
                       type="button"
                       variant="ghost"
@@ -192,10 +194,10 @@ export function PhotoUploader({ eventId, open, onOpenChange, onUploadComplete }:
               </Button>
               <Button
                 type="button"
-                onClick={startUpload}
-                disabled={uploading || idleTasksCount === 0}
+                onClick={handleStartUpload}
+                disabled={uploading || waitingTasksCount === 0}
               >
-                {uploading ? 'Uploading...' : `Upload ${idleTasksCount} Files`}
+                {uploading ? 'Uploading...' : `Upload ${waitingTasksCount} Files`}
               </Button>
             </div>
           )}
