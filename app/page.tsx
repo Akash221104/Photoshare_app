@@ -151,28 +151,28 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#09090B] text-[#FAFAFA] font-sans antialiased overflow-hidden selection:bg-[#6366F1]/30">
+    <div className="flex flex-col min-h-screen bg-[#09090B] text-[#FAFAFA] font-sans antialiased overflow-hidden selection:bg-[#8B5CF6]/30">
       
       {/* Background glow meshes & noise */}
-      <div className="absolute top-[-10%] left-[-15%] w-[60%] h-[60%] bg-[#6366F1]/5 rounded-full blur-[130px] pointer-events-none" />
-      <div className="absolute top-[20%] right-[-15%] w-[65%] h-[65%] bg-[#06B6D4]/5 rounded-full blur-[150px] pointer-events-none" />
-      <div className="absolute bottom-[5%] left-[10%] w-[50%] h-[50%] bg-[#6366F1]/5 rounded-full blur-[130px] pointer-events-none" />
+      <div className="absolute top-[-10%] left-[-15%] w-[60%] h-[60%] bg-[#8B5CF6]/5 rounded-full blur-[130px] pointer-events-none" />
+      <div className="absolute top-[20%] right-[-15%] w-[65%] h-[65%] bg-[#EC4899]/5 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute bottom-[5%] left-[10%] w-[50%] h-[50%] bg-[#8B5CF6]/5 rounded-full blur-[130px] pointer-events-none" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_20%,#09090B_80%)] opacity-60 pointer-events-none" />
 
       {/* Floating Header */}
-      <header className="fixed top-0 left-0 right-0 h-16 border-b border-white/5 bg-[#09090B]/60 backdrop-blur-md z-50 flex items-center justify-between px-6 max-w-7xl mx-auto w-full">
-        <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-lg bg-[#6366F1] flex items-center justify-center shadow-md shadow-[#6366F1]/20">
-            <Camera size={18} className="text-white" />
+      <header className="fixed top-0 left-0 right-0 h-16 border-b border-white/5 bg-[#09090B]/60 backdrop-blur-md z-50 flex items-center justify-between px-4 sm:px-6 max-w-7xl mx-auto w-full">
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-[#8B5CF6] flex items-center justify-center shadow-md shadow-[#8B5CF6]/20">
+            <Camera className="h-4 w-4 sm:h-[18px] sm:w-[18px] text-white" />
           </div>
-          <span className="text-lg font-bold tracking-tight text-[#FAFAFA]">PhotoShare AI</span>
+          <span className="text-base sm:text-lg font-bold tracking-tight text-[#FAFAFA]">PhotoShare AI</span>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           <Link href="/auth/sign-in">
-            <Button variant="ghost" className="text-[#A1A1AA] hover:text-[#FAFAFA]">Sign In</Button>
+            <Button variant="ghost" size="sm" className="text-[#A1A1AA] hover:text-[#FAFAFA] text-xs sm:text-sm px-2 sm:px-3">Sign In</Button>
           </Link>
           <Link href="/auth/sign-up">
-            <Button className="bg-[#6366F1] hover:bg-[#6366F1]/90 text-white shadow-md shadow-[#6366F1]/20 transition-all duration-300">
+            <Button size="sm" className="bg-[#8B5CF6] hover:bg-[#8B5CF6]/90 text-white shadow-md shadow-[#8B5CF6]/20 transition-all duration-300 text-xs sm:text-sm px-2.5 sm:px-4">
               Get Started
             </Button>
           </Link>
@@ -186,30 +186,30 @@ export default function Home() {
           {/* Headline & Slogans */}
           <div className="text-center max-w-4xl space-y-6 mb-12">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/5 bg-[#18181B] text-xs font-semibold text-[#A1A1AA]">
-              <Sparkles size={12} className="text-indigo-400" />
+              <Sparkles size={12} className="text-violet-400" />
               Private Event Matching Engine
             </div>
-
+ 
             {/* Dynamic Sliding Title */}
-            <div className="min-h-[120px] flex items-center justify-center overflow-hidden">
-              <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight leading-tight max-w-3xl bg-gradient-to-b from-[#FAFAFA] to-[#A1A1AA] bg-clip-text text-transparent transition-all duration-500 transform translate-y-0 scale-100">
+            <div className="min-h-[180px] xs:min-h-[140px] sm:min-h-[120px] flex items-center justify-center overflow-hidden">
+              <h1 className="text-3xl xs:text-4xl sm:text-6xl font-extrabold tracking-tight leading-tight max-w-3xl bg-gradient-to-b from-[#FAFAFA] to-[#A1A1AA] bg-clip-text text-transparent transition-all duration-500 transform translate-y-0 scale-100">
                 {headlines[headlineIndex]}
               </h1>
             </div>
-
+ 
             {/* Subtitle */}
             <p className="text-base sm:text-lg text-[#A1A1AA] max-w-3xl mx-auto font-normal leading-relaxed">
               Upload event photos once. Guests simply scan a QR code or open a shared event link, upload one selfie, and instantly receive only the photos they&apos;re in.
             </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-2">
-              <Link href="/auth/sign-up">
-                <Button size="lg" className="bg-[#FAFAFA] text-[#09090B] hover:bg-[#FAFAFA]/95 px-8 h-12 shadow-lg transition-transform duration-300 hover:scale-[1.02] font-semibold">
+ 
+            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-2 w-full max-w-md sm:max-w-none mx-auto">
+              <Link href="/auth/sign-up" className="w-full sm:w-auto">
+                <Button size="lg" className="w-full bg-[#FAFAFA] text-[#09090B] hover:bg-[#FAFAFA]/95 px-8 h-12 shadow-lg transition-transform duration-300 hover:scale-[1.02] font-semibold">
                   Create Your First Event
                 </Button>
               </Link>
-              <a href="#demo-section">
-                <Button size="lg" variant="outline" className="border-white/10 hover:bg-white/5 text-[#FAFAFA] px-8 h-12">
+              <a href="#demo-section" className="w-full sm:w-auto">
+                <Button size="lg" variant="outline" className="w-full border-white/10 hover:bg-white/5 text-[#FAFAFA] px-8 h-12">
                   Watch 30-Second Demo
                 </Button>
               </a>
@@ -231,7 +231,7 @@ export default function Home() {
             </div>
 
             {/* Right side: WhatsApp Chat Simulator */}
-            <div className="w-full max-w-md bg-[#0b141a] border border-white/5 rounded-3xl p-0 relative overflow-hidden min-h-[420px] flex flex-col justify-between shadow-2xl">
+            <div className="w-full max-w-md mx-auto bg-[#0b141a] border border-white/5 rounded-3xl p-0 relative overflow-hidden min-h-[420px] flex flex-col justify-between shadow-2xl">
               
               {/* WhatsApp-Style Header */}
               <div className="bg-[#202c33] p-3 flex items-center justify-between border-b border-zinc-800 shrink-0">
@@ -367,14 +367,14 @@ export default function Home() {
         <section className="px-6 py-20 bg-zinc-950/40 border-b border-white/5">
           <div className="max-w-7xl mx-auto w-full">
             <div className="text-center space-y-3 mb-16">
-              <h2 className="text-sm font-semibold uppercase tracking-wider text-[#6366F1]">Who Is This For?</h2>
+              <h2 className="text-sm font-semibold uppercase tracking-wider text-[#8B5CF6]">Who Is This For?</h2>
               <p className="text-3xl sm:text-4xl font-extrabold text-[#FAFAFA]">Designed for Every Occasion</p>
               <p className="text-[#A1A1AA] max-w-xl mx-auto text-sm">Empowering event managers, couples, organizations, and runners.</p>
             </div>
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
               {/* Card 1: Weddings */}
-              <div className="bg-[#18181B] border border-white/5 rounded-2xl p-6 hover:border-[#6366F1]/30 transition-all duration-300">
+              <div className="bg-[#18181B] border border-white/5 rounded-2xl p-6 hover:border-[#8B5CF6]/30 transition-all duration-300">
                 <span className="text-2xl block mb-4">💍</span>
                 <h4 className="font-bold text-zinc-100 mb-1">Wedding Photographers</h4>
                 <p className="text-xs text-[#A1A1AA] leading-relaxed">
@@ -383,7 +383,7 @@ export default function Home() {
               </div>
 
               {/* Card 2: Festivals */}
-              <div className="bg-[#18181B] border border-white/5 rounded-2xl p-6 hover:border-[#6366F1]/30 transition-all duration-300">
+              <div className="bg-[#18181B] border border-white/5 rounded-2xl p-6 hover:border-[#8B5CF6]/30 transition-all duration-300">
                 <span className="text-2xl block mb-4">🎸</span>
                 <h4 className="font-bold text-zinc-100 mb-1">College Festivals</h4>
                 <p className="text-xs text-[#A1A1AA] leading-relaxed">
@@ -392,7 +392,7 @@ export default function Home() {
               </div>
 
               {/* Card 3: Corporate */}
-              <div className="bg-[#18181B] border border-white/5 rounded-2xl p-6 hover:border-[#6366F1]/30 transition-all duration-300">
+              <div className="bg-[#18181B] border border-white/5 rounded-2xl p-6 hover:border-[#8B5CF6]/30 transition-all duration-300">
                 <span className="text-2xl block mb-4">🏢</span>
                 <h4 className="font-bold text-zinc-100 mb-1">Corporate Events</h4>
                 <p className="text-xs text-[#A1A1AA] leading-relaxed">
@@ -401,7 +401,7 @@ export default function Home() {
               </div>
 
               {/* Card 4: Marathons */}
-              <div className="bg-[#18181B] border border-white/5 rounded-2xl p-6 hover:border-[#6366F1]/30 transition-all duration-300">
+              <div className="bg-[#18181B] border border-white/5 rounded-2xl p-6 hover:border-[#8B5CF6]/30 transition-all duration-300">
                 <span className="text-2xl block mb-4">🏃</span>
                 <h4 className="font-bold text-zinc-100 mb-1">Marathons</h4>
                 <p className="text-xs text-[#A1A1AA] leading-relaxed">
@@ -416,7 +416,7 @@ export default function Home() {
         <section id="demo-section" className="relative px-6 max-w-7xl mx-auto w-full py-20 flex flex-col items-center">
           
           <div className="text-center space-y-4 mb-12">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-[#6366F1]">One Upload. Customized Galleries.</h2>
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-[#8B5CF6]">One Upload. Customized Galleries.</h2>
             <p className="text-3xl sm:text-4xl font-extrabold text-[#FAFAFA]">Watch how one event instantly becomes hundreds of private galleries.</p>
             <p className="text-[#A1A1AA] max-w-2xl mx-auto text-sm leading-relaxed">
               Organizer uploads once. Guests simply join, upload one selfie, and receive only their own photos.
@@ -425,7 +425,7 @@ export default function Home() {
             {/* FSM Controls overlay */}
             <div className="pt-4 flex justify-center gap-4 z-10">
               {simState === 'idle' && (
-                <Button onClick={startSimulation} className="bg-[#6366F1] hover:bg-[#6366F1]/90 text-white font-bold px-8 h-12 shadow-lg shadow-[#6366F1]/20 animate-bounce">
+                <Button onClick={startSimulation} className="bg-[#8B5CF6] hover:bg-[#8B5CF6]/90 text-white font-bold px-8 h-12 shadow-lg shadow-[#8B5CF6]/20 animate-bounce">
                   ▶ Start Live Simulation
                 </Button>
               )}
@@ -435,7 +435,7 @@ export default function Home() {
                 </Button>
               )}
               {simState !== 'idle' && simState !== 'completed' && (
-                <span className="text-xs font-mono text-indigo-400 bg-indigo-500/10 px-4 py-2 rounded-full border border-indigo-500/20 animate-pulse">
+                <span className="text-xs font-mono text-violet-400 bg-violet-500/10 px-4 py-2 rounded-full border border-violet-500/20 animate-pulse">
                   Simulation in Progress...
                 </span>
               )}
@@ -447,14 +447,14 @@ export default function Home() {
             <button 
               onClick={() => { if (simState !== 'idle') setSimState('organizer-active'); }}
               disabled={simState === 'idle'}
-              className={`px-4 py-2 rounded-full text-xs font-bold border transition-all duration-300 ${simState === 'organizer-active' || simState === 'generate-qr' ? 'bg-[#6366F1] border-[#6366F1] text-white shadow-md shadow-[#6366F1]/20' : 'bg-zinc-900 border-white/5 text-zinc-400 hover:text-zinc-200'}`}
+              className={`px-4 py-2 rounded-full text-xs font-bold border transition-all duration-300 ${simState === 'organizer-active' || simState === 'generate-qr' ? 'bg-[#8B5CF6] border-[#8B5CF6] text-white shadow-md shadow-[#8B5CF6]/20' : 'bg-zinc-900 border-white/5 text-zinc-400 hover:text-zinc-200'}`}
             >
               Organizer Dashboard
             </button>
             <button 
               onClick={() => { if (simState !== 'idle') setSimState('guest-active'); }}
               disabled={simState === 'idle'}
-              className={`px-4 py-2 rounded-full text-xs font-bold border transition-all duration-300 ${simState === 'guest-active' || simState === 'upload-selfie' || simState === 'searching' || simState === 'completed' ? 'bg-[#06B6D4] border-[#06B6D4] text-zinc-950 shadow-md shadow-[#06B6D4]/20' : 'bg-zinc-900 border-white/5 text-zinc-400 hover:text-zinc-200'}`}
+              className={`px-4 py-2 rounded-full text-xs font-bold border transition-all duration-300 ${simState === 'guest-active' || simState === 'upload-selfie' || simState === 'searching' || simState === 'completed' ? 'bg-[#EC4899] border-[#EC4899] text-white shadow-md shadow-[#EC4899]/20' : 'bg-zinc-900 border-white/5 text-zinc-400 hover:text-zinc-200'}`}
             >
               Guest Dashboard
             </button>
@@ -465,13 +465,13 @@ export default function Home() {
             
             {/* Flying QR Code overlay */}
             {simState === 'generate-qr' && (
-              <div className="absolute top-[40%] left-1/4 z-40 pointer-events-none animate-fly-qr bg-white p-3 rounded-2xl shadow-2xl flex items-center justify-center border border-zinc-200" style={{ '--fly-x': '620px', '--fly-y': '20px' } as React.CSSProperties}>
+              <div className="absolute top-[40%] left-1/4 z-40 pointer-events-none animate-fly-qr bg-white p-3 rounded-2xl shadow-2xl flex items-center justify-center border border-zinc-200 [--fly-x:0px] [--fly-y:540px] lg:[--fly-x:620px] lg:[--fly-y:20px]">
                 <QrCode size={56} className="text-black" />
               </div>
             )}
 
             {/* ORGANIZER SAAS DASHBOARD */}
-            <div className={`w-full rounded-2xl border-[2px] bg-[#18181B] shadow-2xl overflow-hidden transition-all duration-500 flex flex-col h-[520px] relative ${simState === 'organizer-active' || simState === 'generate-qr' ? 'border-[#6366F1] shadow-[#6366F1]/10 scale-[1.01]' : 'border-zinc-800 opacity-40 scale-[0.99] grayscale'}`}>
+            <div className={`w-full rounded-2xl border-[2px] bg-[#18181B] shadow-2xl overflow-hidden transition-all duration-500 flex flex-col h-[520px] relative ${simState === 'organizer-active' || simState === 'generate-qr' ? 'border-[#8B5CF6] shadow-[#8B5CF6]/10 scale-[1.01]' : 'border-zinc-800 opacity-40 scale-[0.99] grayscale'}`}>
               
               {/* Browser bar */}
               <div className="bg-zinc-900 px-4 py-3 flex items-center justify-between border-b border-zinc-800 shrink-0">
@@ -489,7 +489,7 @@ export default function Home() {
               {/* Dashboard Layout */}
               <div className="flex-1 flex overflow-hidden text-[11px]">
                 {/* Sidebar */}
-                <div className="w-40 border-r border-white/5 bg-zinc-900/50 p-3 flex flex-col justify-between shrink-0">
+                <div className="hidden sm:flex w-40 border-r border-white/5 bg-zinc-900/50 p-3 flex-col justify-between shrink-0">
                   <div className="space-y-4">
                     <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider block px-2">Navigation</span>
                     <ul className="space-y-1 text-zinc-300">
@@ -525,9 +525,9 @@ export default function Home() {
                       <span className="text-zinc-400 block text-[9px] uppercase font-mono">Guests</span>
                       <span className="text-sm font-bold text-[#FAFAFA]">184</span>
                     </div>
-                    <div className="bg-[#18181B] border border-[#6366F1]/30 p-2 rounded-xl">
+                    <div className="bg-[#18181B] border border-[#8B5CF6]/30 p-2 rounded-xl">
                       <span className="text-zinc-400 block text-[9px] uppercase font-mono">AI Progress</span>
-                      <span className="text-sm font-bold text-[#6366F1]">96%</span>
+                      <span className="text-sm font-bold text-[#8B5CF6]">96%</span>
                     </div>
                   </div>
 
@@ -547,13 +547,13 @@ export default function Home() {
 
                   {/* Dynamic Simulation view content */}
                   {simState === 'organizer-active' && (
-                    <div className="bg-zinc-900 border border-indigo-500/30 p-4 rounded-xl space-y-3 animate-in fade-in duration-300">
+                    <div className="bg-zinc-900 border border-violet-500/30 p-4 rounded-xl space-y-3 animate-in fade-in duration-300">
                       <div className="flex justify-between items-center">
-                        <span className="text-[10px] font-bold text-indigo-400">Processing Upload Batch</span>
+                        <span className="text-[10px] font-bold text-violet-400">Processing Upload Batch</span>
                         <span className="text-[10px] font-bold text-zinc-300">{uploadPercent}%</span>
                       </div>
                       <div className="w-full h-2 bg-zinc-950 rounded-full overflow-hidden">
-                        <div className="h-full bg-[#6366F1] rounded-full transition-all duration-300" style={{ width: `${uploadPercent}%` }} />
+                        <div className="h-full bg-[#8B5CF6] rounded-full transition-all duration-300" style={{ width: `${uploadPercent}%` }} />
                       </div>
                       <p className="text-[9px] text-zinc-400">Running vector mappings on 1,247 uploads...</p>
                     </div>
@@ -561,7 +561,7 @@ export default function Home() {
 
                   {/* Share Card step */}
                   {simState === 'generate-qr' && (
-                    <div className="bg-zinc-900 border border-[#6366F1]/30 p-3 rounded-xl flex items-center justify-between animate-in fade-in duration-300">
+                    <div className="bg-zinc-900 border border-[#8B5CF6]/30 p-3 rounded-xl flex items-center justify-between animate-in fade-in duration-300">
                       <div className="space-y-1">
                         <h5 className="font-bold text-[#FAFAFA]">Share QR Code</h5>
                         <p className="text-[9px] text-zinc-400">Guests join to receive matching files</p>
@@ -600,7 +600,7 @@ export default function Home() {
             </div>
 
             {/* GUEST SAAS DASHBOARD */}
-            <div className={`w-full rounded-2xl border-[2px] bg-[#18181B] shadow-2xl overflow-hidden transition-all duration-500 flex flex-col h-[520px] relative ${simState === 'guest-active' || simState === 'upload-selfie' || simState === 'searching' || simState === 'completed' ? 'border-[#06B6D4] shadow-[#06B6D4]/10 scale-[1.01]' : 'border-zinc-800 opacity-40 scale-[0.99] grayscale'}`}>
+            <div className={`w-full rounded-2xl border-[2px] bg-[#18181B] shadow-2xl overflow-hidden transition-all duration-500 flex flex-col h-[520px] relative ${simState === 'guest-active' || simState === 'upload-selfie' || simState === 'searching' || simState === 'completed' ? 'border-[#EC4899] shadow-[#EC4899]/10 scale-[1.01]' : 'border-zinc-800 opacity-40 scale-[0.99] grayscale'}`}>
               
               {/* Browser bar */}
               <div className="bg-zinc-900 px-4 py-3 flex items-center justify-between border-b border-zinc-800 shrink-0">
@@ -618,7 +618,7 @@ export default function Home() {
               {/* Dashboard Layout */}
               <div className="flex-1 flex overflow-hidden text-[11px]">
                 {/* Sidebar */}
-                <div className="w-40 border-r border-white/5 bg-zinc-900/50 p-3 flex flex-col justify-between shrink-0">
+                <div className="hidden sm:flex w-40 border-r border-white/5 bg-zinc-900/50 p-3 flex-col justify-between shrink-0">
                   <div className="space-y-4">
                     <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider block px-2">Gallery</span>
                     <ul className="space-y-1 text-zinc-300">
@@ -647,15 +647,15 @@ export default function Home() {
                   {/* Top Welcome Card */}
                   <div className="bg-[#18181B] border border-white/5 p-3 rounded-xl space-y-1">
                     <h4 className="font-bold text-[#FAFAFA]">Welcome back, Akash</h4>
-                    <span className="text-[9px] text-[#06B6D4] font-semibold block">Joined College Annual Fest 2026</span>
+                    <span className="text-[9px] text-[#EC4899] font-semibold block">Joined College Annual Fest 2026</span>
                   </div>
 
                   {/* Step 4 & 5: QR Scanning / Upload Selfie */}
                   {(simState === 'guest-active' || simState === 'upload-selfie') && (
-                    <div className="bg-zinc-900 border border-cyan-500/30 p-4 rounded-xl text-center space-y-3 animate-in fade-in duration-300 flex flex-col items-center">
-                      <span className="text-[10px] font-bold text-[#06B6D4] uppercase">Select Selfie File</span>
+                    <div className="bg-zinc-900 border border-pink-500/30 p-4 rounded-xl text-center space-y-3 animate-in fade-in duration-300 flex flex-col items-center">
+                      <span className="text-[10px] font-bold text-[#EC4899] uppercase">Select Selfie File</span>
                       {simState === 'guest-active' ? (
-                        <div className="h-10 w-28 bg-[#06B6D4] text-zinc-950 rounded-lg flex items-center justify-center text-xs font-bold animate-button-press cursor-pointer">
+                        <div className="h-10 w-28 bg-[#EC4899] text-white rounded-lg flex items-center justify-center text-xs font-bold animate-button-press cursor-pointer hover:bg-[#EC4899]/90">
                           Upload Selfie
                         </div>
                       ) : (
@@ -673,17 +673,17 @@ export default function Home() {
 
                   {/* Step 6: Searching & Scanning */}
                   {simState === 'searching' && (
-                    <div className="bg-zinc-900 border border-cyan-500/30 p-4 rounded-xl space-y-3 animate-in fade-in duration-300">
+                    <div className="bg-zinc-900 border border-pink-500/30 p-4 rounded-xl space-y-3 animate-in fade-in duration-300">
                       <div className="flex justify-between items-center text-[10px]">
-                        <span className="font-bold text-[#06B6D4]">Matching faces in 1,247 files...</span>
+                        <span className="font-bold text-[#EC4899]">Matching faces in 1,247 files...</span>
                         <span className="font-bold text-zinc-300">{aiPercent}%</span>
                       </div>
                       <div className="w-full h-1.5 bg-zinc-950 rounded-full overflow-hidden">
-                        <div className="h-full bg-[#06B6D4] rounded-full transition-all duration-300" style={{ width: `${aiPercent}%` }} />
+                        <div className="h-full bg-[#EC4899] rounded-full transition-all duration-300" style={{ width: `${aiPercent}%` }} />
                       </div>
                       <div className="grid grid-cols-3 gap-1.5 text-[9px] text-zinc-500">
-                        <span className="text-[#06B6D4]">✔ Detected</span>
-                        <span className={aiPercent >= 50 ? 'text-[#06B6D4]' : ''}>Matching...</span>
+                        <span className="text-[#EC4899]">✔ Detected</span>
+                        <span className={aiPercent >= 50 ? 'text-[#EC4899]' : ''}>Matching...</span>
                         <span className={aiPercent >= 100 ? 'text-emerald-400' : ''}>Gallery Ready</span>
                       </div>
                     </div>
@@ -697,7 +697,7 @@ export default function Home() {
                           <span className="text-[9px] font-semibold text-emerald-400 uppercase">Private Gallery Unlocked</span>
                           <h5 className="font-bold text-[#FAFAFA]">126 Photos Found</h5>
                         </div>
-                        <Button className="bg-[#06B6D4] text-zinc-950 font-bold text-[10px] h-7 px-3 flex items-center gap-1">
+                        <Button className="bg-[#EC4899] text-white hover:bg-[#EC4899]/90 font-bold text-[10px] h-7 px-3 flex items-center gap-1">
                           <Download size={10} /> Download All
                         </Button>
                       </div>
@@ -713,7 +713,6 @@ export default function Home() {
                       </div>
                     </div>
                   )}
-
                 </div>
               </div>
             </div>
@@ -724,7 +723,7 @@ export default function Home() {
         {/* Section 5: Privacy Comparison Layout */}
         <section className="px-6 py-20 max-w-7xl mx-auto w-full">
           <div className="text-center space-y-3 mb-16">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-[#06B6D4] flex items-center justify-center gap-1">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-[#EC4899] flex items-center justify-center gap-1">
               <Shield size={14} /> The Privacy Comparison
             </h2>
             <p className="text-3xl sm:text-4xl font-extrabold text-[#FAFAFA]">Only You Can See Your Photos.</p>
@@ -762,9 +761,9 @@ export default function Home() {
             </div>
 
             {/* Right: PhotoShare AI */}
-            <div className="bg-[#18181B] border border-[#06B6D4]/20 rounded-3xl p-8 flex flex-col justify-between shadow-lg shadow-[#06B6D4]/5 hover:border-[#06B6D4]/40 transition-all duration-300">
+            <div className="bg-[#18181B] border border-[#EC4899]/20 rounded-3xl p-8 flex flex-col justify-between shadow-lg shadow-[#EC4899]/5 hover:border-[#EC4899]/40 transition-all duration-300">
               <div className="space-y-4">
-                <h4 className="text-sm font-bold text-[#06B6D4] flex items-center gap-1.5 uppercase">
+                <h4 className="text-sm font-bold text-[#EC4899] flex items-center gap-1.5 uppercase">
                   <ShieldCheck size={16} /> PhotoShare AI Secure Flow
                 </h4>
                 <p className="text-xs text-zinc-300">
@@ -789,8 +788,8 @@ export default function Home() {
                     <span className="text-emerald-400 font-bold">B&apos;s Photos Only 🔒</span>
                   </div>
                   <div className="flex justify-between items-center bg-zinc-900/20 p-2.5 rounded-lg border border-dashed border-white/5 select-none opacity-40">
-                    <span className="text-zinc-656">Host Dashboard</span>
-                    <span className="text-[#06B6D4] font-bold">Manage Event Only</span>
+                    <span className="text-zinc-600">Host Dashboard</span>
+                    <span className="text-[#EC4899] font-bold">Manage Event Only</span>
                   </div>
                 </div>
               </div>
@@ -800,8 +799,8 @@ export default function Home() {
         </section>
 
         {/* Section Final CTA */}
-        <section className="px-6 py-24 bg-gradient-to-b from-zinc-955 to-[#09090B] border-t border-white/5 text-center relative overflow-hidden flex flex-col items-center">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#6366F1]/5 rounded-full filter blur-[100px] pointer-events-none" />
+        <section className="px-6 py-24 bg-gradient-to-b from-zinc-900 to-[#09090B] border-t border-white/5 text-center relative overflow-hidden flex flex-col items-center">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#8B5CF6]/5 rounded-full filter blur-[100px] pointer-events-none" />
           <div className="max-w-2xl mx-auto space-y-6 relative z-10">
             <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight">
               Ready to Find Every Photo You&apos;re In?
@@ -809,14 +808,14 @@ export default function Home() {
             <p className="text-sm text-[#A1A1AA] max-w-md mx-auto">
               Upload once. Share once. Let AI handle the rest.
             </p>
-            <div className="flex gap-4 justify-center pt-4">
-              <Link href="/auth/sign-up">
-                <Button size="lg" className="bg-[#FAFAFA] text-[#09090B] hover:bg-white px-8 h-12 font-semibold shadow-lg transition-transform duration-300 hover:scale-[1.02]">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4 w-full max-w-md mx-auto sm:max-w-none">
+              <Link href="/auth/sign-up" className="w-full sm:w-auto">
+                <Button size="lg" className="w-full bg-[#FAFAFA] text-[#09090B] hover:bg-white px-8 h-12 font-semibold shadow-lg transition-transform duration-300 hover:scale-[1.02]">
                   Create Your First Event
                 </Button>
               </Link>
-              <Link href="/auth/sign-in">
-                <Button size="lg" variant="outline" className="border-white/10 hover:bg-white/5 px-8 h-12">
+              <Link href="/auth/sign-in" className="w-full sm:w-auto">
+                <Button size="lg" variant="outline" className="w-full border-white/10 hover:bg-white/5 px-8 h-12">
                   Sign In
                 </Button>
               </Link>
@@ -826,7 +825,7 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="h-16 border-t border-white/5 flex items-center justify-center text-[10px] text-zinc-600 bg-zinc-955 shrink-0">
+      <footer className="h-16 border-t border-white/5 flex items-center justify-center text-[10px] text-zinc-600 bg-zinc-950 shrink-0">
         © 2026 PhotoShare AI. All rights reserved. Designed by DeepMind team.
       </footer>
     </div>
