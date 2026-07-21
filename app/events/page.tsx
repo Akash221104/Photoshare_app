@@ -1,5 +1,5 @@
 // app/events/page.tsx
-// Core Workspace page for listing, joining, and creating Events.
+// Core Workspace page for listing, joining, and creating Events (Luxury 28px aesthetic).
 
 'use client';
 
@@ -9,7 +9,6 @@ import Link from 'next/link';
 
 import { useEvents } from '@/hooks/useEvents';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
-import { Button } from '@/components/ui/button';
 import { SearchBar } from '@/components/events/search-bar';
 import { EventGrid } from '@/components/events/event-grid';
 import { CreateEventDialog } from '@/components/events/create-event-dialog';
@@ -31,46 +30,46 @@ export default function EventsListPage() {
 
   if (loading || !user) {
     return (
-      <div className="flex h-screen w-screen items-center justify-center bg-zinc-50 dark:bg-zinc-950">
+      <div className="flex h-screen w-screen items-center justify-center bg-[#FFFDF8]">
         <LoadingSpinner size={32} />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-6xl mx-auto space-y-6">
+    <div className="min-h-screen bg-[#FFFDF8] py-8 px-6 sm:px-10 lg:px-12">
+      <div className="max-w-7xl mx-auto space-y-8">
         {/* Navigation Head */}
         <div className="flex items-center justify-between">
           <Link href="/dashboard">
-            <Button variant="ghost" size="sm" className="gap-2">
+            <button className="btn-secondary-luxury !h-11 !px-5 !text-xs flex items-center gap-2">
               <ArrowLeft size={16} />
               <span className="hidden sm:inline">Dashboard</span>
               <span className="sm:hidden">Back</span>
-            </Button>
+            </button>
           </Link>
           <div className="flex items-center gap-3">
             <NotificationCenter />
-            <Button onClick={() => setCreateOpen(true)} className="flex items-center gap-2">
+            <button onClick={() => setCreateOpen(true)} className="btn-primary-luxury !h-11 !px-6 !text-xs flex items-center gap-2">
               <PlusCircle size={16} />
               <span className="hidden sm:inline">Create Event</span>
               <span className="sm:hidden">Create</span>
-            </Button>
+            </button>
           </div>
         </div>
 
         {/* Title Block */}
         <div>
-          <h2 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50">
+          <h1 className="text-3xl sm:text-4xl font-serif-display font-bold text-[#1A1A1A]">
             Event Workspaces
-          </h2>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+          </h1>
+          <p className="text-sm text-[#525252] mt-1">
             Browse collaborative galleries you own or have joined.
           </p>
         </div>
 
         {/* Search Panel */}
-        <div className="p-4 bg-white dark:bg-zinc-950 rounded-lg border border-zinc-200/50 dark:border-zinc-800/50 shadow-sm">
+        <div className="p-4 bg-white rounded-[24px] border border-[rgba(255,170,80,0.2)] shadow-sm">
           <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
         </div>
 

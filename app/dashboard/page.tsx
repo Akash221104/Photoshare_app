@@ -1,5 +1,5 @@
 // app/dashboard/page.tsx
-// Core Dashboard landing page. Displays stats, uploader tools, and event grids dynamically.
+// Core Dashboard landing page (Apple Photos Luxury 28px aesthetic).
 
 'use client';
 
@@ -10,7 +10,6 @@ import Link from 'next/link';
 import { useEvents } from '@/hooks/useEvents';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { CreateEventDialog } from '@/components/events/create-event-dialog';
 import { SearchBar } from '@/components/events/search-bar';
 import { EventCard } from '@/components/events/event-card';
@@ -49,89 +48,95 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 max-w-7xl mx-auto py-4">
       {/* Welcome banner */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between bg-gradient-to-r from-[#FFF8F2] to-[#FFF6EC] border border-[rgba(255,170,80,0.2)] rounded-[28px] p-8 shadow-sm">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 font-sans">
+          <h2 className="text-3xl sm:text-4xl font-bold font-serif-display text-[#1A1A1A]">
             Welcome back, {user.name} 👋
           </h2>
-          <p className="text-zinc-500 dark:text-zinc-400 mt-1">
+          <p className="text-[#525252] mt-1 text-sm">
             Create photo sharing workspaces, join via access code, and view your spots.
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button onClick={() => setCreateOpen(true)} className="flex items-center gap-2 shadow-sm">
-            <PlusCircle size={16} />
+        <div className="flex gap-3 shrink-0">
+          <button onClick={() => setCreateOpen(true)} className="btn-primary-luxury !h-12 !px-6 text-sm flex items-center gap-2">
+            <PlusCircle size={18} />
             Create Event
-          </Button>
+          </button>
         </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Card className="shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-xs font-semibold uppercase text-zinc-400">Total Joined</CardTitle>
-            <Calendar className="h-4 w-4 text-zinc-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">{stats.total}</div>
-            <p className="text-xs text-zinc-500 mt-1">Total active event galleries</p>
-          </CardContent>
-        </Card>
+      <div className="grid gap-6 sm:grid-cols-3">
+        <div className="card-luxury p-6 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#8A8A8A]">Total Joined</span>
+            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-[#FFB703] to-[#FB8500] flex items-center justify-center text-white shadow-xs">
+              <Calendar className="h-4 w-4" />
+            </div>
+          </div>
+          <div>
+            <div className="text-3xl font-bold font-serif-display text-[#1A1A1A]">{stats.total}</div>
+            <p className="text-xs text-[#8A8A8A] mt-1">Total active event galleries</p>
+          </div>
+        </div>
 
-        <Card className="shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-xs font-semibold uppercase text-zinc-400">Hosted by Me</CardTitle>
-            <Users className="h-4 w-4 text-zinc-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">{stats.hosted}</div>
-            <p className="text-xs text-zinc-500 mt-1">Events created by you</p>
-          </CardContent>
-        </Card>
+        <div className="card-luxury p-6 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#8A8A8A]">Hosted by Me</span>
+            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-[#FFB703] to-[#FB8500] flex items-center justify-center text-white shadow-xs">
+              <Users className="h-4 w-4" />
+            </div>
+          </div>
+          <div>
+            <div className="text-3xl font-bold font-serif-display text-[#1A1A1A]">{stats.hosted}</div>
+            <p className="text-xs text-[#8A8A8A] mt-1">Events created by you</p>
+          </div>
+        </div>
 
-        <Card className="shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-xs font-semibold uppercase text-zinc-400">Guest Memberships</CardTitle>
-            <Image className="h-4 w-4 text-zinc-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">{stats.joined}</div>
-            <p className="text-xs text-zinc-500 mt-1">Joined via invitations</p>
-          </CardContent>
-        </Card>
+        <div className="card-luxury p-6 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#8A8A8A]">Guest Memberships</span>
+            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-[#FFB703] to-[#FB8500] flex items-center justify-center text-white shadow-xs">
+              <Image className="h-4 w-4" />
+            </div>
+          </div>
+          <div>
+            <div className="text-3xl font-bold font-serif-display text-[#1A1A1A]">{stats.joined}</div>
+            <p className="text-xs text-[#8A8A8A] mt-1">Joined via invitations</p>
+          </div>
+        </div>
       </div>
 
       {/* Join & Search Header bar */}
-      <div className="p-4 bg-white dark:bg-zinc-950 rounded-lg border border-zinc-200/50 dark:border-zinc-800/50 shadow-sm">
+      <div className="p-4 bg-white rounded-[24px] border border-[rgba(255,170,80,0.2)] shadow-sm">
         <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       </div>
 
       {/* Recents list & Activity */}
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid gap-8 md:grid-cols-3">
         {/* Recent Events Grid */}
-        <div className="md:col-span-2 space-y-4">
+        <div className="md:col-span-2 space-y-5">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">Recent Workspaces</h3>
+            <h3 className="text-2xl font-bold font-serif-display text-[#1A1A1A]">Recent Workspaces</h3>
             {events.length > 3 && (
               <Link href="/events">
-                <Button variant="ghost" size="sm" className="gap-1.5">
+                <button className="btn-secondary-luxury !h-9 !px-4 !text-xs flex items-center gap-1.5">
                   View All
                   <ArrowRight size={14} />
-                </Button>
+                </button>
               </Link>
             )}
           </div>
           {recentEvents.length === 0 ? (
-            <div className="flex min-h-[220px] flex-col items-center justify-center rounded-lg border border-dashed border-zinc-200 p-8 text-center dark:border-zinc-800 bg-white dark:bg-zinc-950">
-              <Calendar className="h-8 w-8 text-zinc-300 dark:text-zinc-700 mb-2" />
-              <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400">No active events found</p>
-              <p className="text-xs text-zinc-500 mt-1">Submit a join code or create a new event workspace.</p>
+            <div className="flex min-h-[240px] flex-col items-center justify-center rounded-[28px] border-2 border-dashed border-[rgba(255,170,80,0.2)] p-8 text-center bg-[#FFFDF8]">
+              <Calendar className="h-10 w-10 text-[#FB8500] mb-3 opacity-60" />
+              <p className="text-base font-bold text-[#1A1A1A]">No active events found</p>
+              <p className="text-xs text-[#8A8A8A] mt-1">Submit a join code or create a new event workspace.</p>
             </div>
           ) : (
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-5 sm:grid-cols-2">
               {recentEvents.map((event) => (
                 <div key={event.id}>
                   <EventCard event={event} currentUserId={user.id} />
@@ -142,12 +147,12 @@ export default function DashboardPage() {
         </div>
 
         {/* Activity feed placeholder */}
-        <div className="md:col-span-1 space-y-4">
-          <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">Notifications Feed</h3>
-          <Card className="shadow-sm border border-zinc-200/50 dark:border-zinc-800/50 bg-white dark:bg-zinc-950 min-h-[220px] flex flex-col items-center justify-center p-6 text-center">
-            <p className="text-sm font-semibold text-zinc-500 dark:text-zinc-400">All caught up!</p>
-            <p className="text-xs text-zinc-400 mt-1">Updates on photo matches and uploads will appear here.</p>
-          </Card>
+        <div className="md:col-span-1 space-y-5">
+          <h3 className="text-2xl font-bold font-serif-display text-[#1A1A1A]">Notifications Feed</h3>
+          <div className="card-luxury p-8 min-h-[240px] flex flex-col items-center justify-center text-center space-y-2">
+            <p className="text-base font-bold text-[#1A1A1A]">All caught up!</p>
+            <p className="text-xs text-[#8A8A8A]">Updates on photo matches and uploads will appear here.</p>
+          </div>
         </div>
       </div>
 

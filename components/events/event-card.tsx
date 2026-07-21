@@ -1,12 +1,11 @@
 // components/events/event-card.tsx
-// Visual card for event preview listing.
+// Visual card for event preview listing (Luxury 28px aesthetic).
 
 import React from 'react';
 import Link from 'next/link';
 import { Calendar, Shield, ArrowRight } from 'lucide-react';
 import { Event } from '@/types/event';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
 interface EventCardProps {
@@ -26,9 +25,9 @@ export function EventCard({ event, currentUserId }: EventCardProps) {
   };
 
   return (
-    <Card className="group relative flex flex-col h-full overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
+    <Card className="card-luxury group relative flex flex-col h-full rounded-[28px] overflow-hidden">
       {/* Cover Image Placeholder with Gradient */}
-      <div className="h-32 relative flex items-center justify-center overflow-hidden bg-zinc-100 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800">
+      <div className="h-36 relative flex items-center justify-center overflow-hidden bg-[#FFF8F2] border-b border-[rgba(255,170,80,0.15)]">
         {event.cover_url ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -38,27 +37,27 @@ export function EventCard({ event, currentUserId }: EventCardProps) {
             loading="lazy"
           />
         ) : (
-          <div className="h-full w-full bg-gradient-to-br from-zinc-800 to-zinc-900 dark:from-zinc-900 dark:to-black flex items-center justify-center">
-            <span className="text-zinc-600 dark:text-zinc-400 font-extrabold text-2xl tracking-widest uppercase opacity-20 selection:bg-transparent">
+          <div className="h-full w-full bg-gradient-to-br from-[#FFB703] to-[#FB8500] flex items-center justify-center">
+            <span className="text-white font-serif-display font-bold text-3xl tracking-widest uppercase opacity-30">
               {event.name.substring(0, Math.min(event.name.length, 3))}
             </span>
           </div>
         )}
         {isHost && (
-          <Badge className="absolute top-3 right-3 gap-1 bg-white/20 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white font-medium">
+          <Badge className="absolute top-3 right-3 gap-1 bg-[#FB8500] hover:bg-[#FB8500] text-white font-bold text-xs px-2.5 py-0.5 rounded-full border-none shadow-md shadow-[#FB8500]/20">
             <Shield size={12} />
             Host
           </Badge>
         )}
       </div>
 
-      <CardHeader className="p-4 flex-1 space-y-1">
-        <CardTitle className="text-lg font-bold tracking-tight text-zinc-900 group-hover:text-primary dark:text-zinc-50 line-clamp-1">
+      <CardHeader className="p-5 flex-1 space-y-2">
+        <CardTitle className="text-xl font-serif-display font-bold text-[#1A1A1A] group-hover:text-[#FB8500] transition-colors line-clamp-1">
           {event.name}
         </CardTitle>
-        <div className="flex items-center gap-3 text-xs text-zinc-500">
+        <div className="flex items-center gap-2.5 text-xs text-[#8A8A8A] font-medium">
           <p className="flex items-center gap-1">
-            <Calendar size={12} />
+            <Calendar size={12} className="text-[#FB8500]" />
             {formatDate(event.created_at)}
           </p>
           <span>•</span>
@@ -68,19 +67,19 @@ export function EventCard({ event, currentUserId }: EventCardProps) {
         </div>
       </CardHeader>
 
-      <CardContent className="px-4 pb-4 pt-0 text-sm text-zinc-500 dark:text-zinc-400 line-clamp-2 h-10 flex-1">
+      <CardContent className="px-5 pb-4 pt-0 text-sm text-[#525252] line-clamp-2 h-10 flex-1 leading-relaxed">
         {event.description || 'No description provided.'}
       </CardContent>
 
-      <CardFooter className="p-4 border-t border-zinc-100 dark:border-zinc-900 flex justify-between items-center bg-zinc-50/50 dark:bg-zinc-900/10">
-        <span className="text-xs font-mono font-semibold bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 px-2 py-1 rounded">
+      <CardFooter className="p-4 border-t border-[rgba(255,170,80,0.15)] flex justify-between items-center bg-[#FFF8F2]/60">
+        <span className="text-xs font-mono font-bold bg-white text-[#FB8500] border border-[rgba(255,170,80,0.25)] px-3 py-1 rounded-full shadow-xs">
           {event.join_code}
         </span>
         <Link href={`/events/${event.id}`}>
-          <Button size="sm" className="gap-1.5 h-8">
+          <button className="btn-primary-luxury !h-9 !px-4 !text-xs flex items-center gap-1">
             View Workspace
             <ArrowRight size={14} />
-          </Button>
+          </button>
         </Link>
       </CardFooter>
     </Card>

@@ -1,5 +1,5 @@
 // components/events/event-banner.tsx
-// Cover banner representation for active event workspaces.
+// Cover banner representation for active event workspaces (Luxury 28px aesthetic).
 
 import React from 'react';
 
@@ -9,9 +9,9 @@ interface EventBannerProps {
 
 export function EventBanner({ name }: EventBannerProps) {
   return (
-    <div className="relative w-full h-40 sm:h-48 rounded-xl bg-gradient-to-r from-zinc-800 via-zinc-950 to-zinc-800 dark:from-zinc-900 dark:via-black dark:to-zinc-900 flex items-center justify-center overflow-hidden border border-zinc-200/50 dark:border-zinc-800/50 shadow-inner">
-      <div className="absolute inset-0 bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none" />
-      <span className="text-zinc-700/30 dark:text-zinc-600/20 font-black text-6xl tracking-widest uppercase selection:bg-transparent animate-pulse">
+    <div className="relative w-full h-48 sm:h-56 rounded-[28px] bg-gradient-to-r from-[#FFB703] via-[#FB8500] to-[#FF6B6B] flex items-center justify-center overflow-hidden border border-[rgba(255,170,80,0.3)] shadow-md">
+      <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.25)_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none" />
+      <span className="text-white/30 font-serif-display font-black text-6xl sm:text-7xl tracking-widest uppercase selection:bg-transparent animate-pulse">
         {name.substring(0, Math.min(name.length, 6))}
       </span>
     </div>

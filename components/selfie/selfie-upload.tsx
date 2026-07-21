@@ -687,39 +687,41 @@ export function SelfieUpload({
   });
 
   return (
-    <Card className="border border-muted/50 bg-card/65 backdrop-blur-md shadow-xl max-w-lg mx-auto w-full transition-all duration-300">
-      <CardHeader>
-        <CardTitle className="text-xl flex items-center gap-2">
-          <Camera className="w-5 h-5 text-primary" />
+    <Card className="card-luxury max-w-xl mx-auto w-full transition-all duration-300 p-2 sm:p-4">
+      <CardHeader className="space-y-1.5 pb-4">
+        <CardTitle className="text-2xl font-serif-display flex items-center gap-3 text-[#1A1A1A]">
+          <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-[#FFB703] to-[#FB8500] flex items-center justify-center shadow-md shadow-[#FB8500]/20">
+            <Camera className="w-5 h-5 text-white" />
+          </div>
           <span>Selfie Liveness Verification</span>
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="text-sm text-[#525252]">
           Verify your liveness with a 4-second facial sequence to securely register your selfie.
         </CardDescription>
       </CardHeader>
       
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-5">
         {/* Error Notifications */}
         {errorMsg && (
-          <Alert variant="destructive" className="bg-destructive/10 border-destructive/20 text-destructive text-sm">
+          <Alert variant="destructive" className="bg-red-50 border-red-200 text-[#E63946] rounded-2xl text-sm">
             <AlertCircle className="h-4 w-4" />
-            <AlertTitle>System Error</AlertTitle>
+            <AlertTitle className="font-bold">System Error</AlertTitle>
             <AlertDescription>{errorMsg}</AlertDescription>
           </Alert>
         )}
 
         {cameraError && (
-          <Alert variant="destructive" className="bg-destructive/10 border-destructive/20 text-destructive text-sm">
+          <Alert variant="destructive" className="bg-red-50 border-red-200 text-[#E63946] rounded-2xl text-sm">
             <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Webcam Error</AlertTitle>
+            <AlertTitle className="font-bold">Webcam Error</AlertTitle>
             <AlertDescription>{cameraError}</AlertDescription>
           </Alert>
         )}
 
         {validationErrors.length > 0 && (
-          <Alert variant="destructive" className="bg-destructive/10 border-destructive/20 text-destructive text-sm">
+          <Alert variant="destructive" className="bg-red-50 border-red-200 text-[#E63946] rounded-2xl text-sm">
             <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Verification Failed</AlertTitle>
+            <AlertTitle className="font-bold">Verification Failed</AlertTitle>
             <AlertDescription>
               <ul className="list-disc pl-4 mt-1 space-y-1">
                 {validationErrors.map((err, idx) => (
@@ -732,11 +734,11 @@ export function SelfieUpload({
 
         {/* 1. Stored Active Selfie Preview */}
         {selfieUrl && livenessState === 'IDLE' && !localPreview && !cameraActive && (
-          <div className="relative aspect-[4/3] rounded-lg overflow-hidden border border-muted bg-muted/40">
+          <div className="relative aspect-[4/3] rounded-[24px] overflow-hidden border border-[rgba(255,170,80,0.2)] bg-[#FFF8F2] shadow-md">
             <img src={selfieUrl} alt="Active Selfie" className="w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-black/45 flex flex-col justify-end p-4">
-              <span className="text-white text-xs font-semibold uppercase tracking-wider mb-2 self-start bg-emerald-600/90 px-2 py-0.5 rounded flex items-center gap-1">
-                <CheckCircle2 className="w-3.5 h-3.5" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex flex-col justify-end p-5">
+              <span className="text-white text-xs font-bold uppercase tracking-wider self-start bg-emerald-500/90 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
+                <CheckCircle2 className="w-4 h-4 text-white" />
                 Active Selfie Verified
               </span>
             </div>
@@ -745,7 +747,7 @@ export function SelfieUpload({
 
         {/* 2. Video Capture Container with guides & overlays */}
         {cameraActive && (
-          <div className="relative aspect-[4/3] rounded-lg overflow-hidden border border-muted bg-black">
+          <div className="relative aspect-[4/3] rounded-[24px] overflow-hidden border-2 border-[#FB8500] bg-black shadow-2xl">
             <video
               ref={setVideoRef}
               autoPlay
@@ -770,61 +772,61 @@ export function SelfieUpload({
                   rx="25"
                   ry="35"
                   fill="none"
-                  stroke="hsl(var(--primary))"
-                  strokeWidth="1.2"
+                  stroke="#FB8500"
+                  strokeWidth="1.5"
                   strokeDasharray="4 4"
                   className={
                     livenessState === 'CHALLENGE_1' || livenessState === 'CHALLENGE_2' || livenessState === 'PREPARING'
-                      ? 'animate-pulse stroke-emerald-500 stroke-2'
-                      : 'stroke-primary'
+                      ? 'animate-pulse stroke-emerald-400 stroke-2'
+                      : 'stroke-[#FB8500]'
                   }
                 />
               </svg>
             </div>
 
             {/* Live Instruction Banner Overlay */}
-            <div className="absolute top-4 left-4 right-4 bg-black/75 backdrop-blur-md border border-white/10 text-white rounded-md p-3 text-center transition-all duration-300">
+            <div className="absolute top-4 left-4 right-4 bg-black/80 backdrop-blur-md border border-white/15 text-white rounded-2xl p-4 text-center transition-all duration-300 shadow-xl">
               {livenessState === 'BASELINE_GUIDE' && (
                 <div className="space-y-1">
-                  <p className="font-semibold text-sm">Align your face inside the oval</p>
-                  <p className="text-xs text-muted-foreground">Keep a neutral face and look straight at the camera.</p>
+                  <p className="font-bold text-base text-[#FFB703]">Align your face inside the oval</p>
+                  <p className="text-xs text-zinc-300">Keep a neutral face and look straight at the camera.</p>
                 </div>
               )}
               {livenessState === 'PREPARING' && (
                 <div className="space-y-1">
-                  <p className="font-bold text-sm text-yellow-400">Get Ready! Look straight at the camera</p>
-                  <p className="text-xs text-muted-foreground">Calibration starts in {countdown.toFixed(1)}s...</p>
+                  <p className="font-bold text-base text-[#FFB703]">Get Ready! Look straight at the camera</p>
+                  <p className="text-xs text-zinc-300">Calibration starts in {countdown.toFixed(1)}s...</p>
                 </div>
               )}
               {livenessState === 'BASELINE' && !challengeSuccess && (
                 <div className="space-y-1">
-                  <p className="font-bold text-sm text-sky-400">Neutral Pose Calibration</p>
+                  <p className="font-bold text-base text-[#FFB703]">Neutral Pose Calibration</p>
                   <p className="text-xs font-semibold text-white">{feedbackMsg || "Align your face inside the oval."}</p>
-                  <p className="text-[10px] text-muted-foreground">Remaining: {countdown.toFixed(1)}s</p>
+                  <p className="text-[10px] text-zinc-400 font-mono">Remaining: {countdown.toFixed(1)}s</p>
                 </div>
               )}
               {challengeSuccess && (
                 <div className="flex flex-col items-center justify-center py-1 text-emerald-400 font-bold space-y-1 animate-bounce">
-                  <CheckCircle2 className="w-6 h-6 text-emerald-400" />
+                  <CheckCircle2 className="w-7 h-7 text-emerald-400" />
                   <span className="text-sm">{feedbackMsg || "Objective Completed! ✓"}</span>
                 </div>
               )}
               {!challengeSuccess && (livenessState === 'CHALLENGE_1' || livenessState === 'CHALLENGE_2') && currentChallenge && (
                 <div className="space-y-1">
-                  <p className="font-bold text-sm text-emerald-400">
+                  <p className="font-bold text-base text-emerald-400">
                     {CHALLENGE_TEXTS[currentChallenge] || currentChallenge}
                   </p>
                   <p className="text-xs font-semibold text-white">
                     {feedbackMsg || "Perform the movement shown above."}
                   </p>
-                  <p className="text-[10px] text-muted-foreground">
+                  <p className="text-[10px] text-zinc-400 font-mono">
                     Action {livenessState === 'CHALLENGE_1' ? '1/2' : '2/2'} • Remaining: {countdown.toFixed(1)}s
                   </p>
                 </div>
               )}
               {livenessState === 'CHALLENGE_2_FETCHING' && (
-                <div className="flex items-center justify-center gap-2 py-1 text-sm font-semibold">
-                  <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                <div className="flex items-center justify-center gap-2 py-1 text-sm font-semibold text-amber-300">
+                  <Loader2 className="w-4 h-4 animate-spin" />
                   <span>Loading next challenge...</span>
                 </div>
               )}
@@ -833,12 +835,12 @@ export function SelfieUpload({
             {/* Control buttons */}
             {livenessState === 'BASELINE_GUIDE' && (
               <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-3">
-                <Button size="sm" onClick={startChallenges} className="bg-primary hover:bg-primary/95 text-white">
+                <button size="sm" onClick={startChallenges} className="btn-primary-luxury !h-11 !px-6 !text-xs">
                   I'm Ready, Start!
-                </Button>
-                <Button size="sm" variant="secondary" onClick={stopCamera}>
+                </button>
+                <button size="sm" onClick={stopCamera} className="btn-secondary-luxury !h-11 !px-5 !text-xs">
                   Cancel
-                </Button>
+                </button>
               </div>
             )}
           </div>
@@ -846,112 +848,158 @@ export function SelfieUpload({
 
         {/* Model Loader Screen */}
         {livenessState === 'STARTING' && (
-          <div className="flex flex-col items-center justify-center aspect-[4/3] bg-muted/30 rounded-lg border border-muted p-6 space-y-4">
-            <Loader2 className="w-8 h-8 text-primary animate-spin" />
-            <div className="text-center space-y-1">
-              <p className="font-semibold text-sm">Preparing camera and local AI models...</p>
-              <p className="text-xs text-muted-foreground">This processes face movement locally in your browser for instantaneous feedback.</p>
+          <div className="flex flex-col items-center justify-center aspect-[4/3] bg-[#FFF8F2] rounded-[24px] border border-[rgba(255,170,80,0.2)] p-8 space-y-4 text-center">
+            <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-[#FFB703] to-[#FB8500] flex items-center justify-center shadow-lg shadow-[#FB8500]/25 animate-float-slow">
+              <Loader2 className="w-7 h-7 text-white animate-spin" />
+            </div>
+            <div className="space-y-1">
+              <p className="font-bold text-base text-[#1A1A1A]">Preparing camera and live face tracker...</p>
+              <p className="text-xs text-[#525252]">Processing face movement locally in your browser for instantaneous feedback.</p>
             </div>
           </div>
         )}
 
-        {/* 3. Verifying/Analyzing Loading State */}
+        {/* 3. Verifying/Analyzing Step-by-Step Animated Screen */}
         {livenessState === 'VERIFYING' && (
-          <div className="flex flex-col items-center justify-center aspect-[4/3] bg-muted/30 rounded-lg border border-muted p-6 space-y-4">
-            <Loader2 className="w-8 h-8 text-primary animate-spin" />
-            <div className="text-center space-y-1">
-              <p className="font-semibold text-sm">Analyzing liveness recording...</p>
-              <p className="text-xs text-muted-foreground">Verifying poses, frame continuity, and face quality.</p>
+          <div className="flex flex-col items-center justify-center aspect-[4/3] bg-[#FFFDF8] rounded-[24px] border border-[rgba(255,170,80,0.2)] p-6 space-y-6 text-center shadow-sm">
+            <div className="flex items-center justify-center gap-3">
+              <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-[#FFB703] to-[#FB8500] flex items-center justify-center shadow-md shadow-[#FB8500]/20 animate-pulse">
+                <Sparkles className="w-6 h-6 text-white" />
+              </div>
             </div>
-            <Progress value={45} className="w-2/3 h-1.5 bg-muted" />
+
+            <div className="space-y-1">
+              <p className="font-serif-display font-bold text-xl text-[#1A1A1A]">Analyzing liveness recording...</p>
+              <p className="text-xs text-[#525252]">Verifying poses, frame continuity, and face quality.</p>
+            </div>
+
+            {/* Animated Step Progression Indicator */}
+            <div className="w-full max-w-sm grid grid-cols-5 gap-1.5 text-[9px] font-bold text-center">
+              <div className="space-y-1">
+                <div className="h-2 bg-[#FB8500] rounded-full" />
+                <span className="text-[#FB8500] block">Upload</span>
+              </div>
+              <div className="space-y-1">
+                <div className="h-2 bg-[#FB8500] rounded-full" />
+                <span className="text-[#FB8500] block">Detection</span>
+              </div>
+              <div className="space-y-1">
+                <div className="h-2 bg-[#FFB703] rounded-full animate-pulse" />
+                <span className="text-[#FB8500] block">Embedding</span>
+              </div>
+              <div className="space-y-1">
+                <div className="h-2 bg-zinc-200 rounded-full" />
+                <span className="text-[#8A8A8A] block">Searching</span>
+              </div>
+              <div className="space-y-1">
+                <div className="h-2 bg-zinc-200 rounded-full" />
+                <span className="text-[#8A8A8A] block">Found</span>
+              </div>
+            </div>
+
+            <Progress value={65} className="w-3/4 h-2 bg-[#FFF8F2] [&>div]:bg-gradient-to-r [&>div]:from-[#FFB703] [&>div]:to-[#FB8500]" />
           </div>
         )}
 
         {/* 4. Verification Results Feedback */}
         {livenessState === 'FAILED' && detailedChecks && (
-          <div className="bg-muted/40 border border-muted p-4 rounded-lg space-y-3">
-            <div className="flex justify-between items-center text-sm font-semibold">
-              <span>Overall Liveness Score:</span>
-              <span className={`text-md ${verificationScore && verificationScore >= 80 ? 'text-emerald-500' : 'text-red-500'}`}>
+          <div className="bg-[#FFF8F2] border border-[rgba(255,170,80,0.25)] p-5 rounded-2xl space-y-4">
+            <div className="flex justify-between items-center text-sm font-bold">
+              <span className="text-[#1A1A1A]">Overall Liveness Score:</span>
+              <span className={`text-base font-bold ${verificationScore && verificationScore >= 50 ? 'text-emerald-600' : 'text-[#E63946]'}`}>
                 {verificationScore?.toFixed(1)}%
               </span>
             </div>
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="flex items-center gap-1.5">
-                {detailedChecks.face_consistency ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> : <XCircle className="w-3.5 h-3.5 text-red-500" />}
+            <div className="grid grid-cols-2 gap-2.5 text-xs text-[#525252]">
+              <div className="flex items-center gap-2">
+                {detailedChecks.face_consistency ? <CheckCircle2 className="w-4 h-4 text-emerald-500" /> : <XCircle className="w-4 h-4 text-[#E63946]" />}
                 <span>Face Consistency</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                {detailedChecks.pose_challenges ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> : <XCircle className="w-3.5 h-3.5 text-red-500" />}
+              <div className="flex items-center gap-2">
+                {detailedChecks.pose_challenges ? <CheckCircle2 className="w-4 h-4 text-emerald-500" /> : <XCircle className="w-4 h-4 text-[#E63946]" />}
                 <span>Pose Challenges</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                {detailedChecks.temporal_continuity ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> : <XCircle className="w-3.5 h-3.5 text-red-500" />}
+              <div className="flex items-center gap-2">
+                {detailedChecks.temporal_continuity ? <CheckCircle2 className="w-4 h-4 text-emerald-500" /> : <XCircle className="w-4 h-4 text-[#E63946]" />}
                 <span>Temporal Continuity</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                {detailedChecks.face_stability ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> : <XCircle className="w-3.5 h-3.5 text-red-500" />}
+              <div className="flex items-center gap-2">
+                {detailedChecks.face_stability ? <CheckCircle2 className="w-4 h-4 text-emerald-500" /> : <XCircle className="w-4 h-4 text-[#E63946]" />}
                 <span>Tracking Stability</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                {detailedChecks.quality_metrics ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> : <XCircle className="w-3.5 h-3.5 text-red-500" />}
+              <div className="flex items-center gap-2">
+                {detailedChecks.quality_metrics ? <CheckCircle2 className="w-4 h-4 text-emerald-500" /> : <XCircle className="w-4 h-4 text-[#E63946]" />}
                 <span>Quality & Contrast</span>
               </div>
             </div>
           </div>
         )}
 
-        {/* 5. Drag & Drop Backup (Used only if no selfie exists) */}
+        {/* 5. Apple Photos Style Drag & Drop Zone (Used only if no selfie exists) */}
         {!selfieUrl && livenessState === 'IDLE' && !localPreview && !cameraActive && (
-          <div {...getRootProps()} className="relative aspect-[4/3] rounded-lg overflow-hidden border-2 border-dashed border-muted hover:border-primary/50 bg-muted/20 flex flex-col items-center justify-center p-6 text-center cursor-pointer transition-all duration-300">
+          <div 
+            {...getRootProps()} 
+            className="relative aspect-[4/3] rounded-[28px] overflow-hidden border-2 border-dashed border-[#FB8500]/30 hover:border-[#FB8500]/60 bg-gradient-to-b from-[#FFFDF8] to-[#FFF8F2] flex flex-col items-center justify-center p-8 text-center cursor-pointer transition-all duration-300 shadow-sm group"
+          >
             <input {...getInputProps()} />
-            <Upload className="w-10 h-10 text-muted-foreground mb-3 animate-bounce" />
-            <p className="font-semibold text-sm">Drag & drop selfie here</p>
-            <p className="text-xs text-muted-foreground mt-1">Supports JPEG, PNG, or WebP up to 10MB</p>
+            
+            {/* Floating Sparkles & Camera Icon Badge */}
+            <div className="relative mb-4">
+              <div className="h-16 w-16 rounded-3xl bg-gradient-to-br from-[#FFB703] to-[#FB8500] flex items-center justify-center shadow-lg shadow-[#FB8500]/25 group-hover:scale-105 transition-transform animate-float-slow">
+                <Camera className="w-8 h-8 text-white" />
+              </div>
+              <Sparkles className="w-5 h-5 text-[#FFB703] absolute -top-2 -right-2 animate-bounce" />
+            </div>
+
+            <h3 className="font-serif-display font-bold text-xl text-[#1A1A1A]">Upload or Capture Selfie</h3>
+            <p className="text-xs text-[#525252] mt-1 max-w-xs leading-relaxed">
+              Drag & drop selfie photo or start live camera verification.
+            </p>
+            <span className="mt-3 text-[10px] font-bold text-[#FB8500] bg-white px-3 py-1 rounded-full border border-[rgba(255,170,80,0.2)] shadow-xs">
+              Supports JPEG, PNG, WebP
+            </span>
           </div>
         )}
       </CardContent>
 
-      <CardFooter className="flex flex-wrap justify-between gap-3 border-t border-muted/30 pt-4">
-        <div className="flex gap-2">
+      <CardFooter className="flex flex-wrap justify-between gap-4 border-t border-[rgba(255,170,80,0.15)] pt-6">
+        <div className="flex gap-3">
           {/* Liveness Start Button */}
           {livenessState === 'IDLE' && !selfieUrl && (
-            <Button variant="outline" size="sm" onClick={startLivenessFlow} className="gap-1 text-xs">
-              <Camera className="w-3.5 h-3.5" />
+            <button onClick={startLivenessFlow} className="btn-primary-luxury !h-12 !px-6 !text-xs flex items-center gap-2">
+              <Camera className="w-4 h-4" />
               Verify Liveness
-            </Button>
+            </button>
           )}
           
           {/* Retry Button */}
           {livenessState === 'FAILED' && (
-            <Button variant="outline" size="sm" onClick={startLivenessFlow} className="gap-1 text-xs">
-              <RefreshCw className="w-3.5 h-3.5" />
+            <button onClick={startLivenessFlow} className="btn-secondary-luxury !h-12 !px-6 !text-xs flex items-center gap-2">
+              <RefreshCw className="w-4 h-4" />
               Retry Verification
-            </Button>
+            </button>
           )}
         </div>
 
-        <div className="flex gap-2 ml-auto">
+        <div className="flex gap-3 ml-auto">
           {/* Delete Stored Selfie */}
           {selfieUrl && livenessState === 'IDLE' && (
-            <Button
-              variant="destructive"
-              size="sm"
+            <button
               onClick={handleDelete}
               disabled={deleting}
-              className="gap-1 text-xs bg-red-600/90 hover:bg-red-600 text-white"
+              className="px-5 h-12 rounded-full bg-red-50 text-[#E63946] border border-red-200 hover:bg-red-100 font-bold text-xs flex items-center gap-2 transition-colors"
             >
-              {deleting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+              {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
               Delete Selfie
-            </Button>
+            </button>
           )}
 
           {/* Replace Option */}
           {selfieUrl && livenessState === 'IDLE' && (
-            <Button variant="secondary" size="sm" onClick={startLivenessFlow} className="gap-1 text-xs">
-              <RefreshCw className="w-3.5 h-3.5" />
+            <button onClick={startLivenessFlow} className="btn-secondary-luxury !h-12 !px-6 !text-xs flex items-center gap-2">
+              <RefreshCw className="w-4 h-4" />
               Verify New Selfie
-            </Button>
+            </button>
           )}
         </div>
       </CardFooter>
