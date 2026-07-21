@@ -61,25 +61,12 @@ export function RegisterForm() {
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/auth/sign-in/social', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          provider: 'google',
-          callbackURL: '/dashboard',
-        }),
+      await authClient.signIn.social({
+        provider: 'google',
+        callbackURL: '/dashboard',
       });
-
-      const data = await response.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        throw new Error('No redirect URL returned');
-      }
-    } catch (err) {
-      toast.error('Google Sign In failed');
+    } catch (err: any) {
+      toast.error(err?.message || 'Google Sign In failed');
       setLoading(false);
     }
   };
