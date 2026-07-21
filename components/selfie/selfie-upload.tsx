@@ -1,4 +1,4 @@
-// components/selfie/selfie-upload.tsx
+// components/selfie/selfie-upload.tsx - Liveness Verification Component 2026
 'use client';
 
 import React, { useState, useRef, useCallback, useEffect } from 'react';
@@ -61,6 +61,7 @@ export function SelfieUpload({
   const [currentChallenge, setCurrentChallenge] = useState<string | null>(null);
   const [countdown, setCountdown] = useState<number>(0.0);
   const [isVerifyingState, setIsVerifyingState] = useState<boolean>(false);
+  const [verifyingProgress, setVerifyingProgress] = useState<number>(0);
 
   // Real-time event-driven validation states
   const [feedbackMsg, setFeedbackMsg] = useState<string>('');
@@ -203,6 +204,25 @@ export function SelfieUpload({
       }
     };
   }, []);
+
+  // Dynamic Verifying Progress Bar animation
+  useEffect(() => {
+    if (livenessState === 'VERIFYING') {
+      setVerifyingProgress(15);
+      const interval = setInterval(() => {
+        setVerifyingProgress((prev) => {
+          if (prev >= 92) {
+            clearInterval(interval);
+            return 92;
+          }
+          return prev + 6;
+        });
+      }, 180);
+      return () => clearInterval(interval);
+    } else if (livenessState === 'SUCCESS') {
+      setVerifyingProgress(100);
+    }
+  }, [livenessState]);
 
   // Stop camera stream helper
   const stopCamera = useCallback(() => {
@@ -835,10 +855,10 @@ export function SelfieUpload({
             {/* Control buttons */}
             {livenessState === 'BASELINE_GUIDE' && (
               <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-3">
-                <button size="sm" onClick={startChallenges} className="btn-primary-luxury !h-11 !px-6 !text-xs">
-                  I'm Ready, Start!
+                <button onClick={startChallenges} className="btn-primary-luxury !h-11 !px-6 !text-xs">
+                  I&apos;m Ready, Start!
                 </button>
-                <button size="sm" onClick={stopCamera} className="btn-secondary-luxury !h-11 !px-5 !text-xs">
+                <button onClick={stopCamera} className="btn-secondary-luxury !h-11 !px-5 !text-xs">
                   Cancel
                 </button>
               </div>
@@ -861,43 +881,65 @@ export function SelfieUpload({
 
         {/* 3. Verifying/Analyzing Step-by-Step Animated Screen */}
         {livenessState === 'VERIFYING' && (
-          <div className="flex flex-col items-center justify-center aspect-[4/3] bg-[#FFFDF8] rounded-[24px] border border-[rgba(255,170,80,0.2)] p-6 space-y-6 text-center shadow-sm">
+          <div className="flex flex-col items-center justify-center aspect-[4/3] bg-[#FFFDF8] rounded-[24px] border border-[rgba(255,170,80,0.22)] p-6 space-y-6 text-center shadow-md animate-in fade-in duration-300">
             <div className="flex items-center justify-center gap-3">
-              <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-[#FFB703] to-[#FB8500] flex items-center justify-center shadow-md shadow-[#FB8500]/20 animate-pulse">
-                <Sparkles className="w-6 h-6 text-white" />
+              <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-[#FFB703] to-[#FB8500] flex items-center justify-center shadow-lg shadow-[#FB8500]/25 animate-bounce">
+                <Sparkles className="w-7 h-7 text-white animate-spin" />
               </div>
             </div>
 
-            <div className="space-y-1">
-              <p className="font-serif-display font-bold text-xl text-[#1A1A1A]">Analyzing liveness recording...</p>
-              <p className="text-xs text-[#525252]">Verifying poses, frame continuity, and face quality.</p>
+            <div className="space-y-1.5 max-w-sm">
+              <p className="font-serif-display font-bold text-2xl text-[#1A1A1A]">Analyzing liveness recording...</p>
+              <p className="text-xs font-semibold text-[#FB8500] min-h-[20px] transition-all">
+                {verifyingProgress < 35 && "Uploading encrypted selfie frames to vault..."}
+                {verifyingProgress >= 35 && verifyingProgress < 55 && "Detecting facial landmarks & 3D pose continuity..."}
+                {verifyingProgress >= 55 && verifyingProgress < 75 && "Generating 512-D face embedding vector..."}
+                {verifyingProgress >= 75 && verifyingProgress < 90 && "Searching event gallery for matching photos..."}
+                {verifyingProgress >= 90 && "Liveness verified! Unlocking your private gallery... ✨"}
+              </p>
             </div>
 
-            {/* Animated Step Progression Indicator */}
-            <div className="w-full max-w-sm grid grid-cols-5 gap-1.5 text-[9px] font-bold text-center">
-              <div className="space-y-1">
-                <div className="h-2 bg-[#FB8500] rounded-full" />
-                <span className="text-[#FB8500] block">Upload</span>
+            {/* Dynamic Animated Step Progression Indicator */}
+            <div className="w-full max-w-sm grid grid-cols-5 gap-2 text-[10px] font-bold text-center">
+              {/* Step 1: Upload */}
+              <div className="space-y-1.5">
+                <div className={`h-2.5 rounded-full transition-all duration-300 ${verifyingProgress >= 15 ? 'bg-gradient-to-r from-[#FFB703] to-[#FB8500] shadow-sm' : 'bg-zinc-200'}`} />
+                <span className={`block transition-colors ${verifyingProgress >= 15 ? 'text-[#FB8500] font-extrabold' : 'text-[#8A8A8A]'}`}>Upload</span>
               </div>
-              <div className="space-y-1">
-                <div className="h-2 bg-[#FB8500] rounded-full" />
-                <span className="text-[#FB8500] block">Detection</span>
+
+              {/* Step 2: Detection */}
+              <div className="space-y-1.5">
+                <div className={`h-2.5 rounded-full transition-all duration-300 ${verifyingProgress >= 35 ? 'bg-gradient-to-r from-[#FFB703] to-[#FB8500] shadow-sm' : verifyingProgress >= 15 ? 'bg-[#FFB703] animate-pulse' : 'bg-zinc-200'}`} />
+                <span className={`block transition-colors ${verifyingProgress >= 35 ? 'text-[#FB8500] font-extrabold' : 'text-[#8A8A8A]'}`}>Detection</span>
               </div>
-              <div className="space-y-1">
-                <div className="h-2 bg-[#FFB703] rounded-full animate-pulse" />
-                <span className="text-[#FB8500] block">Embedding</span>
+
+              {/* Step 3: Embedding */}
+              <div className="space-y-1.5">
+                <div className={`h-2.5 rounded-full transition-all duration-300 ${verifyingProgress >= 55 ? 'bg-gradient-to-r from-[#FFB703] to-[#FB8500] shadow-sm' : verifyingProgress >= 35 ? 'bg-[#FFB703] animate-pulse' : 'bg-zinc-200'}`} />
+                <span className={`block transition-colors ${verifyingProgress >= 55 ? 'text-[#FB8500] font-extrabold' : 'text-[#8A8A8A]'}`}>Embedding</span>
               </div>
-              <div className="space-y-1">
-                <div className="h-2 bg-zinc-200 rounded-full" />
-                <span className="text-[#8A8A8A] block">Searching</span>
+
+              {/* Step 4: Searching */}
+              <div className="space-y-1.5">
+                <div className={`h-2.5 rounded-full transition-all duration-300 ${verifyingProgress >= 75 ? 'bg-gradient-to-r from-[#FFB703] to-[#FB8500] shadow-sm' : verifyingProgress >= 55 ? 'bg-[#FFB703] animate-pulse' : 'bg-zinc-200'}`} />
+                <span className={`block transition-colors ${verifyingProgress >= 75 ? 'text-[#FB8500] font-extrabold' : 'text-[#8A8A8A]'}`}>Searching</span>
               </div>
-              <div className="space-y-1">
-                <div className="h-2 bg-zinc-200 rounded-full" />
-                <span className="text-[#8A8A8A] block">Found</span>
+
+              {/* Step 5: Found */}
+              <div className="space-y-1.5">
+                <div className={`h-2.5 rounded-full transition-all duration-300 ${verifyingProgress >= 90 ? 'bg-gradient-to-r from-emerald-400 to-emerald-600 shadow-sm animate-pulse' : 'bg-zinc-200'}`} />
+                <span className={`block transition-colors ${verifyingProgress >= 90 ? 'text-emerald-600 font-extrabold' : 'text-[#8A8A8A]'}`}>Found</span>
               </div>
             </div>
 
-            <Progress value={65} className="w-3/4 h-2 bg-[#FFF8F2] [&>div]:bg-gradient-to-r [&>div]:from-[#FFB703] [&>div]:to-[#FB8500]" />
+            {/* Smooth Moving Progress Bar */}
+            <div className="w-full max-w-sm space-y-1.5">
+              <Progress value={verifyingProgress} className="w-full h-3 bg-[#FFF8F2] border border-[rgba(255,170,80,0.25)] rounded-full overflow-hidden [&>div]:bg-gradient-to-r [&>div]:from-[#FFB703] [&>div]:via-[#FB8500] [&>div]:to-emerald-500 [&>div]:transition-all [&>div]:duration-300" />
+              <div className="flex justify-between text-[10px] font-mono text-[#8A8A8A]">
+                <span>Progress: {verifyingProgress}%</span>
+                <span>{verifyingProgress === 100 ? 'Verified ✓' : 'Processing...'}</span>
+              </div>
+            </div>
           </div>
         )}
 

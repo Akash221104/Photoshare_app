@@ -35,56 +35,61 @@ export function EventHeader({ event, role, onLeaveClick }: EventHeaderProps) {
 
   return (
     <div className="space-y-6">
-      {/* Title block */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-3xl sm:text-4xl font-serif-display font-bold text-[#1A1A1A]">
-            {event.name}
-          </h1>
-          <p className="text-sm text-[#525252] mt-1">
-            {event.description || 'Welcome to this shared photo gallery workspace.'}
+      {/* Title block & Actions */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-white border border-[rgba(255,170,80,0.2)] rounded-[28px] p-6 sm:p-7 shadow-sm">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl sm:text-3xl font-serif-display font-bold text-[#1A1A1A]">
+              {event.name}
+            </h1>
+            <span className="text-[10px] font-extrabold text-[#FB8500] bg-[#FFF8F2] px-2.5 py-0.5 rounded-full border border-[rgba(255,170,80,0.3)] uppercase tracking-wider">
+              {role}
+            </span>
+          </div>
+          <p className="text-xs sm:text-sm text-[#525252]">
+            {event.description || 'Welcome to your private shared photo gallery workspace.'}
           </p>
         </div>
 
         {/* Access controls / Actions */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 shrink-0">
           {/* Share Trigger */}
           <button 
             onClick={() => setInviteOpen(true)}
-            className="btn-secondary-luxury !h-11 !px-5 !text-xs flex items-center gap-2"
+            className="btn-primary-luxury !h-11 !px-5 !text-xs flex items-center gap-2"
           >
-            <Share2 size={16} />
-            Invite Guests
+            <Share2 size={15} />
+            <span>Invite Guests</span>
           </button>
 
           {/* Leave Trigger (blocked for host) */}
           {!isHost && onLeaveClick && (
             <button
               onClick={onLeaveClick}
-              className="px-4 h-11 rounded-full bg-red-50 text-[#E63946] border border-red-200 hover:bg-red-100 font-bold text-xs flex items-center gap-2 transition-colors"
+              className="px-4 h-11 rounded-full bg-rose-50 text-[#E63946] border border-rose-200 hover:bg-rose-100 font-bold text-xs flex items-center gap-2 transition-all shadow-xs"
             >
-              <LogOut size={16} />
-              Leave Event
+              <LogOut size={15} />
+              <span>Leave Event</span>
             </button>
           )}
         </div>
       </div>
 
-      {/* Tabs list (Gallery, Members, Settings) */}
-      <div className="border-b border-[rgba(255,170,80,0.2)]">
-        <nav className="-mb-px flex space-x-8">
+      {/* Tabs list (Gallery, Members, Settings) - Modern Glass Pills */}
+      <div className="flex bg-[#FFF8F2] p-1.5 rounded-full border border-[rgba(255,170,80,0.22)] w-fit shadow-xs">
+        <nav className="flex space-x-1">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
               <Link key={link.name} href={link.href}>
                 <span
-                  className={`flex items-center gap-2 border-b-2 py-3 text-sm font-bold cursor-pointer transition-colors ${
+                  className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-extrabold cursor-pointer transition-all ${
                     isActive
-                      ? 'border-[#FB8500] text-[#FB8500]'
-                      : 'border-transparent text-[#8A8A8A] hover:text-[#1A1A1A]'
+                      ? 'bg-gradient-to-r from-[#FFB703] to-[#FB8500] text-white shadow-md shadow-[#FB8500]/25'
+                      : 'text-[#8A8A8A] hover:text-[#1A1A1A] hover:bg-white/50'
                   }`}
                 >
-                  <link.icon size={16} />
+                  <link.icon size={15} />
                   {link.name}
                 </span>
               </Link>

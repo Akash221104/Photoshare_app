@@ -130,109 +130,91 @@ export function DownloadCenter({
   const selectedCount = selectedPhotoIds.length;
 
   return (
-    <div className="bg-card/40 border border-muted/50 rounded-lg p-5 backdrop-blur-md space-y-4 shadow-md transition-all duration-300">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <div className="bg-primary/10 p-2 rounded-full">
-            <Download className="w-5 h-5 text-primary" />
-          </div>
-          <div>
-            <h4 className="font-semibold text-sm">Download Album Center</h4>
-            <p className="text-xs text-muted-foreground">
-              Create instant ZIP archives of your uploads or matching AI face detections.
-            </p>
-          </div>
-        </div>
-
-        {/* Selection Status Badge */}
-        {selectedCount > 0 && (
-          <div className="flex items-center gap-1.5 bg-primary/10 text-primary border border-primary/20 px-3 py-1 rounded-full text-xs font-bold animate-pulse">
-            <CheckSquare className="w-3.5 h-3.5" />
-            <span>{selectedCount} Selected</span>
-          </div>
-        )}
-      </div>
-
+    <div className="w-full transition-all duration-300">
+      {/* Error Alert */}
       {errorMsg && (
-        <Alert variant="destructive" className="bg-destructive/10 border-destructive/20 text-destructive text-xs py-2.5">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle className="text-xs font-bold">Download Failed</AlertTitle>
-          <AlertDescription className="text-xs">{errorMsg}</AlertDescription>
+        <Alert variant="destructive" className="bg-rose-50 border-rose-200 text-[#E63946] rounded-2xl mb-4 text-xs flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="h-4 w-4 shrink-0" />
+            <AlertDescription className="font-semibold">{errorMsg}</AlertDescription>
+          </div>
+          <button onClick={() => setErrorMsg(null)} className="text-xs font-bold underline">Dismiss</button>
         </Alert>
       )}
 
-      {/* Action Buttons Row */}
-      <div className="flex flex-wrap gap-3 pt-1">
-        {/* Download Selected */}
-        <Button
-          size="sm"
-          variant="default"
-          onClick={() => handleDownload('selected')}
-          disabled={selectedCount === 0 || downloading !== null}
-          className="text-xs gap-1.5 shadow"
-        >
-          {downloading === 'selected' ? (
-            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-          ) : (
-            <CheckSquare className="w-3.5 h-3.5" />
-          )}
-          Download Selected ({selectedCount})
-        </Button>
-
-        {/* Download All My Uploads */}
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={() => handleDownload('uploads')}
-          disabled={downloading !== null}
-          className="text-xs gap-1.5 border-muted/50 hover:bg-muted/10"
-        >
-          {downloading === 'uploads' ? (
-            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-          ) : (
-            <Upload className="w-3.5 h-3.5 text-zinc-400" />
-          )}
-          Download All My Uploads
-        </Button>
-
-        {/* Download All My AI Photos */}
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={() => handleDownload('matches')}
-          disabled={downloading !== null}
-          className="text-xs gap-1.5 border-muted/50 hover:bg-muted/10"
-        >
-          {downloading === 'matches' ? (
-            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-          ) : (
-            <Sparkles className="w-3.5 h-3.5 text-emerald-500" />
-          )}
-          Download My AI Matches
-        </Button>
-
-        {/* Cancel button during active download */}
-        {downloading !== null && (
-          <Button
-            size="sm"
-            variant="destructive"
-            onClick={cancelDownload}
-            className="text-xs gap-1 ml-auto bg-red-600/90 hover:bg-red-600 text-white"
-          >
-            <XCircle className="w-3.5 h-3.5" />
-            Cancel
-          </Button>
-        )}
-      </div>
-
-      {/* Progress Indicator */}
-      {downloading !== null && (
-        <div className="space-y-1.5 pt-1.5">
-          <div className="flex justify-between text-[11px] text-muted-foreground font-mono">
-            <span>Compiling photo ZIP archive...</span>
-            <span>{progress}%</span>
+      {/* Downloading Progress Indicator Bar */}
+      {downloading && (
+        <div className="bg-[#FFF8F2] border-2 border-[#FB8500] p-4 rounded-2xl space-y-2.5 shadow-lg animate-in fade-in duration-300 mb-4">
+          <div className="flex justify-between items-center text-xs font-bold">
+            <span className="text-[#FB8500] flex items-center gap-2">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Building ZIP Archive ({downloading === 'selected' ? `${selectedCount} selected photos` : downloading === 'uploads' ? 'all your uploads' : 'all AI matched photos'})...
+            </span>
+            <span className="text-[#1A1A1A] font-mono">{progress}%</span>
           </div>
-          <Progress value={progress} className="h-1.5 bg-muted" />
+          <Progress value={progress} className="h-2 bg-white rounded-full overflow-hidden [&>div]:bg-gradient-to-r [&>div]:from-[#FFB703] [&>div]:to-[#FB8500]" />
+          <div className="flex justify-end">
+            <button onClick={cancelDownload} className="text-[11px] font-bold text-rose-500 hover:underline">
+              Cancel Download
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Floating Active Selection Bar (Shown when items are selected) */}
+      {selectedCount > 0 ? (
+        <div className="bg-white/95 backdrop-blur-xl border-2 border-[#FB8500] p-3 sm:p-4 rounded-2xl shadow-xl shadow-[#FB8500]/10 flex flex-wrap items-center justify-between gap-3 animate-in slide-in-from-bottom-2 duration-300">
+          <div className="flex items-center gap-2 text-xs font-extrabold text-[#FB8500] bg-[#FFF8F2] px-3.5 py-1.5 rounded-full border border-[rgba(255,170,80,0.3)]">
+            <CheckSquare className="w-4 h-4" />
+            <span>{selectedCount} {selectedCount === 1 ? 'Photo' : 'Photos'} Selected</span>
+          </div>
+
+          <div className="flex items-center gap-2.5">
+            <button
+              onClick={() => handleDownload('selected')}
+              disabled={downloading !== null}
+              className="btn-primary-luxury !h-10 !px-5 !text-xs flex items-center gap-2"
+            >
+              <Download className="w-4 h-4" />
+              <span>Download Selected ({selectedCount}) ZIP</span>
+            </button>
+            <button
+              onClick={clearSelection}
+              className="px-3.5 h-10 rounded-full bg-zinc-100 text-zinc-600 hover:bg-zinc-200 font-bold text-xs transition-colors"
+            >
+              Clear
+            </button>
+          </div>
+        </div>
+      ) : (
+        /* Compact Default Download Controls Pill */
+        <div className="bg-[#FFF8F2] border border-[rgba(255,170,80,0.22)] p-3.5 rounded-2xl flex flex-wrap items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-center gap-2.5">
+            <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-[#FFB703] to-[#FB8500] flex items-center justify-center text-white shadow-sm">
+              <Download className="w-4 h-4" />
+            </div>
+            <span className="text-xs font-extrabold text-[#1A1A1A]">Download Album Center:</span>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => handleDownload('uploads')}
+              disabled={downloading !== null}
+              className="btn-secondary-luxury !h-9 !px-4 !text-[11px] flex items-center gap-1.5"
+            >
+              <Upload className="w-3.5 h-3.5 text-[#FB8500]" />
+              <span>Download All My Uploads</span>
+            </button>
+
+            <button
+              onClick={() => handleDownload('matches')}
+              disabled={downloading !== null}
+              className="btn-secondary-luxury !h-9 !px-4 !text-[11px] flex items-center gap-1.5"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Download My AI Matches</span>
+            </button>
+          </div>
         </div>
       )}
     </div>

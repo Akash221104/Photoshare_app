@@ -272,17 +272,19 @@ export function PersonalGallery({
       {loading && photos.length === 0 ? (
         <GallerySkeleton />
       ) : photos.length === 0 ? (
-        <Card className="border border-dashed border-muted/60 bg-muted/5 py-16 text-center">
-          <div className="flex flex-col items-center gap-2 max-w-sm mx-auto">
-            <Sparkles className="w-8 h-8 text-muted-foreground/60 mb-1" />
-            <h4 className="font-semibold text-sm">No photos found</h4>
-            <p className="text-xs text-muted-foreground">
+        <div className="bg-gradient-to-b from-[#FFFDF8] to-[#FFF8F2] border-2 border-dashed border-[#FB8500]/25 rounded-[32px] p-10 sm:p-14 text-center shadow-xs">
+          <div className="flex flex-col items-center gap-3 max-w-sm mx-auto">
+            <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-[#FFB703] to-[#FB8500] flex items-center justify-center text-white shadow-lg shadow-[#FB8500]/20 animate-float-slow">
+              <Sparkles className="w-7 h-7" />
+            </div>
+            <h4 className="font-serif-display font-bold text-xl text-[#1A1A1A]">No Photos Found</h4>
+            <p className="text-xs text-[#525252] leading-relaxed">
               {type === 'matches'
-                ? "We couldn't spot your face matching the current threshold. Try dragging the Sensitivity slider left to find more matches."
-                : "You haven't uploaded any photos to this event yet."}
+                ? "We couldn't spot your face matching the current threshold. Try dragging the Sensitivity slider left to adjust detection precision."
+                : "You haven't uploaded any photos to this event gallery yet."}
             </p>
           </div>
-        </Card>
+        </div>
       ) : (
         <div className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
