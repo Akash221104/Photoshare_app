@@ -38,7 +38,11 @@ export class PythonService {
   private url: string;
 
   constructor() {
-    this.url = process.env.AI_SERVICE_URL || 'http://localhost:8000';
+    const envUrl = process.env.AI_SERVICE_URL || 'https://akash2211-photoshare-app.hf.space';
+    this.url = envUrl;
+    
+    console.log(`[AI Python Service] Initialized with URL: ${this.url}`);
+
     this.client = axios.create({
       baseURL: this.url,
       timeout: 30000, // 30 seconds timeout for ML execution
@@ -125,6 +129,68 @@ export class PythonService {
       }
     }
     throw new Error('FastAPI embedding request failed');
+  }
+
+  /**
+   * Sends the baseline still photo and the challenge video recording to the FastAPI liveness verifier.
+   */
+  async verifyLiveness(
+    baselineBuffer: Buffer,
+    baselineFilename: string,
+    baselineMime: string,
+    videoBuffer: Buffer,
+    videoFilename: string,
+    videoMime: string,
+    challenges: string[]
+  ): Promise<any> {
+    const formData = new FormData();
+    
+    // Convert Buffer to Blob for standard FormData
+    const baselineBlob = new Blob([new Uint8Array(baselineBuffer)], { type: baselineMime });
+    const videoBlob = new Blob([new Uint8Array(videoBuffer)], { type: videoMime });
+    
+    formData.append('baseline_img', baselineBlob, baselineFilename);
+    formData.append('video', videoBlob, videoFilename);
+    formData.append('challenges', challenges.join(','));
+
+    try {
+      console.log(`[AI Python Service] [LIVENESS] Sending liveness request to ${this.url}/liveness/verify...`);
+      const response = await this.client.post('/liveness/verify', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        timeout: 120000, // 120 seconds timeout for video frames processing on CPU
+      });
+      return response.data;
+    } catch (err: any) {
+      const status = err.response?.status;
+      const detail = err.response?.data?.detail || err.message;
+      console.error(`[AI Python Service] [LIVENESS] Liveness verification failed (status ${status}). Error:`, detail);
+      throw new Error(detail);
+    }
+  }
+
+  /**
+   * Sends an image buffer to the FastAPI /detect endpoint.
+   */
+  async detectFaces(imageBuffer: Buffer, filename: string, mimeType: string): Promise<any> {
+    const formData = new FormData();
+    const imageBlob = new Blob([new Uint8Array(imageBuffer)], { type: mimeType });
+    formData.append('file', imageBlob, filename);
+
+    try {
+      const response = await this.client.post('/detect', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    } catch (err: any) {
+      const status = err.response?.status;
+      const detail = err.response?.data?.detail || err.message;
+      console.error(`[AI Python Service] [DETECT] Face detection failed (status ${status}). Error:`, detail);
+      throw new Error(detail);
+    }
   }
 }
 

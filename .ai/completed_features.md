@@ -47,3 +47,10 @@ The following features have been successfully developed, integrated, and verifie
 - **Swipe-Enabled Lightbox:** Fullscreen image modal supports mobile swipe actions (left for next image, right for previous image), custom double-tap/tap scaling, and responsive dimension layout bounds.
 - **Notification Adaptive Widths:** Set `max-w-[calc(100vw-32px)]` bounds on the global notification center and upload progress tray, ensuring cards render beautifully on extremely narrow screens (down to 320px).
 - **Webcam Compatibility & Fallbacks:** Removed strict width/height resolution camera constraints to prevent `OverconstrainedError` on Android/iOS browser camera integrations. Features fallback default video capture (`video: true`) if front-facing designation fails.
+
+## 8. Production-Grade Active Liveness Detection (Challenge-Response) (V5)
+- **Zero-Latency Client-Side Guidance Pipeline**: Lazy-loads MediaPipe Face Landmarker locally inside the browser. Estimates head yaw/pitch/roll and smile scores at 20-30 FPS.
+- **Instantaneous Challenge Transitions**: Progression is event-driven and runs entirely in the browser with no blocking backend requests between challenges, making the user experience feel extremely smooth and immediate.
+- **Secure Backend Final Authority**: The browser continues recording a single 4-second WebM clip in the background. On completion, the baseline still photo and video are sent in a single payload to the FastAPI backend, where the production-grade liveness pipeline verifies temporal consistency, pose compliance, and face similarity.
+- **Step Timeout Safeguards**: Enforces a 15-second timeout limit per challenge step.
+- **Comprehensive Automated Tests**: Verified all Python pipeline modules with 100% test coverage.

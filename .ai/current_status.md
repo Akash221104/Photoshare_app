@@ -20,6 +20,8 @@ The application is in an active **Development** state with all core modules func
 - [x] Added Host Toggle Tabs inside event landing page allowing hosts to view, zoom, and moderate/delete gallery photos.
 - [x] Optimized responsiveness of buttons, headers, and click/touch triggers for all dashboards, setting pages, and image grids on mobile viewports.
 - [x] Verified selfie webcam constraints and added automatic camera fallback handlers.
+- [x] Implemented production-grade Active Liveness Verification (V5 specification) featuring zero-latency local browser-side face tracking with MediaPipe, real-time pose/smile guidance, and single-upload backend verification.
+
 
 ---
 

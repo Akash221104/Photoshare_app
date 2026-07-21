@@ -3,7 +3,7 @@
 
 import time
 import numpy as np
-from fastapi import APIRouter, UploadFile, File, HTTPException, status
+from fastapi import APIRouter, UploadFile, File, HTTPException, status, Form
 from typing import List
 
 from app.schemas.schemas import (
@@ -17,6 +17,8 @@ from app.schemas.schemas import (
 from app.services.model_loader import ModelLoader
 from app.services.image_service import ImageService
 from app.services.face_service import FaceService
+from app.services.liveness.models.result import LivenessResponse
+from app.services.liveness.orchestrator import LivenessOrchestrator
 from app.config.config import MODEL_NAME, logger
 
 router = APIRouter()
@@ -181,3 +183,39 @@ async def analyze_faces(request: AnalyzeRequest):
     except Exception as err:
         logger.error(f"Inference error: {str(err)}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Analysis processing failed: {str(err)}")
+
+@router.post(
+    "/liveness/verify",
+    response_model=LivenessResponse,
+    responses={400: {"model": ErrorResponse}, 500: {"model": ErrorResponse}},
+    summary="Verify user active liveness and extract face embedding"
+)
+async def verify_liveness(
+    baseline_img: UploadFile = File(..., description="JPEG/PNG baseline still image (neutral pose)"),
+    video: UploadFile = File(..., description="WebM/MP4 challenge recording (4-second duration)"),
+    challenges: str = Form(..., description="Comma-separated challenge ID strings, e.g. 'LOOK_RIGHT,SMILE'")
+):
+    """
+    Validates user liveness using a hybrid sequence:
+    1. Extracts baseline face embedding from the neutral still photo.
+    2. Sequentially processes the video clip, checking that the requested challenges were met in order.
+    3. Calculates a final weighted liveness score.
+    """
+    try:
+        baseline_bytes = await baseline_img.read()
+        video_bytes = await video.read()
+        
+        challenge_list = [c.strip() for c in challenges.split(",") if c.strip()]
+        
+        result = LivenessOrchestrator.verify_liveness(
+            baseline_img_bytes=baseline_bytes,
+            video_bytes=video_bytes,
+            challenges=challenge_list
+        )
+        
+        return result
+    except ValueError as val_err:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(val_err))
+    except Exception as err:
+        logger.error(f"Liveness API endpoint failed: {str(err)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Liveness verification failed: {str(err)}")

@@ -62,3 +62,7 @@ photo-ai/.pytest_cache/
 .windsurf
 
 certificates
+
+# Scratch and deployment temp folders
+scratch/
+photo-ai/temp_hf_deploy/

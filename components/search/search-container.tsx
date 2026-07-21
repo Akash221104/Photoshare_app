@@ -75,8 +75,8 @@ export function SearchContainer({ eventId }: SearchContainerProps) {
     }
   };
 
-  const handleSelfieUploadSuccess = async (base64Image: string) => {
-    await uploadSelfie(base64Image);
+  const handleLivenessSuccess = () => {
+    refreshSelfie();
     reloadMatches();
   };
 
@@ -201,10 +201,11 @@ export function SearchContainer({ eventId }: SearchContainerProps) {
         <div className="space-y-8">
           {/* Selfie Box inside AI matches tab */}
           <SelfieUpload
+            eventId={eventId}
             selfieUrl={selfieUrl}
             uploading={uploading}
             deleting={deleting}
-            onUpload={handleSelfieUploadSuccess}
+            onUploadComplete={handleLivenessSuccess}
             onDelete={handleSelfieDeleteSuccess}
           />
 
