@@ -51,15 +51,10 @@ export class EventService {
   }
 
   /**
-   * Retrieves an event by its ID, guarding it against non-members.
+   * Retrieves an event by its ID. Public event metadata is accessible to visitors.
    */
-  async getEvent(eventId: string, userId: string): Promise<EventResponse> {
+  async getEvent(eventId: string, userId?: string): Promise<EventResponse> {
     try {
-      const isMember = await memberRepo.isMember(eventId, userId);
-      if (!isMember) {
-        return { success: false, error: 'Unauthorized: You are not a member of this event' };
-      }
-
       const event = await eventRepo.getEventById(eventId);
       if (!event) {
         return { success: false, error: 'Event not found' };

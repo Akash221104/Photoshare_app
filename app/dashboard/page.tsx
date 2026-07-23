@@ -48,41 +48,50 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto py-4">
-      {/* Welcome banner */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between bg-gradient-to-r from-[#FFF8F2] to-[#FFF6EC] border border-[rgba(255,170,80,0.2)] rounded-[28px] p-8 shadow-sm">
-        <div>
-          <h2 className="text-3xl sm:text-4xl font-bold font-serif-display text-[#1A1A1A]">
-            Welcome back, {user.name} 👋
-          </h2>
-          <p className="text-[#525252] mt-1 text-sm">
-            Create photo sharing workspaces, join via access code, and view your spots.
-          </p>
-        </div>
-        <div className="flex gap-3 shrink-0">
-          <button onClick={() => setCreateOpen(true)} className="btn-primary-luxury !h-12 !px-6 text-sm flex items-center gap-2">
-            <PlusCircle size={18} />
-            Create Event
-          </button>
+    <div className="space-y-6 max-w-7xl mx-auto py-2">
+      {/* 1. Welcome Banner */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-[#FFF8F2] via-[#FFFDF8] to-[#FFF6EC] border border-[rgba(255,170,80,0.3)] rounded-[32px] p-6 sm:p-8 shadow-sm">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-1.5">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FB8500]/10 border border-[#FB8500]/20 text-[#FB8500] text-xs font-bold mb-1">
+              <span>📸 AI Photo Vaults</span>
+            </div>
+            <h2 className="text-2xl sm:text-4xl font-extrabold font-serif-display text-[#1A1A1A] tracking-tight">
+              Welcome back, {user.name} 👋
+            </h2>
+            <p className="text-[#525252] text-xs sm:text-sm font-medium max-w-xl">
+              Manage your photo sharing events, search guests with facial AI, or enter an event access code.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3 shrink-0">
+            <button
+              onClick={() => setCreateOpen(true)}
+              className="btn-primary-luxury !h-12 !px-6 text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-[#FB8500]/25"
+            >
+              <PlusCircle size={18} />
+              <span>Create Event</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid gap-6 sm:grid-cols-3">
-        <div className="card-luxury p-6 space-y-3">
+      {/* 2. Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+        <div className="bg-white border border-[rgba(255,170,80,0.22)] rounded-[24px] p-5 space-y-2 shadow-xs hover:border-[#FB8500]/40 transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#8A8A8A]">Total Joined</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-[#8A8A8A]">Total Events</span>
             <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-[#FFB703] to-[#FB8500] flex items-center justify-center text-white shadow-xs">
               <Calendar className="h-4 w-4" />
             </div>
           </div>
           <div>
-            <div className="text-3xl font-bold font-serif-display text-[#1A1A1A]">{stats.total}</div>
-            <p className="text-xs text-[#8A8A8A] mt-1">Total active event galleries</p>
+            <div className="text-3xl font-extrabold font-serif-display text-[#1A1A1A]">{stats.total}</div>
+            <p className="text-xs text-[#8A8A8A] mt-0.5">Active photo event galleries</p>
           </div>
         </div>
 
-        <div className="card-luxury p-6 space-y-3">
+        <div className="bg-white border border-[rgba(255,170,80,0.22)] rounded-[24px] p-5 space-y-2 shadow-xs hover:border-[#FB8500]/40 transition-all">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-[#8A8A8A]">Hosted by Me</span>
             <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-[#FFB703] to-[#FB8500] flex items-center justify-center text-white shadow-xs">
@@ -90,12 +99,12 @@ export default function DashboardPage() {
             </div>
           </div>
           <div>
-            <div className="text-3xl font-bold font-serif-display text-[#1A1A1A]">{stats.hosted}</div>
-            <p className="text-xs text-[#8A8A8A] mt-1">Events created by you</p>
+            <div className="text-3xl font-extrabold font-serif-display text-[#1A1A1A]">{stats.hosted}</div>
+            <p className="text-xs text-[#8A8A8A] mt-0.5">Events created & managed by you</p>
           </div>
         </div>
 
-        <div className="card-luxury p-6 space-y-3">
+        <div className="bg-white border border-[rgba(255,170,80,0.22)] rounded-[24px] p-5 space-y-2 shadow-xs hover:border-[#FB8500]/40 transition-all">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-[#8A8A8A]">Guest Memberships</span>
             <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-[#FFB703] to-[#FB8500] flex items-center justify-center text-white shadow-xs">
@@ -103,60 +112,53 @@ export default function DashboardPage() {
             </div>
           </div>
           <div>
-            <div className="text-3xl font-bold font-serif-display text-[#1A1A1A]">{stats.joined}</div>
-            <p className="text-xs text-[#8A8A8A] mt-1">Joined via invitations</p>
+            <div className="text-3xl font-extrabold font-serif-display text-[#1A1A1A]">{stats.joined}</div>
+            <p className="text-xs text-[#8A8A8A] mt-0.5">Joined via QR code or invite link</p>
           </div>
         </div>
       </div>
 
-      {/* Join & Search Header bar */}
-      <div className="p-4 bg-white rounded-[24px] border border-[rgba(255,170,80,0.2)] shadow-sm">
+      {/* 3. Search & Join Bar */}
+      <div className="bg-[#FFF8F2]/60 rounded-[24px] border border-[rgba(255,170,80,0.2)] p-3.5 shadow-xs">
         <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       </div>
 
-      {/* Recents list & Activity */}
-      <div className="grid gap-8 md:grid-cols-3">
-        {/* Recent Events Grid */}
-        <div className="md:col-span-2 space-y-5">
-          <div className="flex items-center justify-between">
-            <h3 className="text-2xl font-bold font-serif-display text-[#1A1A1A]">Recent Workspaces</h3>
-            {events.length > 3 && (
-              <Link href="/events">
-                <button className="btn-secondary-luxury !h-9 !px-4 !text-xs flex items-center gap-1.5">
-                  View All
-                  <ArrowRight size={14} />
-                </button>
-              </Link>
-            )}
+      {/* 4. Full-Width Events Grid */}
+      <div className="space-y-4 pt-2">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-2xl font-bold font-serif-display text-[#1A1A1A]">My Events</h3>
+            <p className="text-xs text-[#8A8A8A]">Select an event to view, upload, or find your photos with AI.</p>
           </div>
-          {recentEvents.length === 0 ? (
-            <div className="flex min-h-[240px] flex-col items-center justify-center rounded-[28px] border-2 border-dashed border-[rgba(255,170,80,0.2)] p-8 text-center bg-[#FFFDF8]">
-              <Calendar className="h-10 w-10 text-[#FB8500] mb-3 opacity-60" />
-              <p className="text-base font-bold text-[#1A1A1A]">No active events found</p>
-              <p className="text-xs text-[#8A8A8A] mt-1">Submit a join code or create a new event workspace.</p>
-            </div>
-          ) : (
-            <div className="grid gap-5 sm:grid-cols-2">
-              {recentEvents.map((event) => (
-                <div key={event.id}>
-                  <EventCard event={event} currentUserId={user.id} />
-                </div>
-              ))}
-            </div>
-          )}
         </div>
 
-        {/* Activity feed placeholder */}
-        <div className="md:col-span-1 space-y-5">
-          <h3 className="text-2xl font-bold font-serif-display text-[#1A1A1A]">Notifications Feed</h3>
-          <div className="card-luxury p-8 min-h-[240px] flex flex-col items-center justify-center text-center space-y-2">
-            <p className="text-base font-bold text-[#1A1A1A]">All caught up!</p>
-            <p className="text-xs text-[#8A8A8A]">Updates on photo matches and uploads will appear here.</p>
+        {filteredEvents.length === 0 ? (
+          <div className="flex min-h-[260px] flex-col items-center justify-center rounded-[28px] border-2 border-dashed border-[rgba(255,170,80,0.25)] p-8 text-center bg-[#FFFDF8] space-y-3">
+            <Calendar className="h-10 w-10 text-[#FB8500] opacity-70" />
+            <div className="space-y-1">
+              <p className="text-base font-bold text-[#1A1A1A]">No event workspaces found</p>
+              <p className="text-xs text-[#8A8A8A]">Create your first event workspace or submit an event join code above.</p>
+            </div>
+            <button
+              onClick={() => setCreateOpen(true)}
+              className="btn-primary-luxury !h-10 !px-5 text-xs flex items-center gap-2"
+            >
+              <PlusCircle size={16} />
+              <span>Create First Event</span>
+            </button>
           </div>
-        </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredEvents.map((event) => (
+              <div key={event.id} className="h-full">
+                <EventCard event={event} currentUserId={user.id} />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Create Dialog */}
+      {/* Create Event Modal */}
       <CreateEventDialog
         open={createOpen}
         onOpenChange={setCreateOpen}

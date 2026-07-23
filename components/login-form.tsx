@@ -20,7 +20,8 @@ export function LoginForm() {
   const searchParams = useSearchParams();
   const [loading, setLoading] = React.useState(false);
 
-  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+  const redirectUrl = searchParams.get('redirect');
+  const callbackUrl = redirectUrl || searchParams.get('callbackUrl') || '/dashboard';
 
   const {
     register,

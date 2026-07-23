@@ -13,6 +13,7 @@ export interface Event {
   photo_count?: number;
   cover_url?: string | null;
   member_count?: number;
+  host_name?: string | null;
 }
 
 export interface Member {

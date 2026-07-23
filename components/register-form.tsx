@@ -6,7 +6,7 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 
 import { registerSchema, RegisterInput } from '@/schemas/register.schema';
@@ -17,7 +17,10 @@ import { Label } from '@/components/ui/label';
 
 export function RegisterForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = React.useState(false);
+
+  const redirectUrl = searchParams.get('redirect') || searchParams.get('callbackUrl') || '/dashboard';
 
   const {
     register,
@@ -50,7 +53,7 @@ export function RegisterForm() {
 
       toast.success('Account created successfully! Redirecting...');
       // Hard redirect ensures the session cookie is picked up by middleware
-      window.location.href = '/dashboard';
+      window.location.href = redirectUrl;
     } catch (err: any) {
       toast.error('An unexpected connection error occurred');
       setLoading(false);

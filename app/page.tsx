@@ -70,6 +70,7 @@ export default function Home() {
 
   // --- Finite State Machine Simulation State ---
   const [simState, setSimState] = useState<SimState>('idle');
+  const [activeTab, setActiveTab] = useState<'organizer' | 'guest'>('organizer');
   const [uploadPercent, setUploadPercent] = useState(0);
   const [aiPercent, setAiPercent] = useState(0);
   const [showReplay, setShowReplay] = useState(false);
@@ -77,6 +78,7 @@ export default function Home() {
   // Trigger FSM Sequence
   const startSimulation = () => {
     setSimState('organizer-active');
+    setActiveTab('organizer');
     setUploadPercent(0);
     setAiPercent(0);
     setShowReplay(false);
@@ -88,6 +90,7 @@ export default function Home() {
     let timer: NodeJS.Timeout;
 
     if (simState === 'organizer-active') {
+      setActiveTab('organizer');
       // Animate upload percent from 0 to 100 at a comfortable, readable speed
       const interval = setInterval(() => {
         setUploadPercent((prev) => {
@@ -104,18 +107,23 @@ export default function Home() {
         setSimState('generate-qr');
       }, 4500);
     } else if (simState === 'generate-qr') {
+      setActiveTab('organizer');
       timer = setTimeout(() => {
         setSimState('guest-active');
+        setActiveTab('guest'); // Auto slide to Guest view
       }, 2500); // Allow QR to fly
     } else if (simState === 'guest-active') {
+      setActiveTab('guest');
       timer = setTimeout(() => {
         setSimState('upload-selfie');
       }, 2000);
     } else if (simState === 'upload-selfie') {
+      setActiveTab('guest');
       timer = setTimeout(() => {
         setSimState('searching');
       }, 2200);
     } else if (simState === 'searching') {
+      setActiveTab('guest');
       // Animate AI matching search bar
       const interval = setInterval(() => {
         setAiPercent((prev) => {
@@ -132,6 +140,7 @@ export default function Home() {
         setSimState('completed');
       }, 3000);
     } else if (simState === 'completed') {
+      setActiveTab('guest');
       // Show replay button after 2 seconds
       timer = setTimeout(() => {
         setShowReplay(true);
@@ -187,17 +196,17 @@ export default function Home() {
     <div className="flex flex-col min-h-screen bg-[#FFFDF8] text-[#525252] font-sans antialiased overflow-hidden selection:bg-[#FFB703]/20 selection:text-[#FB8500]">
 
       {/* Background radial hero glow */}
-      <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[1000px] h-[600px] hero-radial-glow pointer-events-none z-0" />
+      <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-full max-w-[1000px] h-[600px] hero-radial-glow pointer-events-none z-0 overflow-hidden" />
 
       {/* 2026 Ultra-Modern Floating Island Navbar */}
-      <header className="fixed top-4 left-1/2 -translate-x-1/2 max-w-6xl w-[92%] sm:w-full z-50 h-16 rounded-full border border-[rgba(255,170,80,0.25)] bg-white/80 backdrop-blur-2xl shadow-xl shadow-[#FB8500]/10 px-4 sm:px-6 flex items-center justify-between transition-all duration-300">
+      <header className="fixed top-3 sm:top-4 left-3 right-3 sm:left-6 sm:right-6 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-[92%] max-w-6xl z-50 h-16 rounded-full border border-[rgba(255,170,80,0.25)] bg-white/95 backdrop-blur-2xl shadow-xl shadow-[#FB8500]/10 px-3 sm:px-6 flex items-center justify-between transition-all duration-300">
 
         {/* Brand Logo */}
-        <Link href="/" className="flex items-center gap-2.5 group">
+        <Link href="/" className="flex items-center gap-2 group shrink-0">
           <div className="h-9 w-9 rounded-2xl bg-gradient-to-br from-[#FFB703] to-[#FB8500] flex items-center justify-center text-white shadow-md shadow-[#FB8500]/25 group-hover:scale-105 transition-transform">
             <Camera className="h-4.5 w-4.5 text-white" />
           </div>
-          <span className="text-lg font-bold tracking-tight font-serif-display text-[#1A1A1A]">PhotoShare AI</span>
+          <span className="text-base sm:text-lg font-bold tracking-tight font-serif-display text-[#1A1A1A]">PhotoShare AI</span>
         </Link>
 
         {/* Centered Modern Nav Links (Desktop) */}
@@ -214,14 +223,14 @@ export default function Home() {
         </nav>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-2.5 sm:gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
           <Link href="/auth/sign-in">
-            <button className="btn-secondary-luxury !h-10 !px-4 sm:!px-5 !text-xs">
+            <button className="btn-secondary-luxury !h-9 sm:!h-10 !px-3 sm:!px-5 !text-[11px] sm:!text-xs">
               Sign In
             </button>
           </Link>
           <Link href="/auth/sign-up">
-            <button className="btn-primary-luxury !h-10 !px-5 !text-xs">
+            <button className="btn-primary-luxury !h-9 sm:!h-10 !px-3.5 sm:!px-5 !text-[11px] sm:!text-xs">
               Get Started
             </button>
           </Link>
@@ -229,18 +238,18 @@ export default function Home() {
       </header>
 
       {/* Hero Section (Unique 2026 Light Luxury Silk Canvas) */}
-      <main className="flex-1 pt-20 sm:pt-24 bg-gradient-to-b from-[#FFF4E8] via-[#FFFDF8] to-[#FFFDF8]">
+      <main className="flex-1 pt-20 sm:pt-24 bg-gradient-to-b from-[#FFF4E8] via-[#FFFDF8] to-[#FFFDF8] overflow-hidden">
         <section className="relative w-full min-h-[calc(100vh-80px)] sm:min-h-[calc(100vh-96px)] flex flex-col items-center justify-center px-4 sm:px-6 py-10 sm:py-16 overflow-hidden">
           
           {/* Unique Refined Light Micro-Grid Pattern */}
           <div className="absolute inset-0 bg-[radial-gradient(#FB8500_1.2px,transparent_1.2px)] [background-size:28px_28px] opacity-15 [mask-image:radial-gradient(ellipse_75%_65%_at_50%_40%,#000_65%,transparent_100%)] pointer-events-none" />
 
           {/* Top Center Soft Warm Silk Glow Field */}
-          <div className="absolute top-[-15%] left-1/2 -translate-x-1/2 w-[1200px] sm:w-[1400px] h-[650px] bg-[radial-gradient(ellipse_at_top,rgba(255,183,3,0.30)_0%,rgba(251,133,0,0.12)_45%,transparent_75%)] pointer-events-none z-0" />
+          <div className="absolute top-[-15%] left-1/2 -translate-x-1/2 w-full max-w-[1200px] sm:max-w-[1400px] h-[650px] bg-[radial-gradient(ellipse_at_top,rgba(255,183,3,0.30)_0%,rgba(251,133,0,0.12)_45%,transparent_75%)] pointer-events-none z-0 overflow-hidden" />
 
           {/* Floating Organic Light Spheres */}
-          <div className="absolute top-8 left-[4%] w-[500px] h-[500px] bg-gradient-to-br from-[#FFB703]/22 via-[#FB8500]/14 to-transparent rounded-full blur-[100px] animate-float-slow pointer-events-none" />
-          <div className="absolute bottom-4 right-[4%] w-[500px] h-[500px] bg-gradient-to-tr from-[#FB8500]/16 via-[#FF6B6B]/12 to-transparent rounded-full blur-[100px] animate-float-reverse pointer-events-none" />
+          <div className="absolute top-8 left-[4%] w-full max-w-[500px] h-[500px] bg-gradient-to-br from-[#FFB703]/22 via-[#FB8500]/14 to-transparent rounded-full blur-[100px] animate-float-slow pointer-events-none" />
+          <div className="absolute bottom-4 right-[4%] w-full max-w-[500px] h-[500px] bg-gradient-to-tr from-[#FB8500]/16 via-[#FF6B6B]/12 to-transparent rounded-full blur-[100px] animate-float-reverse pointer-events-none" />
 
           {/* Floating Glass Memory Badges (Positioned gracefully near the title - Desktop) */}
           <div className="hidden lg:flex items-center gap-3.5 absolute top-32 left-8 xl:left-20 bg-white/85 backdrop-blur-xl border border-[rgba(255,170,80,0.22)] rounded-2xl p-4 shadow-xl shadow-[#FB8500]/10 animate-float-slow pointer-events-none z-10">
@@ -641,55 +650,270 @@ export default function Home() {
             </p>
 
             {/* FSM Controls overlay */}
-            <div className="pt-4 flex justify-center gap-4 z-10">
-              {simState === 'idle' && (
-                <button onClick={startSimulation} className="btn-primary-luxury text-base animate-bounce">
-                  ▶ Start Live Simulation
-                </button>
-              )}
+            <div className="pt-4 flex flex-wrap justify-center gap-3 z-10">
+              <button
+                onClick={startSimulation}
+                className="btn-primary-luxury text-sm sm:text-base flex items-center gap-2 shadow-lg shadow-[#FB8500]/25 hover:scale-105 active:scale-95 transition-all"
+              >
+                <span>▶</span> {simState === 'idle' ? 'Start Live Simulation' : 'Restart Simulation'}
+              </button>
               {simState === 'completed' && showReplay && (
-                <button onClick={startSimulation} className="btn-secondary-luxury text-sm flex items-center gap-2">
-                  <RotateCcw size={18} /> Replay Simulation
+                <button onClick={startSimulation} className="btn-secondary-luxury text-xs sm:text-sm flex items-center gap-2">
+                  <RotateCcw size={16} /> Replay Demo
                 </button>
               )}
               {simState !== 'idle' && simState !== 'completed' && (
-                <span className="text-xs font-bold text-[#FB8500] bg-white px-5 py-2.5 rounded-full border border-[rgba(255,170,80,0.3)] shadow-sm animate-pulse">
-                  Simulation in Progress...
+                <span className="text-xs font-bold text-[#FB8500] bg-white px-4 py-2 rounded-full border border-[rgba(255,170,80,0.3)] shadow-sm animate-pulse flex items-center gap-1.5">
+                  <span className="h-2 w-2 rounded-full bg-[#FB8500] animate-ping" />
+                  {simState === 'organizer-active' && 'Step 1: Organizer Uploading...'}
+                  {simState === 'generate-qr' && 'Step 2: Generating Event QR...'}
+                  {simState === 'guest-active' && 'Step 3: Guest Joined Event'}
+                  {simState === 'upload-selfie' && 'Step 4: Guest Uploading Selfie...'}
+                  {simState === 'searching' && 'Step 5: AI Face Matching...'}
                 </span>
               )}
             </div>
           </div>
 
-          {/* Interactive Phone tab selectors */}
-          <div className="flex justify-center gap-4 mb-10 z-10">
+          {/* Interactive view switcher tabs - Always clickable */}
+          <div className="flex justify-center gap-3 mb-8 z-10 w-full max-w-md mx-auto">
             <button
-              onClick={() => { if (simState !== 'idle') setSimState('organizer-active'); }}
-              disabled={simState === 'idle'}
-              className={`px-6 py-2.5 rounded-full text-xs font-bold border transition-all duration-300 ${simState === 'organizer-active' || simState === 'generate-qr' ? 'bg-[#FB8500] border-[#FB8500] text-white shadow-md shadow-[#FB8500]/25' : 'bg-white border-[rgba(255,170,80,0.2)] text-[#525252] hover:text-[#1A1A1A]'}`}
+              onClick={() => setActiveTab('organizer')}
+              className={`flex-1 px-4 py-2.5 sm:px-6 sm:py-3 rounded-full text-xs sm:text-sm font-extrabold border transition-all duration-300 shadow-sm flex items-center justify-center gap-2 ${
+                activeTab === 'organizer'
+                  ? 'bg-[#FB8500] border-[#FB8500] text-white shadow-md shadow-[#FB8500]/25 scale-[1.02]'
+                  : 'bg-white border-[rgba(255,170,80,0.3)] text-[#525252] hover:text-[#1A1A1A] hover:bg-white/80'
+              }`}
             >
-              Organizer Dashboard
+              <LayoutDashboard size={16} />
+              <span>Organizer View</span>
             </button>
             <button
-              onClick={() => { if (simState !== 'idle') setSimState('guest-active'); }}
-              disabled={simState === 'idle'}
-              className={`px-6 py-2.5 rounded-full text-xs font-bold border transition-all duration-300 ${simState === 'guest-active' || simState === 'upload-selfie' || simState === 'searching' || simState === 'completed' ? 'bg-[#FF6B6B] border-[#FF6B6B] text-white shadow-md shadow-[#FF6B6B]/25' : 'bg-white border-[rgba(255,170,80,0.2)] text-[#525252] hover:text-[#1A1A1A]'}`}
+              onClick={() => setActiveTab('guest')}
+              className={`flex-1 px-4 py-2.5 sm:px-6 sm:py-3 rounded-full text-xs sm:text-sm font-extrabold border transition-all duration-300 shadow-sm flex items-center justify-center gap-2 ${
+                activeTab === 'guest'
+                  ? 'bg-[#FF6B6B] border-[#FF6B6B] text-white shadow-md shadow-[#FF6B6B]/25 scale-[1.02]'
+                  : 'bg-white border-[rgba(255,170,80,0.3)] text-[#525252] hover:text-[#1A1A1A] hover:bg-white/80'
+              }`}
             >
-              Guest Dashboard
+              <Users size={16} />
+              <span>Guest View</span>
             </button>
           </div>
 
-          {/* macOS Browser Panels side-by-side layout */}
-          <div className="relative grid lg:grid-cols-2 gap-10 max-w-7xl w-full items-stretch pt-4">
+          {/* Flying QR Code overlay */}
+          {simState === 'generate-qr' && (
+            <div className="absolute top-[45%] left-1/2 -translate-x-1/2 lg:left-1/4 z-50 pointer-events-none animate-fly-qr bg-white p-4 rounded-3xl shadow-2xl flex items-center justify-center border-2 border-amber-300 [--fly-x:0px] [--fly-y:340px] lg:[--fly-x:620px] lg:[--fly-y:20px]">
+              <QrCode size={64} className="text-[#1A1A1A]" />
+            </div>
+          )}
 
-            {/* Flying QR Code overlay */}
-            {simState === 'generate-qr' && (
-              <div className="absolute top-[40%] left-1/4 z-40 pointer-events-none animate-fly-qr bg-white p-4 rounded-3xl shadow-2xl flex items-center justify-center border border-amber-200 [--fly-x:0px] [--fly-y:540px] lg:[--fly-x:620px] lg:[--fly-y:20px]">
-                <QrCode size={64} className="text-[#1A1A1A]" />
+          {/* MOBILE SLIDER CONTAINER (< 1024px) */}
+          <div className="lg:hidden w-full max-w-xl mx-auto overflow-hidden relative rounded-[28px] p-1">
+            <div
+              className="flex w-[200%] transition-transform duration-500 ease-out"
+              style={{ transform: activeTab === 'organizer' ? 'translateX(0%)' : 'translateX(-50%)' }}
+            >
+              {/* MOBILE ORGANIZER PANEL */}
+              <div className="w-1/2 pr-2">
+                <div className={`w-full rounded-[28px] border-2 bg-white shadow-xl overflow-hidden transition-all duration-300 flex flex-col h-[520px] relative ${activeTab === 'organizer' ? 'border-[#FB8500] shadow-[#FB8500]/15' : 'border-[rgba(255,170,80,0.2)]'}`}>
+                  {/* Browser bar */}
+                  <div className="bg-[#FFF8F2] px-4 py-3 flex items-center justify-between border-b border-[rgba(255,170,80,0.15)] shrink-0">
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-2.5 h-2.5 rounded-full bg-[#E63946]" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-[#FFB703]" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-[#22C55E]" />
+                    </div>
+                    <div className="bg-white px-3 py-0.5 rounded-full text-[10px] font-mono text-[#8A8A8A] border border-[rgba(255,170,80,0.2)] max-w-[200px] truncate text-center">
+                      photoshare.ai/organizer
+                    </div>
+                    <div className="w-8" />
+                  </div>
+
+                  {/* Organizer Content */}
+                  <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-white text-xs">
+                    {/* Top Stats */}
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="bg-[#FFF8F2] border border-[rgba(255,170,80,0.2)] p-2.5 rounded-xl text-center">
+                        <span className="text-[#8A8A8A] block text-[8px] uppercase font-mono">Photos</span>
+                        <span className="text-sm font-bold text-[#1A1A1A]">1,247</span>
+                      </div>
+                      <div className="bg-[#FFF8F2] border border-[rgba(255,170,80,0.2)] p-2.5 rounded-xl text-center">
+                        <span className="text-[#8A8A8A] block text-[8px] uppercase font-mono">Guests</span>
+                        <span className="text-sm font-bold text-[#1A1A1A]">184</span>
+                      </div>
+                      <div className="bg-[#FFF8F2] border border-[#FB8500]/30 p-2.5 rounded-xl text-center">
+                        <span className="text-[#8A8A8A] block text-[8px] uppercase font-mono">AI Status</span>
+                        <span className="text-sm font-bold text-[#FB8500]">96%</span>
+                      </div>
+                    </div>
+
+                    {/* Event Card */}
+                    <div className="bg-[#FFF8F2] border border-[rgba(255,170,80,0.2)] p-3 rounded-xl space-y-1">
+                      <div className="flex justify-between items-center">
+                        <h4 className="font-bold text-[#1A1A1A] text-xs">Annual Fest 2026</h4>
+                        <span className="text-[9px] bg-emerald-50 text-emerald-600 border border-emerald-200 px-2 py-0.5 rounded-full font-bold">
+                          Live
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-[#525252]">Pillai Auditorium • 4.8 GB</p>
+                    </div>
+
+                    {/* Simulation Step Box */}
+                    {simState === 'organizer-active' && (
+                      <div className="bg-[#FFF6EC] border-2 border-[#FB8500]/40 p-3 rounded-xl space-y-2 animate-in fade-in duration-300">
+                        {uploadPercent < 50 ? (
+                          <div className="space-y-2">
+                            <div className="flex justify-between items-center text-[11px]">
+                              <span className="font-bold text-[#1A1A1A] flex items-center gap-1.5">
+                                <Upload size={14} className="animate-bounce text-[#FB8500]" />
+                                Step 1: Uploading Photos
+                              </span>
+                              <span className="font-mono font-bold text-[#FB8500] text-[10px]">
+                                {Math.min(1247, Math.floor((uploadPercent / 50) * 1247))} / 1,247
+                              </span>
+                            </div>
+                            <div className="border border-dashed border-[#FB8500] rounded-lg p-2 bg-white text-center space-y-1">
+                              <span className="text-[10px] font-bold text-[#1A1A1A] block">DSLR_EVENT_BATCH.zip</span>
+                              <div className="w-full h-2 bg-[#FFF8F2] rounded-full overflow-hidden">
+                                <div className="h-full bg-gradient-to-r from-[#FFB703] to-[#FB8500] rounded-full transition-all duration-300" style={{ width: `${(uploadPercent / 50) * 100}%` }} />
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            <div className="flex justify-between items-center text-[11px]">
+                              <span className="font-bold text-emerald-600 flex items-center gap-1">
+                                <Sparkles size={13} className="animate-spin text-emerald-500" />
+                                Step 2: AI Face Vector Mapping
+                              </span>
+                              <span className="font-mono font-bold text-[#1A1A1A] text-[10px]">{uploadPercent}%</span>
+                            </div>
+                            <div className="w-full h-2 bg-white rounded-full overflow-hidden">
+                              <div className="h-full bg-gradient-to-r from-[#FFB703] to-emerald-500 rounded-full transition-all duration-300" style={{ width: `${uploadPercent}%` }} />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {simState === 'generate-qr' && (
+                      <div className="bg-[#FFF8F2] border border-[#FB8500]/30 p-3 rounded-xl flex items-center justify-between animate-in fade-in duration-300">
+                        <div>
+                          <h5 className="font-bold text-[#1A1A1A] text-xs">Event QR Code Ready</h5>
+                          <p className="text-[10px] text-[#525252]">Guests scanning QR code...</p>
+                        </div>
+                        <div className="h-10 w-10 bg-white rounded-lg flex items-center justify-center p-1 border border-[rgba(255,170,80,0.2)]">
+                          <QrCode size={26} className="text-[#1A1A1A]" />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Table */}
+                    <div className="bg-[#FFF8F2] border border-[rgba(255,170,80,0.2)] rounded-xl p-3 space-y-1.5">
+                      <span className="text-[9px] font-bold text-[#8A8A8A] uppercase">Recent Uploads</span>
+                      <div className="space-y-1 text-[10px] font-mono text-[#525252]">
+                        <div className="flex justify-between items-center">
+                          <span>IMG_1204.jpg</span>
+                          <span className="text-emerald-600 font-bold">Done</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span>IMG_1205.jpg</span>
+                          <span className="text-emerald-600 font-bold">Done</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-            )}
+
+              {/* MOBILE GUEST PANEL */}
+              <div className="w-1/2 pl-2">
+                <div className={`w-full rounded-[28px] border-2 bg-white shadow-xl overflow-hidden transition-all duration-300 flex flex-col h-[520px] relative ${activeTab === 'guest' ? 'border-[#FF6B6B] shadow-[#FF6B6B]/15' : 'border-[rgba(255,170,80,0.2)]'}`}>
+                  {/* Browser bar */}
+                  <div className="bg-[#FFF8F2] px-4 py-3 flex items-center justify-between border-b border-[rgba(255,170,80,0.15)] shrink-0">
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-2.5 h-2.5 rounded-full bg-[#E63946]" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-[#FFB703]" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-[#22C55E]" />
+                    </div>
+                    <div className="bg-white px-3 py-0.5 rounded-full text-[10px] font-mono text-[#8A8A8A] border border-[rgba(255,170,80,0.2)] max-w-[200px] truncate text-center">
+                      photoshare.ai/guest
+                    </div>
+                    <div className="w-8" />
+                  </div>
+
+                  {/* Guest Content */}
+                  <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-white text-xs">
+                    <div className="bg-[#FFF8F2] border border-[rgba(255,170,80,0.2)] p-3 rounded-xl space-y-0.5">
+                      <h4 className="font-bold text-[#1A1A1A] text-xs">Welcome, Akash</h4>
+                      <span className="text-[10px] text-[#FF6B6B] font-bold block">Joined Annual Fest 2026</span>
+                    </div>
+
+                    {(simState === 'guest-active' || simState === 'upload-selfie') && (
+                      <div className="bg-[#FFF6EC] border border-[#FF6B6B]/30 p-4 rounded-xl text-center space-y-2 animate-in fade-in duration-300 flex flex-col items-center">
+                        <span className="text-[10px] font-bold text-[#FF6B6B] uppercase">Guest Selfie Key</span>
+                        {simState === 'guest-active' ? (
+                          <button onClick={startSimulation} className="h-9 px-5 bg-gradient-to-r from-[#FFB703] to-[#FB8500] text-white rounded-full flex items-center justify-center text-[11px] font-bold shadow-md shadow-[#FB8500]/20">
+                            Upload Selfie
+                          </button>
+                        ) : (
+                          <div className="space-y-1">
+                            <div className="h-14 w-14 rounded-full overflow-hidden border-2 border-[#FB8500] relative mx-auto shadow-md">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80" alt="Selfie preview" className="h-full w-full object-cover animate-pulse" />
+                            </div>
+                            <span className="text-[9px] text-[#525252] font-semibold block">selfie_akash.jpg</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {simState === 'searching' && (
+                      <div className="bg-[#FFF6EC] border border-[#FF6B6B]/30 p-4 rounded-xl space-y-2 animate-in fade-in duration-300">
+                        <div className="flex justify-between items-center text-[11px]">
+                          <span className="font-bold text-[#FF6B6B]">AI Face Matching...</span>
+                          <span className="font-bold text-[#1A1A1A]">{aiPercent}%</span>
+                        </div>
+                        <div className="w-full h-2 bg-white rounded-full overflow-hidden">
+                          <div className="h-full bg-gradient-to-r from-[#FFB703] to-[#FF6B6B] rounded-full transition-all duration-300" style={{ width: `${aiPercent}%` }} />
+                        </div>
+                      </div>
+                    )}
+
+                    {simState === 'completed' && (
+                      <div className="space-y-3 animate-in fade-in duration-500">
+                        <div className="bg-emerald-50 border border-emerald-200 p-3 rounded-xl flex items-center justify-between">
+                          <div>
+                            <span className="text-[9px] font-bold text-emerald-600 uppercase block">Gallery Unlocked</span>
+                            <h5 className="font-bold text-[#1A1A1A] text-xs">126 Photos Found</h5>
+                          </div>
+                          <button className="bg-[#FF6B6B] text-white font-bold text-[10px] h-7 px-3 rounded-full flex items-center gap-1 shadow-sm">
+                            <Download size={10} /> Download
+                          </button>
+                        </div>
+
+                        <div className="grid grid-cols-3 gap-2">
+                          {MATCHED_IMAGES.slice(0, 3).map((img, i) => (
+                            <div key={i} className="aspect-square rounded-lg overflow-hidden border border-[rgba(255,170,80,0.2)] relative shadow-sm">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src={img} alt="Matched pic" className="h-full w-full object-cover" />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* DESKTOP SIDE-BY-SIDE PANELS (>= 1024px) */}
+          <div className="hidden lg:grid grid-cols-2 gap-10 max-w-7xl w-full items-stretch pt-4">
 
             {/* ORGANIZER SAAS DASHBOARD */}
-            <div className={`w-full rounded-[28px] border-2 bg-white shadow-xl overflow-hidden transition-all duration-500 flex flex-col h-[540px] relative ${simState === 'organizer-active' || simState === 'generate-qr' ? 'border-[#FB8500] shadow-[#FB8500]/15 scale-[1.01]' : 'border-[rgba(255,170,80,0.2)] opacity-50 scale-[0.99] grayscale'}`}>
+            <div className={`w-full rounded-[28px] border-2 bg-white shadow-xl overflow-hidden transition-all duration-500 flex flex-col h-[540px] relative ${activeTab === 'organizer' ? 'border-[#FB8500] shadow-[#FB8500]/15 scale-[1.01] opacity-100' : 'border-[rgba(255,170,80,0.2)] opacity-60 scale-[0.99]'}`}>
 
               {/* Browser bar */}
               <div className="bg-[#FFF8F2] px-5 py-3.5 flex items-center justify-between border-b border-[rgba(255,170,80,0.15)] shrink-0">
@@ -732,7 +956,6 @@ export default function Home() {
 
                 {/* Main Content */}
                 <div className="flex-1 p-5 overflow-y-auto space-y-4 bg-white">
-
                   {/* Top Stats */}
                   <div className="grid grid-cols-3 gap-3">
                     <div className="bg-[#FFF8F2] border border-[rgba(255,170,80,0.2)] p-3 rounded-2xl">
@@ -851,7 +1074,7 @@ export default function Home() {
             </div>
 
             {/* GUEST SAAS DASHBOARD */}
-            <div className={`w-full rounded-[28px] border-2 bg-white shadow-xl overflow-hidden transition-all duration-500 flex flex-col h-[540px] relative ${simState === 'guest-active' || simState === 'upload-selfie' || simState === 'searching' || simState === 'completed' ? 'border-[#FF6B6B] shadow-[#FF6B6B]/15 scale-[1.01]' : 'border-[rgba(255,170,80,0.2)] opacity-50 scale-[0.99] grayscale'}`}>
+            <div className={`w-full rounded-[28px] border-2 bg-white shadow-xl overflow-hidden transition-all duration-500 flex flex-col h-[540px] relative ${activeTab === 'guest' ? 'border-[#FF6B6B] shadow-[#FF6B6B]/15 scale-[1.01] opacity-100' : 'border-[rgba(255,170,80,0.2)] opacity-60 scale-[0.99]'}`}>
 
               {/* Browser bar */}
               <div className="bg-[#FFF8F2] px-5 py-3.5 flex items-center justify-between border-b border-[rgba(255,170,80,0.15)] shrink-0">
@@ -906,9 +1129,9 @@ export default function Home() {
                     <div className="bg-[#FFF6EC] border border-[#FF6B6B]/30 p-5 rounded-2xl text-center space-y-3 animate-in fade-in duration-300 flex flex-col items-center">
                       <span className="text-xs font-bold text-[#FF6B6B] uppercase">Select Selfie File</span>
                       {simState === 'guest-active' ? (
-                        <div className="h-11 px-6 bg-gradient-to-r from-[#FFB703] to-[#FB8500] text-white rounded-full flex items-center justify-center text-xs font-bold shadow-md shadow-[#FB8500]/20 cursor-pointer hover:scale-[1.02] transition-transform">
+                        <button onClick={startSimulation} className="h-11 px-6 bg-gradient-to-r from-[#FFB703] to-[#FB8500] text-white rounded-full flex items-center justify-center text-xs font-bold shadow-md shadow-[#FB8500]/20 cursor-pointer hover:scale-[1.02] transition-transform">
                           Upload Selfie
-                        </div>
+                        </button>
                       ) : (
                         <div className="space-y-2">
                           {/* Selfie upload preview */}

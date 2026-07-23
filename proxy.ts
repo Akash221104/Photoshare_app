@@ -7,5 +7,6 @@ export const config = {
     "/dashboard/:path*",
     "/profile/:path*",
     "/settings/:path*",
+    "/events/:id/settings/:path*",
   ],
 };

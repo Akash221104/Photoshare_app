@@ -31,9 +31,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${dmSerif.variable} ${inter.variable} h-full antialiased`}
+      className={`${dmSerif.variable} ${inter.variable} h-full antialiased overflow-x-hidden`}
     >
-      <body className="min-h-full flex flex-col font-sans bg-[#FFFDF8] text-[#1A1A1A] selection:bg-[#FFB703]/20 selection:text-[#FB8500]">
+      <body className="min-h-full flex flex-col font-sans bg-[#FFFDF8] text-[#1A1A1A] selection:bg-[#FFB703]/20 selection:text-[#FB8500] overflow-x-hidden w-full relative">
         <NotificationProvider>
           <UploadProvider>
             {children}

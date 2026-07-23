@@ -13,13 +13,10 @@ export async function GET(
 ) {
   const { id: eventId } = await params;
   const { data: session } = await auth.getSession();
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
 
-  const response = await eventService.getEvent(eventId, session.user.id);
+  const response = await eventService.getEvent(eventId, session?.user?.id);
   if (!response.success) {
-    return NextResponse.json({ error: response.error }, { status: response.error?.includes('Unauthorized') ? 403 : 404 });
+    return NextResponse.json({ error: response.error }, { status: 404 });
   }
   return NextResponse.json(response.data);
 }

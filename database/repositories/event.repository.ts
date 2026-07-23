@@ -67,13 +67,35 @@ export class EventRepository {
   }
 
   /**
-   * Retrieves an event by its ID.
+   * Retrieves an event by its ID with real-time stats (photo count & member count).
    */
   async getEventById(id: string): Promise<EventRow | null> {
     const sql = `
-      SELECT id, name, description, join_code, host_id, upload_mode, created_at, updated_at
-      FROM events
-      WHERE id = $1;
+      SELECT 
+        e.id, 
+        e.name, 
+        e.description, 
+        e.join_code, 
+        e.host_id, 
+        e.upload_mode, 
+        e.created_at, 
+        e.updated_at,
+        u.name as host_name,
+        COALESCE(p.photo_count, 0)::int as photo_count,
+        COALESCE(m.member_count, 0)::int as member_count
+      FROM events e
+      LEFT JOIN users u ON e.host_id = u.id
+      LEFT JOIN (
+        SELECT event_id, COUNT(*) as photo_count 
+        FROM photos 
+        GROUP BY event_id
+      ) p ON e.id = p.event_id
+      LEFT JOIN (
+        SELECT event_id, COUNT(*) as member_count 
+        FROM event_members 
+        GROUP BY event_id
+      ) m ON e.id = m.event_id
+      WHERE e.id = $1;
     `;
     const res = await query(sql, [id]);
     if (res.rows.length === 0) return null;

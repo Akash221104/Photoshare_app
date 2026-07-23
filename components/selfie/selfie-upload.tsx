@@ -122,8 +122,14 @@ export function SelfieUpload({
         body: JSON.stringify({ eventId })
       });
 
-      const sessionData = await sessionRes.json();
+      const sessionData = await sessionRes.json().catch(() => ({}));
       if (!sessionRes.ok) {
+        if (sessionRes.status === 401 || sessionData.error?.toLowerCase().includes('unauthorized')) {
+          // Unauthenticated guest -> redirect to sign in with return action
+          const returnUrl = `/events/${eventId}/gallery?action=selfie`;
+          window.location.href = `/auth/sign-in?redirect=${encodeURIComponent(returnUrl)}`;
+          return;
+        }
         throw new Error(sessionData.error || 'Failed to initialize liveness session.');
       }
 
@@ -382,22 +388,28 @@ export function SelfieUpload({
     const video = videoRef.current;
     const landmarker = landmarkerRef.current;
     if (!video || !landmarker || !streamRef.current) return;
-    if (video.paused || video.ended || video.readyState < 3) return;
-    if (video.videoWidth === 0 || video.videoHeight === 0) return;
+    if (video.paused || video.ended || video.readyState < 4 || video.videoWidth === 0 || video.currentTime === 0) return;
 
     processingRef.current = true;
 
     try {
-      let timestamp = performance.now();
+      let timestamp = Math.round(performance.now());
       if (timestamp <= lastTimestampRef.current) {
-        timestamp = lastTimestampRef.current + 1;
+        timestamp = lastTimestampRef.current + 33;
       }
       lastTimestampRef.current = timestamp;
 
-      const results = landmarker.detectForVideo(video, timestamp);
+      let results: any = null;
+      try {
+        results = landmarker.detectForVideo(video, timestamp);
+      } catch {
+        // Quietly skip frame if WASM timing sync falls out of step
+        processingRef.current = false;
+        return;
+      }
       const state = livenessStateRef.current;
 
-      if (results.faceLandmarks && results.faceLandmarks.length > 0) {
+      if (results && results.faceLandmarks && results.faceLandmarks.length > 0) {
         const landmarks = results.faceLandmarks[0];
         
         // Extract 5 structural landmarks mirroring InsightFace
@@ -713,10 +725,10 @@ export function SelfieUpload({
           <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-[#FFB703] to-[#FB8500] flex items-center justify-center shadow-md shadow-[#FB8500]/20">
             <Camera className="w-5 h-5 text-white" />
           </div>
-          <span>Selfie Liveness Verification</span>
+          <span>Take a Quick Selfie</span>
         </CardTitle>
         <CardDescription className="text-sm text-[#525252]">
-          Verify your liveness with a 4-second facial sequence to securely register your selfie.
+          Take a selfie so AI can find all your event photos automatically.
         </CardDescription>
       </CardHeader>
       
@@ -767,7 +779,7 @@ export function SelfieUpload({
 
         {/* 2. Video Capture Container with guides & overlays */}
         {cameraActive && (
-          <div className="relative aspect-[4/3] rounded-[24px] overflow-hidden border-2 border-[#FB8500] bg-black shadow-2xl">
+          <div className="relative aspect-[3/4] sm:aspect-[4/3] min-h-[380px] sm:min-h-[420px] rounded-[24px] overflow-hidden border-2 border-[#FB8500] bg-black shadow-2xl">
             <video
               ref={setVideoRef}
               autoPlay
@@ -889,46 +901,46 @@ export function SelfieUpload({
             </div>
 
             <div className="space-y-1.5 max-w-sm">
-              <p className="font-serif-display font-bold text-2xl text-[#1A1A1A]">Analyzing liveness recording...</p>
+              <p className="font-serif-display font-bold text-2xl text-[#1A1A1A]">Searching Event Photos...</p>
               <p className="text-xs font-semibold text-[#FB8500] min-h-[20px] transition-all">
-                {verifyingProgress < 35 && "Uploading encrypted selfie frames to vault..."}
-                {verifyingProgress >= 35 && verifyingProgress < 55 && "Detecting facial landmarks & 3D pose continuity..."}
-                {verifyingProgress >= 55 && verifyingProgress < 75 && "Generating 512-D face embedding vector..."}
-                {verifyingProgress >= 75 && verifyingProgress < 90 && "Searching event gallery for matching photos..."}
-                {verifyingProgress >= 90 && "Liveness verified! Unlocking your private gallery... ✨"}
+                {verifyingProgress < 35 && "Checking selfie..."}
+                {verifyingProgress >= 35 && verifyingProgress < 55 && "Scanning face features..."}
+                {verifyingProgress >= 55 && verifyingProgress < 75 && "Matching face with event photos..."}
+                {verifyingProgress >= 75 && verifyingProgress < 90 && "Finding your photos..."}
+                {verifyingProgress >= 90 && "Photos found! Opening your gallery... ✨"}
               </p>
             </div>
 
             {/* Dynamic Animated Step Progression Indicator */}
-            <div className="w-full max-w-sm grid grid-cols-5 gap-2 text-[10px] font-bold text-center">
-              {/* Step 1: Upload */}
-              <div className="space-y-1.5">
-                <div className={`h-2.5 rounded-full transition-all duration-300 ${verifyingProgress >= 15 ? 'bg-gradient-to-r from-[#FFB703] to-[#FB8500] shadow-sm' : 'bg-zinc-200'}`} />
-                <span className={`block transition-colors ${verifyingProgress >= 15 ? 'text-[#FB8500] font-extrabold' : 'text-[#8A8A8A]'}`}>Upload</span>
+            <div className="w-full max-w-sm grid grid-cols-5 gap-1.5 sm:gap-2 text-[8px] sm:text-[10px] font-bold text-center">
+              {/* Step 1: Selfie */}
+              <div className="space-y-1">
+                <div className={`h-2 sm:h-2.5 rounded-full transition-all duration-300 ${verifyingProgress >= 15 ? 'bg-gradient-to-r from-[#FFB703] to-[#FB8500] shadow-sm' : 'bg-zinc-200'}`} />
+                <span className={`block truncate transition-colors ${verifyingProgress >= 15 ? 'text-[#FB8500] font-extrabold' : 'text-[#8A8A8A]'}`}>Selfie</span>
               </div>
 
-              {/* Step 2: Detection */}
-              <div className="space-y-1.5">
-                <div className={`h-2.5 rounded-full transition-all duration-300 ${verifyingProgress >= 35 ? 'bg-gradient-to-r from-[#FFB703] to-[#FB8500] shadow-sm' : verifyingProgress >= 15 ? 'bg-[#FFB703] animate-pulse' : 'bg-zinc-200'}`} />
-                <span className={`block transition-colors ${verifyingProgress >= 35 ? 'text-[#FB8500] font-extrabold' : 'text-[#8A8A8A]'}`}>Detection</span>
+              {/* Step 2: Scanning */}
+              <div className="space-y-1">
+                <div className={`h-2 sm:h-2.5 rounded-full transition-all duration-300 ${verifyingProgress >= 35 ? 'bg-gradient-to-r from-[#FFB703] to-[#FB8500] shadow-sm' : verifyingProgress >= 15 ? 'bg-[#FFB703] animate-pulse' : 'bg-zinc-200'}`} />
+                <span className={`block truncate transition-colors ${verifyingProgress >= 35 ? 'text-[#FB8500] font-extrabold' : 'text-[#8A8A8A]'}`}>Scan</span>
               </div>
 
-              {/* Step 3: Embedding */}
-              <div className="space-y-1.5">
-                <div className={`h-2.5 rounded-full transition-all duration-300 ${verifyingProgress >= 55 ? 'bg-gradient-to-r from-[#FFB703] to-[#FB8500] shadow-sm' : verifyingProgress >= 35 ? 'bg-[#FFB703] animate-pulse' : 'bg-zinc-200'}`} />
-                <span className={`block transition-colors ${verifyingProgress >= 55 ? 'text-[#FB8500] font-extrabold' : 'text-[#8A8A8A]'}`}>Embedding</span>
+              {/* Step 3: Matching */}
+              <div className="space-y-1">
+                <div className={`h-2 sm:h-2.5 rounded-full transition-all duration-300 ${verifyingProgress >= 55 ? 'bg-gradient-to-r from-[#FFB703] to-[#FB8500] shadow-sm' : verifyingProgress >= 35 ? 'bg-[#FFB703] animate-pulse' : 'bg-zinc-200'}`} />
+                <span className={`block truncate transition-colors ${verifyingProgress >= 55 ? 'text-[#FB8500] font-extrabold' : 'text-[#8A8A8A]'}`}>Match</span>
               </div>
 
-              {/* Step 4: Searching */}
-              <div className="space-y-1.5">
-                <div className={`h-2.5 rounded-full transition-all duration-300 ${verifyingProgress >= 75 ? 'bg-gradient-to-r from-[#FFB703] to-[#FB8500] shadow-sm' : verifyingProgress >= 55 ? 'bg-[#FFB703] animate-pulse' : 'bg-zinc-200'}`} />
-                <span className={`block transition-colors ${verifyingProgress >= 75 ? 'text-[#FB8500] font-extrabold' : 'text-[#8A8A8A]'}`}>Searching</span>
+              {/* Step 4: Finding */}
+              <div className="space-y-1">
+                <div className={`h-2 sm:h-2.5 rounded-full transition-all duration-300 ${verifyingProgress >= 75 ? 'bg-gradient-to-r from-[#FFB703] to-[#FB8500] shadow-sm' : verifyingProgress >= 55 ? 'bg-[#FFB703] animate-pulse' : 'bg-zinc-200'}`} />
+                <span className={`block truncate transition-colors ${verifyingProgress >= 75 ? 'text-[#FB8500] font-extrabold' : 'text-[#8A8A8A]'}`}>Find</span>
               </div>
 
-              {/* Step 5: Found */}
-              <div className="space-y-1.5">
-                <div className={`h-2.5 rounded-full transition-all duration-300 ${verifyingProgress >= 90 ? 'bg-gradient-to-r from-emerald-400 to-emerald-600 shadow-sm animate-pulse' : 'bg-zinc-200'}`} />
-                <span className={`block transition-colors ${verifyingProgress >= 90 ? 'text-emerald-600 font-extrabold' : 'text-[#8A8A8A]'}`}>Found</span>
+              {/* Step 5: Photos */}
+              <div className="space-y-1">
+                <div className={`h-2 sm:h-2.5 rounded-full transition-all duration-300 ${verifyingProgress >= 90 ? 'bg-gradient-to-r from-emerald-400 to-emerald-600 shadow-sm animate-pulse' : 'bg-zinc-200'}`} />
+                <span className={`block truncate transition-colors ${verifyingProgress >= 90 ? 'text-emerald-600 font-extrabold' : 'text-[#8A8A8A]'}`}>Photos!</span>
               </div>
             </div>
 
@@ -1004,11 +1016,11 @@ export function SelfieUpload({
         )}
       </CardContent>
 
-      <CardFooter className="flex flex-wrap justify-between gap-4 border-t border-[rgba(255,170,80,0.15)] pt-6">
-        <div className="flex gap-3">
+      <CardFooter className="flex flex-col sm:flex-row justify-between gap-3 border-t border-[rgba(255,170,80,0.15)] pt-6">
+        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
           {/* Liveness Start Button */}
           {livenessState === 'IDLE' && !selfieUrl && (
-            <button onClick={startLivenessFlow} className="btn-primary-luxury !h-12 !px-6 !text-xs flex items-center gap-2">
+            <button onClick={startLivenessFlow} className="btn-primary-luxury !h-12 !px-6 !text-xs flex items-center justify-center gap-2 w-full sm:w-auto">
               <Camera className="w-4 h-4" />
               Verify Liveness
             </button>
@@ -1016,20 +1028,20 @@ export function SelfieUpload({
           
           {/* Retry Button */}
           {livenessState === 'FAILED' && (
-            <button onClick={startLivenessFlow} className="btn-secondary-luxury !h-12 !px-6 !text-xs flex items-center gap-2">
+            <button onClick={startLivenessFlow} className="btn-secondary-luxury !h-12 !px-6 !text-xs flex items-center justify-center gap-2 w-full sm:w-auto">
               <RefreshCw className="w-4 h-4" />
               Retry Verification
             </button>
           )}
         </div>
 
-        <div className="flex gap-3 ml-auto">
+        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto sm:ml-auto">
           {/* Delete Stored Selfie */}
           {selfieUrl && livenessState === 'IDLE' && (
             <button
               onClick={handleDelete}
               disabled={deleting}
-              className="px-5 h-12 rounded-full bg-red-50 text-[#E63946] border border-red-200 hover:bg-red-100 font-bold text-xs flex items-center gap-2 transition-colors"
+              className="px-5 h-12 rounded-full bg-red-50 text-[#E63946] border border-red-200 hover:bg-red-100 font-bold text-xs flex items-center justify-center gap-2 transition-colors w-full sm:w-auto"
             >
               {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
               Delete Selfie
@@ -1038,7 +1050,7 @@ export function SelfieUpload({
 
           {/* Replace Option */}
           {selfieUrl && livenessState === 'IDLE' && (
-            <button onClick={startLivenessFlow} className="btn-secondary-luxury !h-12 !px-6 !text-xs flex items-center gap-2">
+            <button onClick={startLivenessFlow} className="btn-secondary-luxury !h-12 !px-6 !text-xs flex items-center justify-center gap-2 w-full sm:w-auto">
               <RefreshCw className="w-4 h-4" />
               Verify New Selfie
             </button>

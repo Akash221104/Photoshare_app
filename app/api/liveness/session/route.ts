@@ -25,10 +25,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'eventId is required' }, { status: 400 });
     }
 
-    // Check event membership
+    // Check event membership (auto-enroll authenticated visitors as guest members)
     const isMember = await memberRepo.isMember(eventId, session.user.id);
     if (!isMember) {
-      return NextResponse.json({ error: 'Forbidden: You must be a member of the event' }, { status: 403 });
+      await memberRepo.joinEvent(eventId, session.user.id, 'guest');
     }
 
     // Get IP and User Agent hashes

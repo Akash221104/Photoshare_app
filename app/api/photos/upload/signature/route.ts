@@ -42,10 +42,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid file format. Only JPEG, PNG, and WebP are allowed' }, { status: 400 });
     }
 
-    // 3. Authorization Guard: Check membership
+    // 3. Authorization Guard: Check membership (auto-enroll authenticated visitors as guest members)
     const isMember = await memberRepo.isMember(eventId, session.user.id);
     if (!isMember) {
-      return NextResponse.json({ error: 'Unauthorized: You must join the event before uploading' }, { status: 403 });
+      await memberRepo.joinEvent(eventId, session.user.id, 'guest');
     }
 
     // 4. Check Event settings (Upload Mode)

@@ -12,6 +12,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { HostShareKit } from '@/components/events/host-share-kit';
 import { LoadingSpinner } from '@/components/loading-spinner';
 
 interface EventStats {
@@ -28,9 +29,12 @@ interface EventStats {
 
 interface HostDashboardProps {
   eventId: string;
+  eventName?: string;
+  hostName?: string;
+  joinCode?: string;
 }
 
-export function HostDashboard({ eventId }: HostDashboardProps) {
+export function HostDashboard({ eventId, eventName, hostName, joinCode }: HostDashboardProps) {
   const [stats, setStats] = useState<EventStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -129,6 +133,14 @@ export function HostDashboard({ eventId }: HostDashboardProps) {
           </p>
         </div>
       </div>
+
+      {/* Host Share Kit (QR Code, Copy Link, Print QR & A4 Poster) */}
+      <HostShareKit
+        eventId={eventId}
+        eventName={eventName || 'Event'}
+        hostName={hostName}
+        joinCode={joinCode}
+      />
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">

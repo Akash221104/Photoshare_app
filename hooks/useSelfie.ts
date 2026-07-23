@@ -14,12 +14,17 @@ export function useSelfie(eventId: string) {
       setError(null);
       const res = await fetch(`/api/selfie?eventId=${eventId}`);
       if (!res.ok) {
+        if (res.status === 401) {
+          setSelfieUrl(null);
+          return;
+        }
         throw new Error('Failed to retrieve selfie metadata');
       }
       const data = await res.json();
       setSelfieUrl(data?.cloudinary_url || null);
     } catch (err: any) {
-      setError(err.message || 'Failed to load selfie');
+      // Quietly set null selfie for unauthenticated guest visitors
+      setSelfieUrl(null);
     } finally {
       setLoading(false);
     }

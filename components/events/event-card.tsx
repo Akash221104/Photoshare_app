@@ -77,7 +77,7 @@ export function EventCard({ event, currentUserId }: EventCardProps) {
         </span>
         <Link href={`/events/${event.id}`}>
           <button className="btn-primary-luxury !h-9 !px-4 !text-xs flex items-center gap-1">
-            View Workspace
+            Enter Event
             <ArrowRight size={14} />
           </button>
         </Link>

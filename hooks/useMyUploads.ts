@@ -23,7 +23,12 @@ export function useMyUploads(eventId: string) {
         `/api/my/uploads?eventId=${eventId}&limit=${limit}&offset=${currentOffset}&sortBy=${sortBy}&query=${encodeURIComponent(searchQuery)}`
       );
       if (!res.ok) {
-        const errData = await res.json();
+        const errData = await res.json().catch(() => ({}));
+        if (res.status === 401) {
+          setPhotos([]);
+          setHasMore(false);
+          return;
+        }
         throw new Error(errData.error || 'Failed to retrieve uploads');
       }
 

@@ -15,9 +15,10 @@ interface EventHeaderProps {
   event: Event;
   role: 'host' | 'guest' | 'admin';
   onLeaveClick?: () => void;
+  hideTabs?: boolean;
 }
 
-export function EventHeader({ event, role, onLeaveClick }: EventHeaderProps) {
+export function EventHeader({ event, role, onLeaveClick, hideTabs }: EventHeaderProps) {
   const pathname = usePathname();
   const [inviteOpen, setInviteOpen] = React.useState(false);
   const isHost = role === 'host';
@@ -76,27 +77,29 @@ export function EventHeader({ event, role, onLeaveClick }: EventHeaderProps) {
       </div>
 
       {/* Tabs list (Gallery, Members, Settings) - Modern Glass Pills */}
-      <div className="flex bg-[#FFF8F2] p-1.5 rounded-full border border-[rgba(255,170,80,0.22)] w-fit shadow-xs">
-        <nav className="flex space-x-1">
-          {navLinks.map((link) => {
-            const isActive = pathname === link.href;
-            return (
-              <Link key={link.name} href={link.href}>
-                <span
-                  className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-extrabold cursor-pointer transition-all ${
-                    isActive
-                      ? 'bg-gradient-to-r from-[#FFB703] to-[#FB8500] text-white shadow-md shadow-[#FB8500]/25'
-                      : 'text-[#8A8A8A] hover:text-[#1A1A1A] hover:bg-white/50'
-                  }`}
-                >
-                  <link.icon size={15} />
-                  {link.name}
-                </span>
-              </Link>
-            );
-          })}
-        </nav>
-      </div>
+      {!hideTabs && (
+        <div className="flex bg-[#FFF8F2] p-1.5 rounded-full border border-[rgba(255,170,80,0.22)] w-fit max-w-full overflow-x-auto whitespace-nowrap shadow-xs no-scrollbar">
+          <nav className="flex space-x-1">
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href;
+              return (
+                <Link key={link.name} href={link.href}>
+                  <span
+                    className={`flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs font-extrabold cursor-pointer transition-all ${
+                      isActive
+                        ? 'bg-gradient-to-r from-[#FFB703] to-[#FB8500] text-white shadow-md shadow-[#FB8500]/25'
+                        : 'text-[#8A8A8A] hover:text-[#1A1A1A] hover:bg-white/50'
+                    }`}
+                  >
+                    <link.icon size={15} />
+                    {link.name}
+                  </span>
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+      )}
 
       {/* Invitation Modal */}
       <InviteLinkModal event={event} open={inviteOpen} onOpenChange={setInviteOpen} />

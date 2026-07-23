@@ -37,27 +37,27 @@ export function SearchBar({ searchQuery, setSearchQuery }: SearchBarProps) {
   };
 
   return (
-    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between w-full">
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between w-full">
       {/* Search Input */}
-      <div className="relative flex-1 max-w-md">
+      <div className="relative flex-1 max-w-md w-full">
         <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-[#FB8500]" />
         <Input
           type="text"
           placeholder="Search events by name..."
-          className="pl-10 h-11 rounded-[18px] border-[rgba(255,170,80,0.25)] focus:border-[#FB8500] focus:ring-[#FB8500]/20 bg-[#FFFDF8] text-[#1A1A1A] placeholder:text-[#8A8A8A]"
+          className="pl-10 h-11 rounded-[18px] border-[rgba(255,170,80,0.25)] focus:border-[#FB8500] focus:ring-[#FB8500]/20 bg-[#FFFDF8] text-[#1A1A1A] placeholder:text-[#8A8A8A] w-full"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
       </div>
 
       {/* Join Code Input Form */}
-      <form onSubmit={handleJoin} className="flex items-center gap-3">
-        <div className="relative w-48">
+      <form onSubmit={handleJoin} className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+        <div className="relative flex-1 sm:w-48">
           <KeyRound className="absolute left-3.5 top-3.5 h-4 w-4 text-[#FB8500]" />
           <Input
             type="text"
             placeholder="Enter Join Code"
-            className="pl-10 h-11 uppercase tracking-wider font-mono text-xs rounded-[18px] border-[rgba(255,170,80,0.25)] focus:border-[#FB8500] focus:ring-[#FB8500]/20 bg-[#FFFDF8] text-[#1A1A1A] placeholder:text-[#8A8A8A]"
+            className="pl-10 h-11 uppercase tracking-wider font-mono text-xs rounded-[18px] border-[rgba(255,170,80,0.25)] focus:border-[#FB8500] focus:ring-[#FB8500]/20 bg-[#FFFDF8] text-[#1A1A1A] placeholder:text-[#8A8A8A] w-full"
             value={joinCode}
             onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
             maxLength={6}
@@ -66,7 +66,7 @@ export function SearchBar({ searchQuery, setSearchQuery }: SearchBarProps) {
         <button
           type="submit"
           disabled={joining || !joinCode.trim()}
-          className="btn-primary-luxury !h-11 !px-5 !text-xs"
+          className="btn-primary-luxury !h-11 !px-4 sm:!px-5 !text-xs shrink-0"
         >
           {joining ? 'Joining...' : 'Join Event'}
         </button>

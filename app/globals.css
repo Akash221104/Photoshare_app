@@ -5,25 +5,38 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --color-background: #FFFDF8;
-  --color-foreground: #1A1A1A;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
   --font-sans: var(--font-inter), sans-serif;
   --font-serif: var(--font-dm-serif), serif;
   --font-heading: var(--font-dm-serif), serif;
   --font-mono: monospace;
   
-  --color-primary: #FFB703;
-  --color-secondary: #FB8500;
-  --color-accent: #E63946;
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
   --color-coral: #FF6B6B;
   --color-cream: #FFF8F2;
   --color-surface: #FFF6EC;
-  --color-card: #FFFFFF;
   --color-heading: #1A1A1A;
   --color-body: #525252;
   --color-muted-text: #8A8A8A;
   --color-success: #22C55E;
-  --color-border: rgba(255, 170, 80, 0.16);
 }
 
 :root {
@@ -42,10 +55,33 @@
   --accent: #FFB703;
   --accent-foreground: #1A1A1A;
   --destructive: #E63946;
+  --destructive-foreground: #FFFFFF;
   --border: rgba(255, 170, 80, 0.16);
   --input: rgba(255, 170, 80, 0.2);
   --ring: #FB8500;
   --radius: 1.75rem; /* 28px */
+}
+
+.dark {
+  --background: #09090b;
+  --foreground: #f4f4f5;
+  --card: #09090b;
+  --card-foreground: #f4f4f5;
+  --popover: #09090b;
+  --popover-foreground: #f4f4f5;
+  --primary: #FB8500;
+  --primary-foreground: #09090b;
+  --secondary: #27272a;
+  --secondary-foreground: #f4f4f5;
+  --muted: #18181b;
+  --muted-foreground: #a1a1aa;
+  --accent: #FFB703;
+  --accent-foreground: #09090b;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: rgba(255, 170, 80, 0.25);
+  --input: rgba(255, 170, 80, 0.35);
+  --ring: #FB8500;
 }
 
 @layer base {

@@ -163,24 +163,24 @@ export function DownloadCenter({
 
       {/* Floating Active Selection Bar (Shown when items are selected) */}
       {selectedCount > 0 ? (
-        <div className="bg-white/95 backdrop-blur-xl border-2 border-[#FB8500] p-3 sm:p-4 rounded-2xl shadow-xl shadow-[#FB8500]/10 flex flex-wrap items-center justify-between gap-3 animate-in slide-in-from-bottom-2 duration-300">
-          <div className="flex items-center gap-2 text-xs font-extrabold text-[#FB8500] bg-[#FFF8F2] px-3.5 py-1.5 rounded-full border border-[rgba(255,170,80,0.3)]">
+        <div className="bg-white/95 backdrop-blur-xl border-2 border-[#FB8500] p-3 sm:p-4 rounded-2xl shadow-xl shadow-[#FB8500]/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in slide-in-from-bottom-2 duration-300">
+          <div className="flex items-center gap-2 text-xs font-extrabold text-[#FB8500] bg-[#FFF8F2] px-3.5 py-1.5 rounded-full border border-[rgba(255,170,80,0.3)] self-start sm:self-auto">
             <CheckSquare className="w-4 h-4" />
             <span>{selectedCount} {selectedCount === 1 ? 'Photo' : 'Photos'} Selected</span>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto">
             <button
               onClick={() => handleDownload('selected')}
               disabled={downloading !== null}
-              className="btn-primary-luxury !h-10 !px-5 !text-xs flex items-center gap-2"
+              className="btn-primary-luxury !h-10 !px-5 !text-xs flex items-center justify-center gap-2 w-full sm:w-auto"
             >
               <Download className="w-4 h-4" />
               <span>Download Selected ({selectedCount}) ZIP</span>
             </button>
             <button
               onClick={clearSelection}
-              className="px-3.5 h-10 rounded-full bg-zinc-100 text-zinc-600 hover:bg-zinc-200 font-bold text-xs transition-colors"
+              className="px-3.5 h-10 rounded-full bg-zinc-100 text-zinc-600 hover:bg-zinc-200 font-bold text-xs transition-colors w-full sm:w-auto text-center"
             >
               Clear
             </button>
@@ -188,19 +188,19 @@ export function DownloadCenter({
         </div>
       ) : (
         /* Compact Default Download Controls Pill */
-        <div className="bg-[#FFF8F2] border border-[rgba(255,170,80,0.22)] p-3.5 rounded-2xl flex flex-wrap items-center justify-between gap-3 shadow-xs">
+        <div className="bg-[#FFF8F2] border border-[rgba(255,170,80,0.22)] p-3 sm:p-3.5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
           <div className="flex items-center gap-2.5">
-            <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-[#FFB703] to-[#FB8500] flex items-center justify-center text-white shadow-sm">
+            <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-[#FFB703] to-[#FB8500] flex items-center justify-center text-white shadow-sm shrink-0">
               <Download className="w-4 h-4" />
             </div>
             <span className="text-xs font-extrabold text-[#1A1A1A]">Download Album Center:</span>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
             <button
               onClick={() => handleDownload('uploads')}
               disabled={downloading !== null}
-              className="btn-secondary-luxury !h-9 !px-4 !text-[11px] flex items-center gap-1.5"
+              className="btn-secondary-luxury !h-9 !px-4 !text-[11px] flex items-center justify-center gap-1.5 w-full sm:w-auto"
             >
               <Upload className="w-3.5 h-3.5 text-[#FB8500]" />
               <span>Download All My Uploads</span>
@@ -209,7 +209,7 @@ export function DownloadCenter({
             <button
               onClick={() => handleDownload('matches')}
               disabled={downloading !== null}
-              className="btn-secondary-luxury !h-9 !px-4 !text-[11px] flex items-center gap-1.5"
+              className="btn-secondary-luxury !h-9 !px-4 !text-[11px] flex items-center justify-center gap-1.5 w-full sm:w-auto"
             >
               <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
               <span>Download My AI Matches</span>

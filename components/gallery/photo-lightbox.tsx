@@ -254,7 +254,7 @@ export function PhotoLightbox({
 
       {/* Photo Info Bottom Tray */}
       {showInfo && (
-        <div className="absolute bottom-16 bg-card/85 backdrop-blur-md border border-muted/30 text-white rounded-lg p-4 max-w-sm w-full mx-4 shadow-xl z-50 flex flex-col gap-2">
+        <div className="absolute bottom-16 bg-zinc-950/95 backdrop-blur-md border border-zinc-800 text-white rounded-lg p-4 max-w-sm w-full mx-4 shadow-xl z-50 flex flex-col gap-2">
           <h4 className="font-semibold text-sm flex items-center gap-1.5 text-primary">
             <Info size={14} />
             <span>Image Metadata</span>

@@ -22,12 +22,16 @@ export function useMyPhotos(eventId: string, initialThreshold = 0.40) {
       setLoadingStats(true);
       const res = await fetch(`/api/gallery/me/stats?eventId=${eventId}&threshold=${threshold}`);
       if (!res.ok) {
+        if (res.status === 401) {
+          setStats(null);
+          return;
+        }
         throw new Error('Failed to load gallery stats');
       }
       const data = await res.json();
       setStats(data);
     } catch (err: any) {
-      console.error(err);
+      // Quietly swallow unauthenticated error for guest visitors
     } finally {
       setLoadingStats(false);
     }
@@ -42,7 +46,12 @@ export function useMyPhotos(eventId: string, initialThreshold = 0.40) {
         `/api/my/photos?eventId=${eventId}&threshold=${threshold}&limit=${limit}&offset=${currentOffset}&sortBy=${sortBy}&query=${encodeURIComponent(searchQuery)}`
       );
       if (!res.ok) {
-        const errData = await res.json();
+        const errData = await res.json().catch(() => ({}));
+        if (res.status === 401) {
+          setPhotos([]);
+          setHasMore(false);
+          return;
+        }
         throw new Error(errData.error || 'Failed to retrieve matched photos');
       }
 

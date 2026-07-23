@@ -131,7 +131,7 @@ export function NotificationCenter() {
         <span className="sr-only">Notifications</span>
       </PopoverTrigger>
       
-      <PopoverContent className="w-80 sm:w-96 max-w-[calc(100vw-32px)] p-0 border border-zinc-200 dark:border-zinc-800 shadow-2xl rounded-xl" align="end">
+      <PopoverContent className="w-80 sm:w-96 max-w-[calc(100vw-32px)] p-0 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-2xl rounded-xl" align="end">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-900 px-4 py-3 bg-zinc-50 dark:bg-zinc-900/50">
           <div className="flex items-center gap-2">

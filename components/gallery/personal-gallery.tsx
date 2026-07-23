@@ -2,7 +2,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Sliders, RefreshCw, AlertCircle, Calendar, User, Sparkles, ZoomIn, Info, Check, CheckSquare, Square, Download } from 'lucide-react';
+import { Sliders, RefreshCw, AlertCircle, Calendar, User, Sparkles, ZoomIn, Info, Check, CheckSquare, Square, Download, Trash2, LayoutGrid, Grid2X2, Grid3x3 } from 'lucide-react';
+import { toast } from 'sonner';
 import { MatchedPhotoRow, PersonalGalleryStats } from '@/types/selfie';
 import { Photo } from '@/types/photo';
 import { Card, CardContent } from '@/components/ui/card';
@@ -56,6 +57,8 @@ export function PersonalGallery({
   type,
 }: PersonalGalleryProps) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [gridDensity, setGridDensity] = useState<'small' | 'medium' | 'large'>('medium');
+  const [deleting, setDeleting] = useState<boolean>(false);
 
   // Normalize list to Photo[] structure for lightbox preview
   const getMappedPhotosForLightbox = (): Photo[] => {
@@ -116,142 +119,145 @@ export function PersonalGallery({
     }
   };
 
+  const handleSingleDelete = async (photoId: string) => {
+    if (!window.confirm('Are you sure you want to delete this photo?')) return;
+    try {
+      setDeleting(true);
+      const res = await fetch(`/api/photos/${photoId}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || 'Failed to delete photo');
+      }
+      toast.success('Photo deleted successfully');
+      onRefresh();
+      if (lightboxIndex !== null) setLightboxIndex(null);
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to delete photo');
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedPhotoIds.length === 0) return;
+    if (!window.confirm(`Are you sure you want to delete ${selectedPhotoIds.length} selected photos?`)) return;
+    try {
+      setDeleting(true);
+      let successCount = 0;
+      for (const id of selectedPhotoIds) {
+        const res = await fetch(`/api/photos/${id}`, { method: 'DELETE' });
+        if (res.ok) successCount++;
+      }
+      toast.success(`Successfully deleted ${successCount} photos`);
+      clearSelection();
+      onRefresh();
+    } catch (err: any) {
+      toast.error('Error deleting selected photos');
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   const allSelected = photos.length > 0 && selectedPhotoIds.length === photos.length;
+
+  const gridClasses = {
+    small: 'grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-2',
+    medium: 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3',
+    large: 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5',
+  }[gridDensity];
 
   return (
     <div className="space-y-6">
-      {/* 1. Statistics Cards (Only show for matches or when stats are available) */}
-      {type === 'matches' && (
-        <>
-          {loadingStats && !stats ? (
-            <StatsSkeleton />
-          ) : stats ? (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <Card className="border border-muted/40 bg-card/50 backdrop-blur-sm shadow-sm">
-                <CardContent className="p-4 flex items-center justify-between">
-                  <div>
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">AI Matches Found</p>
-                    <h3 className="text-xl font-black mt-1 text-primary">{stats.totalPhotosFound}</h3>
-                  </div>
-                  <div className="bg-primary/10 p-2.5 rounded-full">
-                    <Sparkles className="w-4 h-4 text-primary" />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="border border-muted/40 bg-card/50 backdrop-blur-sm shadow-sm">
-                <CardContent className="p-4 flex items-center justify-between">
-                  <div>
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Highest Similarity</p>
-                    <h3 className="text-xl font-black mt-1 text-emerald-500">
-                      {stats.highestSimilarity > 0 ? `${(stats.highestSimilarity * 100).toFixed(1)}%` : '0%'}
-                    </h3>
-                  </div>
-                  <div className="bg-emerald-500/10 p-2.5 rounded-full">
-                    <Sparkles className="w-4 h-4 text-emerald-500" />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="border border-muted/40 bg-card/50 backdrop-blur-sm shadow-sm">
-                <CardContent className="p-4 flex items-center justify-between">
-                  <div>
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Average Match</p>
-                    <h3 className="text-xl font-black mt-1 text-indigo-500">
-                      {stats.averageSimilarity > 0 ? `${(stats.averageSimilarity * 100).toFixed(1)}%` : '0%'}
-                    </h3>
-                  </div>
-                  <div className="bg-indigo-500/10 p-2.5 rounded-full">
-                    <Sliders className="w-4 h-4 text-indigo-500" />
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          ) : null}
-        </>
-      )}
-
+      
       {/* 2. Controls Dashboard */}
-      <Card className="border border-muted/40 bg-card/45 backdrop-blur-sm">
-        <CardContent className="p-4 flex flex-col md:flex-row md:items-center justify-between gap-5">
-          
-          {/* Similarity Threshold Slider (AI Matches only) */}
-          {type === 'matches' && threshold !== undefined && setThreshold && (
-            <div className="flex-1 space-y-2">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-bold flex items-center gap-1.5">
-                  <span>Match Sensitivity</span>
-                  <span className="text-[10px] font-bold bg-primary/10 text-primary px-2 py-0.5 rounded">
-                    {(threshold * 100).toFixed(0)}% Similarity
-                  </span>
-                </label>
-                <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
-                  <Info className="w-3 h-3" />
-                  <span>Lower matches more, higher matches cleaner</span>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-3">
-                <span className="text-[10px] text-muted-foreground">30%</span>
-                <input
-                  type="range"
-                  value={threshold}
-                  onChange={(e) => setThreshold(parseFloat(e.target.value))}
-                  min={0.30}
-                  max={0.65}
-                  step={0.01}
-                  className="flex-1 h-1.5 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
-                />
-                <span className="text-[10px] text-muted-foreground">65%</span>
-              </div>
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-white border border-[rgba(255,170,80,0.2)] p-4 rounded-2xl shadow-xs">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-extrabold text-[#1A1A1A]">
+            {type === 'matches' ? 'Your Matched Photos' : 'Your Uploaded Photos'}
+          </span>
+          <span className="text-xs font-bold text-[#FB8500] bg-[#FFF8F2] px-2.5 py-0.5 rounded-full border border-[rgba(255,170,80,0.3)]">
+            {photos.length} {photos.length === 1 ? 'Photo' : 'Photos'}
+          </span>
+        </div>
+
+        {/* Selection Controls, Grid Density & Sorters */}
+        <div className="flex flex-wrap items-center gap-3 md:ml-auto">
+          {/* Grid View Density Switcher */}
+          <div className="flex items-center gap-1 bg-[#FFF8F2] border border-[rgba(255,170,80,0.3)] p-1 rounded-xl">
+            <button
+              onClick={() => setGridDensity('small')}
+              className={`p-1.5 rounded-lg text-xs font-bold transition-all ${
+                gridDensity === 'small' ? 'bg-[#FB8500] text-white shadow-xs' : 'text-[#8A8A8A] hover:text-[#1A1A1A]'
+              }`}
+              title="Small Compact Grid"
+            >
+              <Grid3x3 size={15} />
+            </button>
+            <button
+              onClick={() => setGridDensity('medium')}
+              className={`p-1.5 rounded-lg text-xs font-bold transition-all ${
+                gridDensity === 'medium' ? 'bg-[#FB8500] text-white shadow-xs' : 'text-[#8A8A8A] hover:text-[#1A1A1A]'
+              }`}
+              title="Medium Standard Grid"
+            >
+              <Grid2X2 size={15} />
+            </button>
+            <button
+              onClick={() => setGridDensity('large')}
+              className={`p-1.5 rounded-lg text-xs font-bold transition-all ${
+                gridDensity === 'large' ? 'bg-[#FB8500] text-white shadow-xs' : 'text-[#8A8A8A] hover:text-[#1A1A1A]'
+              }`}
+              title="Large Preview Grid"
+            >
+              <LayoutGrid size={15} />
+            </button>
+          </div>
+
+          {/* Selection & Bulk Delete Actions */}
+          {photos.length > 0 && (
+            <div className="flex items-center gap-1.5 bg-zinc-50 rounded-xl p-1 border border-zinc-200">
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={allSelected ? clearSelection : selectAllPhotos}
+                className="text-xs px-2.5 h-8 gap-1.5 font-bold"
+              >
+                {allSelected ? <CheckSquare className="w-3.5 h-3.5 text-[#FB8500]" /> : <Square className="w-3.5 h-3.5 text-zinc-400" />}
+                <span>{allSelected ? 'Deselect All' : 'Select All'}</span>
+              </Button>
+
+              {selectedPhotoIds.length > 0 && (
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={handleBulkDelete}
+                  disabled={deleting}
+                  className="text-xs px-3 h-8 gap-1.5 font-bold bg-rose-600 hover:bg-rose-700 text-white rounded-lg shadow-xs"
+                >
+                  <Trash2 size={13} />
+                  <span>Delete ({selectedPhotoIds.length})</span>
+                </Button>
+              )}
             </div>
           )}
 
-          {/* Selection Controls & Sorters */}
-          <div className="flex flex-wrap items-center gap-3 md:ml-auto">
-            {/* Selection actions */}
-            {photos.length > 0 && (
-              <div className="flex items-center gap-1 bg-muted/40 rounded-lg p-0.5 border border-muted">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={allSelected ? clearSelection : selectAllPhotos}
-                  className="text-xs px-2.5 h-8 gap-1.5"
-                >
-                  {allSelected ? <CheckSquare className="w-3.5 h-3.5 text-primary" /> : <Square className="w-3.5 h-3.5 text-muted-foreground" />}
-                  <span>{allSelected ? 'Deselect All' : 'Select All'}</span>
-                </Button>
-                {selectedPhotoIds.length > 0 && (
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={clearSelection}
-                    className="text-xs px-2 h-8 text-red-500 hover:text-red-400"
-                  >
-                    Clear ({selectedPhotoIds.length})
-                  </Button>
-                )}
-              </div>
-            )}
-
-            {/* Sort Selector */}
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground whitespace-nowrap">Sort:</span>
-              <Select value={sortBy} onValueChange={(val: any) => setSortBy(val)}>
-                <SelectTrigger className="w-[140px] h-8 bg-background border border-muted/50 text-xs">
-                  <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
-                <SelectContent>
-                  {type === 'matches' && <SelectItem value="similarity">Best Match</SelectItem>}
-                  <SelectItem value="newest">Newest First</SelectItem>
-                  <SelectItem value="oldest">Oldest First</SelectItem>
-                  <SelectItem value="size">File Size</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          {/* Sort Selector */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-zinc-400 font-semibold whitespace-nowrap">Sort:</span>
+            <Select value={sortBy} onValueChange={(val: any) => setSortBy(val)}>
+              <SelectTrigger className="w-[140px] h-8 bg-white border border-zinc-200 text-xs rounded-xl font-bold">
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                {type === 'matches' && <SelectItem value="similarity">Best Match</SelectItem>}
+                <SelectItem value="newest">Newest First</SelectItem>
+                <SelectItem value="oldest">Oldest First</SelectItem>
+                <SelectItem value="size">File Size</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* 3. Error Alert */}
       {error && (
@@ -287,7 +293,7 @@ export function PersonalGallery({
         </div>
       ) : (
         <div className="space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+          <div className={`grid ${gridClasses}`}>
             {photos.map((photo, index) => {
               const photoId = type === 'matches' ? photo.photo_id : photo.id;
               const isSelected = selectedPhotoIds.includes(photoId);
@@ -297,8 +303,8 @@ export function PersonalGallery({
                 <Card
                   key={photoId}
                   onClick={() => toggleSelectPhoto(photoId)}
-                  className={`group relative overflow-hidden border bg-card hover:shadow-md transition-all duration-300 rounded-lg aspect-[4/3] cursor-pointer select-none ${
-                    isSelected ? 'ring-2 ring-primary border-primary bg-primary/5' : 'border-muted/40'
+                  className={`group relative overflow-hidden border bg-card hover:shadow-md transition-all duration-300 rounded-2xl sm:rounded-3xl aspect-square sm:aspect-[4/3] cursor-pointer select-none ${
+                    isSelected ? 'ring-2 ring-[#FB8500] border-[#FB8500] bg-[#FB8500]/5' : 'border-zinc-200'
                   }`}
                 >
                   {/* Photo Thumbnail */}
@@ -313,7 +319,7 @@ export function PersonalGallery({
                   {/* Top-Left Selection Checkbox */}
                   <div className={`absolute top-2.5 left-2.5 z-20 transition-all ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
                     <div className={`w-5 h-5 rounded flex items-center justify-center border shadow backdrop-blur-sm transition-all ${
-                      isSelected ? 'bg-primary border-primary text-white' : 'bg-black/40 border-white/40 text-transparent hover:border-white'
+                      isSelected ? 'bg-[#FB8500] border-[#FB8500] text-white' : 'bg-black/40 border-white/40 text-transparent hover:border-white'
                     }`}>
                       <Check className="w-3.5 h-3.5 stroke-[3]" />
                     </div>
@@ -350,6 +356,20 @@ export function PersonalGallery({
                       </div>
 
                       <div className="flex gap-1.5">
+                        {/* Single Delete Photo */}
+                        {type === 'uploads' && (
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            size="icon"
+                            className="h-7 w-7 bg-rose-500/30 hover:bg-rose-500/50 border-transparent backdrop-blur-md text-white rounded-full shadow"
+                            onClick={() => handleSingleDelete(photoId)}
+                            title="Delete Photo"
+                          >
+                            <Trash2 size={13} />
+                          </Button>
+                        )}
+
                         {/* Download Photo */}
                         <Button
                           type="button"
@@ -357,6 +377,7 @@ export function PersonalGallery({
                           size="icon"
                           className="h-7 w-7 bg-white/20 hover:bg-white/35 border-transparent backdrop-blur-md text-white rounded-full shadow"
                           onClick={() => handleIndividualDownload(photo)}
+                          title="Download Original"
                         >
                           <Download size={13} />
                         </Button>
@@ -368,6 +389,7 @@ export function PersonalGallery({
                           size="icon"
                           className="h-7 w-7 bg-white/20 hover:bg-white/35 border-transparent backdrop-blur-md text-white rounded-full shadow"
                           onClick={() => setLightboxIndex(index)}
+                          title="Preview Lightbox"
                         >
                           <ZoomIn size={13} />
                         </Button>
@@ -403,6 +425,8 @@ export function PersonalGallery({
           onClose={() => setLightboxIndex(null)}
           onPrev={handlePrev}
           onNext={handleNext}
+          onDelete={() => handleSingleDelete(getMappedPhotosForLightbox()[lightboxIndex].id)}
+          canDelete={type === 'uploads'}
           currentIndex={lightboxIndex}
           totalCount={photos.length}
         />

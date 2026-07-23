@@ -23,10 +23,10 @@ export async function POST(request: NextRequest) {
 
     const { eventId, image } = result.data;
 
-    // Check membership
+    // Check membership (auto-enroll authenticated visitors as guest members)
     const isMember = await memberRepo.isMember(eventId, session.user.id);
     if (!isMember) {
-      return NextResponse.json({ error: 'Forbidden: You must be a member of the event' }, { status: 403 });
+      await memberRepo.joinEvent(eventId, session.user.id, 'guest');
     }
 
     // Check size limit: base64 size is approximately 4/3 of binary size
